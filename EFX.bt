@@ -1,0 +1,1898 @@
+// ------------------------------------------------
+// --- 010 Editor v8.0.1
+//
+//      File: 
+//   Authors: 叶子, 尾巴, canni, 冰块冰块冰Ice, MHW Modding Wiki, Crimson, Asterisk, Dave uRrr
+//   Version: 3.1
+//   Purpose: 
+//  Category: 
+// File Mask: *efx
+//  ID Bytes: 
+//   History: 
+//              1.0     initial template
+//                      structure tidy up
+//                      more efx type hash marked
+//                      research and generalisation from DMQW Group
+//
+//              1.1     add new type EFX_Behavior (UNKN_02)
+//                      added notes about 20 bytes (type Post_Basic) before type Basic_Transform
+//                      more parameter type found on EFX_Behavior
+//
+//              1.2     naming correction for Launcher_Property (bone id that mapped to need to be marked)
+//                      few counting parameter found for Keyframe_Anim, as least the structure is now filled up
+//                      updated & added structure accroding to wiki
+//                          structre of DDS_USEAGE
+//                          added AURAS structure
+//                      
+//              1.3     Removed the Post_Basic structure before the Basic_Transform
+//                          as there is too many varies and hard to tell if there exists one
+//                      Remove Unkn_05 as it is one of the Post_Basic struct
+//                      DDS_Useage ( = CM_Useage) -> marked brightness, scale, height/width, color
+//                      Unkn_09 -> Flowmap, marked brightness, scale, height/width, color
+//                      Unkn_10 -> Cubemap, marked brightness, scale, height/width, color
+//                      Added CM_Map
+//                      Added Unkn_11 and Unkn_12 struct, usually occur before CM_Map
+//                      Unkn_08 -> Texture, extended and structured, looks like mrl3
+//                      
+//              1.4     Added Following Effect
+//                      LAYER_VISIBILITY -Moved before-> DDS_USEAGE
+//                      
+//                      
+//                      ***Note***
+//                      GOTO template variable may not work properly as the order of #EFX TYPE is not fully correct
+//                      naming on #HASH EFX may not full correct
+//                      overlapping on Keyframe_Anim -> Unknown Parameter 2 -> if the last Frame_Para's type is [93 2F D5 2B] 
+//                      Unknow left over at end of efx file, with no header, seems like bunch of ints
+//                      
+//                      when controlling mod3 behavior, KEYFRAME_ANIM need to shift ONE block below (while there is mod3, 
+//                      won't necessary having a keyframe)
+//
+//              2.0     Iceborne Fix
+//                      Keyframe_Anim -Rename-> TIML
+//                      Global_Control -Reestimate-> Prefix & Internal / External Efx useage (I/E Function Tested by Canni)
+//                      Mod3 Path: No longer have a length indicator, instead, having fixed two entry
+//                                  -> Mod3 Path 1 & Mod3 Path 2 -> identified by end of string [00]
+//                      Texture & relating attri path: Not fixed yet
+//                      Header: unkn2[4] function mostly discovered
+//                                  EFX_type (Count) = EFX_Count + IE_Count + UNKN_Count + NULL_Efx
+//                                  Null Entry in EFX_type [00] = NULL_Efx
+//                      ~           F_Lenth: Block Length relating to End of EFX (by Canni)
+//                      ~ TIML:   Always have a prefix (5*4)
+//                      Internal / External Efx useage (counted with IE_Count):
+//                           External must have a prefix (5*4)
+//                           Internal could have an External as a prefix or a prefix (2*4)
+//
+//              2.1     Restructured on External/Internal code when blocking
+//
+//              2.2     Introduced a section after External/Internal, temporary named as Unknown Prefix
+//                      There is 17 types of discovered prefix header, two of them only have one instance
+//                      THEY ARE NOT SORTED and only filled with LONG ARRAY
+//                      
+//              2.2.1   Marked EFX/EPV Color Slot for DDS/MOD3/AURAS/EFX Behavior according to Crimson
+//
+//              3.0     Fixing a length for Unknown Prefix type 12 (DA A5 DE 10)
+//                      Introduce the true header of EFX main part
+//                      A unique type of main part, header = [9A A9 39 49]
+//                          Discovered Three Types of Block, see detail in the template Single_Prefix
+//                              One of the Main Body Attribute (Unkn_26 [77 99 54 09]) 
+//                              having the same structure to Type 3 Block [F6 F4 37 7A]
+//                      Merged TIML template by Dave uRrr, mapped TIML Foot value marked by 叶子
+//                      Fixed Main Body Attribute:
+//                          Texture [6B B9 E2 62]
+//                          Layer_Visibility [5A F8 E9 75]
+//                          CM_Map [B2 04 E0 37]
+//
+//                      Added path deceleration to few attribute
+//                      Fix some type error when serializing
+//                       
+//                      Adding new attributes to complete the padding
+//                      Discovered 45 new attribute and structure
+//
+//                      Discovered where the NULL efx entry count points to (second last structure of the efx)
+//                      Marked the EFX Actual which is relating to the ints at the end of EFX file
+//
+//                      Restructure the EFX template, it reads the EFX sequentially instead to find key header
+//                      Main attribute are repainted in occur order (See order at and of this template)
+//                          * Note * The order is not exact as some of attribute not strictly follow the order and 
+//                            forming a loop when sorting at all efxs
+//                              [Layer_Visibility,Symmetric_Copy,Texture,Self_Spin_Control,Unkn_04,Unkn_35,Loop_Play,Unkn_11]
+//                      Tested on all 8858 EFXs (with script ported python, in which the template also should do)
+//
+//              3.1     Added CRC string check for prefix headers (Thanks to Asterisk pointing out JAMCRC)
+//
+//                      *** Note ***                      
+//                      One of the prefix clearly relating to the EFX Behavior attribute, by induction, the rest of 
+//                      the header may share the similar function with other attribute
+//                      Some Main attribute has only few occur times on all files
+// ------------------------------------------------
+
+// #HASH EFX
+
+const int EXTERNAL              = 1965813039    ; // 25 31 AF 44 // 外部调用
+const int INTERNAL              = 1152332069    ; // 2F ED 2B 75 // 内部调用
+
+// NEW DISCOVERERD
+const int UNKN_00               = 351869514     ; // 4A 1A F9 14
+const int UNKN_02               = 1257264016    ; // 90 53 F0 4A
+const int UNKN_05               = 201720946     ; // 72 04 06 0C
+const int UNKN_08               = 674258598     ; // A6 5E 30 28
+const int UNKN_09               = 428328940     ; // EC C7 87 19
+const int UNKN_10               = 1524169119    ; // 9F F9 D8 5A
+const int UNKN_13               = 1354601878    ; // 96 95 BD 50
+const int UNKN_14               = 71967929      ; // B9 24 4A 04
+const int UNKN_15               = 584030352     ; // 90 98 CF 22
+const int UNKN_16               = 341394325     ; // 95 43 59 14
+const int UNKN_17               = 1558046267    ; // 3B E6 DD 5C
+const int UNKN_18               = 957228464     ; // B0 25 0E 39
+const int UNKN_19               = 1616705008    ; // F0 F5 5C 60
+const int UNKN_20               = 275476317     ; // 5D 6F 6B 10
+
+const int UNKN_21               = 14579343      ; // 8F 76 DE 00
+const int UNKN_22               = 252064274     ; // 12 32 06 0F
+const int UNKN_23               = 697457224     ; // 48 5A 92 29
+const int UNKN_24               = 280719621     ; // 05 71 BB 10
+const int UNKN_25               = 1240420851    ; // F3 51 EF 49
+const int UNKN_26               = 156539255     ; // 77 99 54 09
+const int UNKN_27               = 212167510     ; // 56 6B A5 0C
+const int UNKN_28               = 842043995     ; // 5B 92 30 32
+const int UNKN_29               = 812022019     ; // 03 79 66 30
+const int UNKN_30               = 1267346617    ; // B9 2C 8A 4B
+
+// 31-45 See below
+
+
+const int TIML                  = 1819109748    ; // 74 69 6D 6C // 关键帧动画
+
+const int BASIC_TRANSFORM       = 10286765      ; // AD F6 9C 00 // 基本变换
+const int LIMIT_TRANSFORM       = 368199626     ; // CA 47 F2 15 // 变换约束
+const int LAUNCHER_PROPERTY     = 1921765292    ; // AC CF 8B 72 // 发射器属性
+const int LIFE_CYCLE            = 1320868484    ; // 84 DA BA 4E // 生命周期
+const int SYMMETRIC_COPY        = 1003792849    ; // D1 A9 D4 3B // 对称复制
+const int MOMENTUM_CONTROL      = 222458580     ; // D4 72 42 0D // 动量控制
+const int VISIBLE_DIST          = 859243212     ; // CC 02 37 33 // 可见距离
+const int DDS_TRACE_PROP        = 319363982     ; // 8E 1B 09 13 // DDS轨迹属性
+const int DDS_USEAGE            = 1136904414    ; // DE C8 C3 43 // DDS(CM)调用   // CM_Useage
+const int LOOP_PLAY             = 480396424     ; // 88 44 A2 1C // 播放循环
+const int UVS_USEAGE            = 1698970185    ; // 49 3A 44 65 // UVS调用
+const int TRANSPARENT_CONTROL   = 61219887      ; // 2F 24 A6 03 // 透明渐变控制
+const int LAYER_VISIBILITY      = 1978267738    ; // 5A F8 E9 75 // 层级可见性
+const int COLOR_PROP_CONTROL    = 459578090     ; // EA 9A 64 1B // 颜色属性控制
+const int MOD3_USEAGE           = 276670093     ; // 8D A6 7D 10 // mod3调用
+const int SELF_SPIN_CONTROL     = 1774142981    ; // 05 46 BF 69 // 自旋转控制 
+const int AURAS                 = 597394907     ; // DB 85 9B 23 // 光圈
+const int FOLLOW                = 1123011591    ; // 07 CC EF 42 // 跟随
+
+const int EFX_BEHAVIORS         = 1179069619    ; // B3 2C 47 46 // EFX行为
+const int TEXTURE               = 1659025771    ; // 6B B9 E2 62 // 材质
+const int FLOWMAP               = 37870541      ; // CD DB 41 02 // FLOWMAP
+const int CUBEMAP               = 1660327299    ; // 83 95 F6 62 // CUBEMAP
+const int CM_MAP                = 937428146     ; // B2 04 E0 37 // CM_MAP
+
+
+const int UNKN_01               = 2116359897    ; // D9 16 25 7E 
+const int UNKN_03               = 733291506     ; // F2 23 B5 2B 
+const int UNKN_04               = 523015778     ; // 62 96 2C 1F 
+const int UNKN_06               = 2020068998    ; // 86 CE 67 78 
+const int UNKN_07               = 1226136492    ; // AC 5B 15 49 
+
+const int UNKN_11               = 873436648     ; // E8 95 0F 34
+const int UNKN_12               = 493311524     ; // 24 56 67 1D
+
+
+// #HEADER STRUCT
+typedef struct {
+    long    EFX<name="EFX">;
+    long    VERSION<name="VERSION">;
+    long    CONST0[5]<name="CONSTANT">;
+    long    EFXR<name="EFXR">;
+    int     CONST1<name="CONSTANT 1">;
+    float   NULL;
+    int     EFX_Count<name="NON-NULL EFX Type Entry Count">;
+    int     EFX_type_len<name="EFX Type Entry Length">;
+    int     IE_Count<name="Internal/External Useage Count">;
+    int     UNKN_Count<name="Unknown Prefix Count">;
+    int     NULL_Count<name="NULL EFX Type Count">;
+    int     NULL_Lenth<name="NULL EFX Entry Length (END OF EFX)">;
+    int     End_Count<name="End of EFX int Count (Actual EFX Count?)">;
+    int     offset;
+} Header;
+
+typedef struct {
+    string str;
+} STRING;
+
+typedef struct {
+    local int i;
+    local int64 en = FTell()+header.EFX_type_len;
+    local TFindResults s = FindAll((ubyte)0,true,false,0,0.0,1,FTell(),en);
+    for(i=0;i<s.count && FTell()<en;i++){
+        STRING efx_T<name=" ",read=ReadStr>;
+    };
+} EFX_Type;
+
+
+// #SUPPORT STRUCT
+typedef union {
+    float   unknf;
+    int     unkni;
+} UN;
+
+// type 0 - float; 1 - int; 2 - ubyte
+typedef struct (int type, int skip){
+    if(type==0){
+        float x;
+        FSkip(skip*4);
+        float y; 
+        FSkip(skip*4);
+        float z;
+        FSkip(skip*4);
+    } else if (type == 2){
+        ubyte x;
+        ubyte y;
+        ubyte z;
+        ubyte NULL<bgcolor=0xffffff>;
+    } else {
+        int x;
+        int y;
+        int z;
+    }
+} XYZ;
+
+
+// #EFX TYPE STRUCT
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[9];
+} Unkn_00;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    byte    unkn1[4];
+    float   unkn2;
+    int     unkn3;
+    long    unkn4;
+    float   unkn5[9];
+} Unkn_02;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    byte    unkn1;
+} Unkn_05;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[10];
+} Unkn_08;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int64   unkn0[2];
+    float   unkn1[2];
+} Unkn_09;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long    unkn1[2];
+    float   unkn2[2];
+    int     unkn3[4];
+    float   unkn4[16];
+    int     path_len<name="Path Length",bgcolor=0x123456>;
+    int     unkn5[2];
+    if(path_len>0)
+        char    p[path_len]<name="Path",bgcolor=0x123456>;
+} Unkn_10;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    float   unkn1[11];
+} Unkn_13;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    long    unkn0;
+    float   unkn1[3];
+} Unkn_14;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+    float   unkn1[4];
+    int     unkn2[4];
+} Unkn_15;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    float   unkn1[9];
+    int     unkn2;
+    float   unkn3[3];
+    int     unkn4[3];
+} Unkn_16;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn00[2];
+    long    unkn01;
+    XYZ     color1(2,0);
+    long    unkn02;
+    XYZ     color2(2,0);
+    long    unkn03;
+    XYZ     color3(2,0);
+    long    unkn04;
+    float   unkn05[49];
+    int     unkn06[2];
+    float   unkn07[28];
+    int     unkn08[2];
+    float   unkn09[20];
+    int     unkn10[4];
+    float   unkn11[2];
+    int     unkn12[2];
+    float   unkn13[6];
+    int     unkn14[3];
+    float   unkn15[9];
+    short   unkn16;
+    int     path_len<name="Path Length",bgcolor=0x123456>;
+    if(path_len>0)
+        char    p[path_len]<name="Path",bgcolor=0x123456>;
+} Unkn_17;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[3];
+} Unkn_18;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+} Unkn_19;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    float   unkn1[5];
+    long    unkn2[3];
+    float   unkn3[9];
+    short   unkn4;
+} Unkn_20;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    long    unkn0[18];
+} Unkn_21;
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[3];
+    float   unkn1[11];
+    int     unkn2[2];
+    long    unkn3[4];
+    float   unkn4[4];
+    int     unkn5[2];
+    long    unkn6[4];
+    float   unkn7;
+    int     path_len<name="Path Length",bgcolor=0x123456>;
+    if(path_len>0)
+        char    p[path_len]<name="Path",bgcolor=0x123456>;
+} Unkn_22;
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    float   unkn1[4];
+    int     unkn2[2];
+    float   unkn3;
+} Unkn_23;
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[8];
+    float   unkn1[3];
+    int     unkn2[2];
+    float   unkn3[9];
+    int     unkn4[2];
+    float   unkn5;
+    int     unkn6[3];
+} Unkn_24;
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    long    unkn0[17];
+    short   unkn1;
+} Unkn_25;
+
+// UNKN_26 see after single prefix
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+    int     length;
+    long    unkn1[length/4-5];
+    float   unkn2[3];
+    int     unkn3[2];
+} Unkn_27;
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+    int     length;
+    long    unkn1[length/4-5];
+    float   unkn2[3];
+    int     unkn3[2];
+} Unkn_28;
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[3];
+} Unkn_29;
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long    unkn1;
+    int     unkn2[2];
+    long    unkn3[3];
+    float   unkn4[4];
+    long    unkn5;
+    float   unkn6[8];
+} Unkn_30;
+
+
+const int UNKN_31               = 2115227124    ; // F4 CD 13 7E
+const int UNKN_32               = 1217635032    ; // D8 A2 93 48
+const int UNKN_33               = 1535857470    ; // 3E 53 8B 5B
+const int UNKN_34               = 1111321825    ; // E1 6C 3D 42
+const int UNKN_35               = 1062052310    ; // D6 A1 4D 3F
+const int UNKN_36               = 1916268445    ; // 9D EF 37 72
+const int UNKN_37               = 283684959     ; // 5F B0 E8 10
+const int UNKN_38               = 845585410     ; // 02 9C 66 32
+const int UNKN_39               = 1293936879    ; // EF E8 1F 4D
+
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long    unkn1;
+    int     unkn2;
+} Unkn_31;
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long    unkn1;
+    float   unkn2;
+    int     unkn3;
+    float   unkn4[6];
+    int     unkn5[8];
+    byte    unkn6;
+} Unkn_32;
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long     unkn1;
+    float    unkn2[10];
+} Unkn_33;
+
+// Mod3 Useage
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long    unkn1[3];
+    byte    unkn2[8];
+    int     unkn3;
+    STRING  path1<name="Mod3 Path1",bgcolor=0x123456,read=ReadStr>;
+} Unkn_34;
+
+// NM Useage
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn00[2];
+    long    unkn01;
+    XYZ     color1(2,0);
+    long    unkn02;
+    XYZ     color2(2,0);
+    float   unkn03[20];
+    int     unkn04[3];
+    float   unkn05[3];
+    XYZ     color3(2,0);
+    float   unkn06[25];
+    int     unkn07[6];
+    float   unkn08[6];
+    int     unkn09[6];
+    float   unkn10[3];
+    int     unkn11;
+    float   unkn12[4];
+    int     unkn13;
+    int     path_len<name="Path Length",bgcolor=0x123456>;
+    if(path_len>0)
+        char    p[path_len]<name="Path",bgcolor=0x123456>;
+} Unkn_35;
+
+// 2 cases
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long    unkn1;
+    float   unkn2[1];
+    int     unkn3;
+    short   unkn4;
+} Unkn_36;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long    unkn1;
+    int     unkn2[7];
+} Unkn_37;
+
+// 1 case CC_Effect cm_flash_000
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long    unkn1;
+    float   unkn2[3];
+    int     path_len<name="Path Length",bgcolor=0x123456>;
+    if(path_len>0)
+        char    p[path_len]<name="Path",bgcolor=0x123456>;
+} Unkn_38;
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[4];
+    float   unkn1[168];
+} Unkn_39;
+
+
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+int     unkn0[2];
+    long    unkn1;
+    float   unkn2[2];
+    int     unkn3[2];
+    int     unkn4[2];
+    int     unkn5[2];
+    int     unkn6[2];
+    int     unkn7[2];
+    int     unkn8[2];
+    int     unkn9[2];
+} DUMMY;
+
+const int UNKN_40               = 1913890808    ; // F8 A7 13 72
+const int UNKN_41               = 64111316      ; // D4 42 D2 03
+const int UNKN_42               = 215153612     ; // CC FB D2 0C
+const int UNKN_43               = 180261702     ; // 46 93 BE 0A
+const int UNKN_44               = 638869640     ; // 88 60 14 26
+const int UNKN_45               = 11111; // 
+const int UNKN_46               = 11111; // 
+const int UNKN_47               = 11111; // 
+const int UNKN_48               = 11111; // 
+const int UNKN_49               = 11111; // 
+
+
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long    unkn1;
+    float   unkn2;
+    int     unkn3;
+} Unkn_40;
+
+// 1 case
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long    unkn1;
+    float   unkn2[3];
+} Unkn_41;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long    unkn1;
+    int     unkn2;
+    XYZ     color(2,0);
+    long    unkn3[2];
+    float   unkn4[13];
+} Unkn_42;
+
+// 2 cases
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long    unkn1;
+    int     unkn2[2];
+    XYZ     color(2,0);
+    int     unkn3;
+    long    unkn4;
+    float   unkn5[4];
+    long    unkn6;
+    float   unkn7[8];
+} Unkn_43;
+
+// 1 case
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    float   unkn1;
+} Unkn_44;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+} Unkn_45;
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+} Unkn_46;
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+} Unkn_47;
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+} Unkn_48;
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+} Unkn_49;
+
+
+
+
+typedef struct {
+    int     unkn0;
+    int     path_len<name="Path Length",bgcolor=0x123456>;
+    long    type<name="External",format=hex,bgcolor=0xAA0000>;
+    int     unkn[7];
+    XYZ     xyz(0,0);
+    int     NULL[3];
+    char    p[path_len]<name="Path",bgcolor=0x123456>;
+} External;
+
+typedef struct {
+    int     unkn[7];
+    XYZ     xyz(0,0);
+    int     NULL[3];
+    int     attri_count;
+    if (attri_count > 0)
+        int     attri[attri_count];
+} Internal;
+
+typedef struct (int x) {
+    local int ord = x;
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     count<name="I/E Count",bgcolor=0xFF0000>;
+    long    ie<name="Internal/External",format=hex,bgcolor=0x990000>;
+    if (ie==EXTERNAL)
+        if (count>0)
+            External external<name="External">;
+        if (count>1) {
+            long    ie<name="Internal",format=hex,bgcolor=0x990000>;
+            Internal internal;
+    } else if (ie==INTERNAL)
+        Internal internal;
+
+} IE_Prefix;
+
+typedef struct {
+    local int k;
+    for(k=0;k<header.IE_Count;k++) {
+        IE_Prefix ie(k)<name="External/Internal Useage",read=ReadIEP>;
+    }
+} IE_PREFIX;
+
+
+
+typedef struct {
+    float   key_trans_rot<name="Keyframe Disp / Rot Value">;
+    long    end_thresh<name="End Mispos Threshold">;
+    float   start_thresh<name="Start Mispos Threshold">;
+    float   key_reg<name="Keyframe Register">;
+    short   displacement<name="Displacement",bgcolor=0x00ff00>;
+    short   rotate<name="Rotate",bgcolor=0xff00ff>;
+} TIML_Foot;
+
+typedef struct {
+    uint64  offSet<bgcolor=0x080080>;
+    uint64  Count;
+    uint32  unkn1;
+    uint32  unkn2;
+    float   unkn3;
+    uint32  unkn4;
+    uint32  unkn5;
+    long    unkn6<format=hex>;
+} TIML_Set0;
+
+typedef struct {
+    uint64  offSet<bgcolor=0x080080>;
+    uint64  Count<bgcolor=0x0000FF>;
+    uint64  unkn1;
+} TIML_Set1;
+
+typedef struct {
+    
+    uint64  offSet<bgcolor=0x080080>;
+    uint64  Count<bgcolor=0x0000FF>;
+    long    unkn0<format=hex>;
+    uint32  unkn1;
+    local int p = FTell();
+    FSeek(base+offSet);
+    TIML_Foot    foot[Count]<bgcolor=0xFF0066,read=ReadFoot,name="Foot Data">;
+    FSeek(p);
+} TIML_Set2;
+
+typedef struct {
+    TIML_Set0    set0<bgcolor=0xAAAAAA,read=ReadSet0,name="Data Set 0">;
+    FSeek(base+set0.offSet);
+    TIML_Set1    set1<bgcolor=0x006600,read=ReadSet1,name="Data Set 1">;
+    FSeek(base+set1.offSet);
+    TIML_Set2    set2[set1.Count]<bgcolor=0x006600,read=ReadSet2,name="Data Set 2",optimize=false>;
+} TIML_Data;
+
+typedef struct {
+    uint64  offSet<name="Data OffSet">;
+    local int p = FTell();
+    if(offSet != 0) {
+        FSeek(offSet+base);
+        TIML_Data    data<bgcolor=0x080080,name="Data">;
+        FSeek(p);
+    }
+} TIML_Time;
+
+string ReadSet0(TIML_Set0& r) {
+    string s;
+    SPrintf(s, "offSet: %d \t Count: %d \t [%d %d %f %d %d %xh]", 
+        r.offSet, r.Count, r.unkn1, r.unkn2, r.unkn3, r.unkn4, r.unkn5, r.unkn6);
+    return s;
+}
+
+string ReadSet1(TIML_Set1& r) {
+    string s;
+    SPrintf(s, "offSet: %d \t Count: %d \t [%xh]", r.offSet, r.Count, r.unkn1);
+    return s;
+}
+
+string ReadSet2(TIML_Set2& r) {
+    string s;
+    SPrintf(s, "offSet: %d \t Count: %d \t [%xh %d]", r.offSet, r.Count, r.unkn0, r.unkn1);
+    return s;
+}
+
+string ReadFoot(TIML_Foot& r) {
+    string s;
+    SPrintf(s, "[%f %d %f %f %d %d]", r.key_trans_rot, r.end_thresh, r.start_thresh, r.key_reg, r.displacement, r.rotate);
+    return s;
+}
+
+typedef struct {
+    local int base = FTell();
+
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    long    CONST[5];
+    int     count<name="Count">;
+    if(count>0)
+        int NULL;
+    TIML_Time time[count]<bgcolor=0xff0000,name="Time",optimize=false>;
+    FSeek(base+timl_length);
+} Timl;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;    XYZ     local_coord(0,1)<name="Local Coordinate L",bgcolor=0xFFAA00,read=ReadfloatXYZ>;
+
+    XYZ     rotate(0,1)<name="Rotation R",bgcolor=0xAA00FF,read=ReadfloatXYZ>;  // Format Exceptions too many to diaplay
+    XYZ     resize(0,1)<name="Resize S",bgcolor=0x00FFAA,read=ReadfloatXYZ>;    // Format Exceptions too many to diaplay
+    int     unkn1;  // {0: 236, 1: 49, 2: 233, 3: 295, 4: 28783, 5: 36}
+    XYZ     unkn2(0,1)[6]<optimize=true,read=ReadfloatXYZ>;
+
+    int     unkn3;  // {0: 26795, 1: 2438, 2: 340, 3: 59}
+} Basic_Transform;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    XYZ     axis_lim(1,0)<name="Axis Limitation",read=ReadintXYZ,bgcolor=0xAA0000>;
+    XYZ     angle_lim(1,0)<name="Axis Limitation",read=ReadintXYZ,bgcolor=0x00AA00>;
+    int     unkn0[3];    int     efx_pos_lim_1<name="EFX Posirion Limitation 1",bgcolor=0x0000AA0>;
+    int     unkn1;  // {0: 20433, 1: 9199}
+    int     efx_pos_lim_2<name="EFX Posirion Limitation 2",bgcolor=0x0000AA0>;
+    int     unkn2;
+    int     efx_pos_lim_3<name="EFX Posirion Limitation 3",bgcolor=0x0000AA0>;
+    int     bone_lim<name="Bone Limitation">;} Limit_Transform;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[10];
+    int64   occur<name="Occur Time">;
+    uint64  unkn1;
+    uint64  unkn2;
+    uint64  unkn3;
+} Launcher_Property;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+    long    unkn1[2];
+    int     duration[2]<name="Duration">;
+    int     unkn2[2];
+    int     unkn_count;
+    int     unkn3[3];
+    int     NULL;
+} Life_Cycle;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+    float   unkn1[6];
+    int     unkn2[2];
+    float   unkn3[12];
+    int     unkn4;
+} Symmetric_Copy;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[3];
+    float   unkn1[2];
+    long    NULL0[4];
+    float   unkn2[13];
+    long    NULL1[5];
+} Momentum_Control;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+    float   param[4];
+} Visible_Dist;
+
+// I was like WTF, any way I labeled the float...
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn00;
+    int     unkn01;
+    long    unkn02;
+    int     unkn03;
+    float   unkn04<bgcolor=0x91A480>;
+    int     unkn05[2];
+    long    unkn06;
+    int     unkn07[2];
+    float   unkn08[5]<bgcolor=0x91A480>;
+    long    unkn09;
+    int     unkn10;
+    float   unkn11<bgcolor=0x91A480>;
+    int     unkn12[3];
+    long    unkn13;
+    long    NULL1;
+    XYZ     color1(2,0)<name="Color 1",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
+    long    NULL2;
+    XYZ     color2(2,0)<name="Color 2",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
+    long    unkn14;
+    int     unkn15;
+    float   unkn16<bgcolor=0x91A480>;
+    int     unkn17;
+    float   unkn18<bgcolor=0x91A480>;
+    long    NULL3;
+    XYZ     color3(2,0)<name="Color 3",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
+    long    NULL4;
+    XYZ     color4(2,0)<name="Color 4",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
+    int     unkn19[2];
+    float   unkn20<bgcolor=0x91A480>;
+    int     unkn21;
+    long    unkn22;
+    float   unkn23<bgcolor=0x91A480>;
+    long    NULL5;
+    float   unkn24<bgcolor=0x91A480>;
+    long    NULL6;
+    float   unkn25<bgcolor=0x91A480>;
+    long    NULL7;
+    float   unkn26;
+    long    NULL8;
+    short   NULL9;
+    int     path_len<name="Path Length",bgcolor=0x123456>;
+    char    p[path_len]<name="Path",bgcolor=0x123456>;
+} Dds_Trace_Prop;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    XYZ     color(2,0)[2]<name="Color",read=ReadbyteXYZ,bgcolor=0xFFFF00,optimize=true>;
+    float   brightness<name="Brightness",bgcolor=0x55aaaa>;
+    int     unkn2_1[2];
+    int     efx_slot;
+    int     slot_override;
+    int     unkn2_2;
+    float   unkn3[2];
+    float   scale[2]<name="Scale",bgcolor=0xaa55aa>;
+    float   height<name="Height",bgcolor=0xaaaa55>;
+    float   NULL;
+    float   width<name="Width",bgcolor=0xaaaa55>;
+    float   unkn4[9];
+    int     path_len<name="Path Length",bgcolor=0x123456>;
+    int     unkn5;
+    uint64  unkn6;
+    float   unkn7;
+    int     unkn8;
+    int     unkn9;
+    char    p[path_len]<name="Path",bgcolor=0x123456>;
+} Dds_Useage;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    XYZ     color(2,0)[2]<name="Color",read=ReadbyteXYZ,bgcolor=0xFFFF00,optimize=true>;
+    float   brightness<name="Brightness",bgcolor=0x00aaaa>;
+    int     unkn2[5];
+    float   unkn3[2];
+    float   scale[2]<name="Scale",bgcolor=0xaa55aa>;
+    float   height<name="Height",bgcolor=0xaaaa55>;
+    float   NULL;
+    float   width<name="Width",bgcolor=0xaaaa55>;
+    float   unkn4[9];
+    int     path_len<name="Path Length",bgcolor=0x123456>;
+    int     unkn5[6];
+    float   unkn6[4];
+    uint64  unkn7;
+    char    p[path_len]<name="Path",bgcolor=0x123456>;
+} Flowmap;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+    XYZ     color(2,0)[2]<name="Color",read=ReadbyteXYZ,bgcolor=0xFFFF00,optimize=true>;
+    float   unkn1[10];
+    int     unkn2[26];
+    int     path_len<name="Path Length",bgcolor=0x123456>;
+    char    p[path_len]<name="Path",bgcolor=0x123456>;
+} Cubemap;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+    float   speed<name="Speed",bgcolor=0x0000BB>;
+    long    NULL;
+    float   unkn2[4*4];
+} Loop_Play;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+    int     dds_template_id<name="DDS Template ID",bgcolor=0xBB0000>;
+    long    NULL;
+    int     unkn2;
+    int     unkn3;
+    float   unkn4[4];
+    int     unkn5;
+    int     path_len<name="Path Length",bgcolor=0x123456>;
+    char    p[path_len]<name="Path",bgcolor=0x123456>;
+} Uvs_Useage;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+    float   unkn1;
+    float   transparentness<name="Transparentness & Brigntness",bgcolor=0x00BB00>;
+    long    NULL;
+    int     unkn2;
+} Transparent_Control;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+    float   outer_layer_radius<name="Outer Layer Radius",bgcolor=0xAAAA00>;
+    int     unkn1;
+    float   inner_layer_radius<name="Inner Layer Radius",bgcolor=0x00AAAA>;
+    int     unkn2;
+    int     effect_contol<name="Effect Type Control",bgcolor=0xAA00AA>;
+    int     unkn3[3];
+    float   unkn4[17];
+    int     unkn5[3];
+} Layer_Visibility;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+    long    unkn1;
+    float   unkn2;
+    long    unkn3;
+    float   unkn4[4];
+    int     unkn5;
+    long    NULL0[2];
+    int     unkn6[17];
+} Color_Prop_Control;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long    CD1;
+    float   unkn2[5];
+    float   unkn5[14];
+    float   ib_isthispath;
+    int64   NULL;
+    int64   ib_unkn;
+    long    unkn3[2];
+    int     unkn7[4];
+    int     unkn4[2];
+    int     epv_color_slot[3];
+    int     unkn6[5];
+    short   NULL1;
+    byte    BeginMod3;
+    STRING  path1<name="Mod3 Path1",bgcolor=0x123456,read=ReadStr>;
+    STRING  path2<name="Mod3 Path2",bgcolor=0x123456,read=ReadStr>;
+} Mod3_Useage;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long    NULL[2];
+    float   unkn1[16];
+} Self_Spin_Control;
+
+typedef struct {
+    long    unkn;
+    // long    const0<name="E2D9F0AB",format=hex>;
+    long    const0<name="AFDB4043",format=hex>;
+
+    // 0x00 - ?; 0x03 - NULL; 0x06 - int; 0x09 - ?; 0x0C - float; 0x0F - Color;
+    // 0x80 - file; 0x36/0x37 - int*2; 0x14 - XYZ
+    int     t<name="Parameter Type">;
+
+    if(t==0x03)
+        long    NULL;
+    else if (t==0x05)
+        short   unkn0;
+    else if (t==0x06)
+        int     decal_epv_color_slot;
+    else if (t==0x0C)
+        float   unkn0;
+    else if (t==0x0F)
+        XYZ     color(2,0)<name="Color",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
+    else if (t==0x14)
+        XYZ     unkn1(0,0)<read=ReadfloatXYZ,bgcolor=0x00FFFF>;
+    else if (t==0x15) {
+        float   unkn0;
+        long    unkn1;
+        float   unkn2;
+        long    unkn3;
+    } else if (t==0x36 || t==0x37)
+        int     unkn1[2];
+    else if (t==0x40)
+        int64   unkn0;
+    else if (t==0x80){
+        long    file_type;
+        int     path_len<name="Path Length",bgcolor=0x123456>;
+        char    p[path_len]<name="Path",bgcolor=0x123456>;
+    } else {
+        Printf("UNKNOWN EFX Behaiv Type\n");
+        Printf("%d\n",FTell());
+        long    unkn_type;
+    }
+} EFX_Behav;
+
+typedef struct {
+    int     unkn0;
+    int     behav_type_len<name="Behavior Type Len",bgcolor=0xABCDEF>;
+    int     para_count<name="Parameter Count",bgcolor=0xFEDCBA>;
+    char    b_type[behav_type_len]<name="Behavior Type",bgcolor=0xABCDEF>;
+    local int j;
+    for(j=0;j<para_count;j++)
+        EFX_Behav efx_behav<name="Behavior Parameter">;
+} EFX_Behavior;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    EFX_Behavior    efx_behav<name="Behavior Parameter">;
+} EFX_Behaviors;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    float   unkn1;
+    ubyte   body_p<name="Player Aura Part",bgcolor=0x550055,comment="/wiki/EFX-Effect-Editing#aura-parts">;
+    ubyte   wp_p<name="Weapon Aura Part",bgcolor=0x550055,comment="/wiki/EFX-Effect-Editing#aura-parts">;
+    short   NULL;
+    int     epv_color_slot;
+    XYZ     color(2,0)<name="Color",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
+    float   unkn4;
+    float   area[2]<name="Area of Aura",bgcolor=0x555500>;
+    int     bright<name="Brightness",bgcolor=0x005555>;
+    float   unkn5[9];
+} Auras;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    float   unkn0[23];
+    int     unkn1[2];
+    float   unkn2[3];
+} Follow;
+
+typedef struct {
+    long    set<bgcolor=0x990000>;
+    int     unkn0<bgcolor=0xcc0000>;
+    long    t<bgcolor=0xcc0000>;
+    int     type<bgcolor=0xff0000>;
+    if(type==0x80){
+        long    head<name="EB5D1F24">;
+        long    NULL;
+        int     path_len<name="Path Length",bgcolor=0x123456>;
+        if(path_len > 0)
+            char    p[path_len]<name="Path",bgcolor=0x123456>;
+    }else if (type==0x06){
+        int64   NULL;
+        int     unkn;
+    }else if (type==0x03 || type==0x0A || type==0x0C)
+        long    NULL[3];
+    else if (type==0x15)
+        float   unkn[6];
+} Tex_Set;
+
+typedef struct {
+    long    header[2];
+    long    unkn03;
+    int     set_count<name="Set Count",bgcolor=0x660000>;
+    local int k;
+    for(k=0;k<set_count;k++)
+        Tex_Set     set;
+} Tex_Block;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int64   unkn00;
+    int     block_count;
+    local int j;
+    for(j=0;j<block_count;j++)
+        Tex_Block   block;
+} Texture;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+    int     path_len<name="Path Length",bgcolor=0x123456>;
+    if(path_len>0)
+        char    p[path_len]<name="Path",bgcolor=0x123456>;
+    float   unkn1[3];
+    XYZ     unkn_set_1(0,1);
+    int64   NULL[3];
+    float   unkn2[12];
+    XYZ     unkn_set_2(0,1);
+    float   unkn3[5];
+} CM_Map;
+
+
+
+// #UNKNOWN STRUCT
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long    unkn;
+    float   unkn2[4];
+} Unkn_01;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+    int     length;
+    long    unkn1[88];
+    STRING  path1<name="UNKN 03 Path",bgcolor=0x123456,read=ReadStr>;
+    // char    p[path_len]<name="Path",bgcolor=0x123456>;
+} Unkn_03;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    long    NULL;
+    int     unkn0;
+    long    unkn1;
+    XYZ     float_set1(0,0)<read=ReadfloatXYZ,bgcolor=0x00FFFF>;
+    long    NULL0;
+    XYZ     float_set2(0,0)<read=ReadfloatXYZ,bgcolor=0x00FFFF>;
+    long    NULL1;
+} Unkn_04;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+    int64   NULL0[3];
+    float   unkn1[43];
+    int     unkn2;
+    float   unkn3[8];
+} Unkn_06;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    float   unkn1[4];
+    int64   NULL;
+    int     unkn2[2];
+} Unkn_07;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    float   unkn1[8];
+} Unkn_11;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    short   unkn[10];
+} Unkn_12;
+
+
+
+// #DISPLAY FUNCTION
+string ReadintXYZ(XYZ& h) {
+    string s;
+    SPrintf(s, "X:%d \t Y:%d \t Z:%d", h.x, h.y, h.z);
+    return s;
+};
+
+string ReadfloatXYZ(XYZ& h) {
+    string s;
+    SPrintf(s, "X:%f \t Y:%f \t Z:%f", h.x, h.y, h.z);
+    return s;
+};
+
+string ReadbyteXYZ(XYZ& h) {
+    string s;
+    SPrintf(s, "X:%d \t Y:%d \t Z:%d", h.x, h.y, h.z);
+    return s;
+};
+
+string ReadStr(STRING& c){
+    string s;
+    SPrintf(s, "%s", c.str);
+    return s;
+};
+
+string ReadUN(UN &u) {
+    string s;
+    SPrintf(s, "Int: %d\tFloat: %f", u.unkni, u.unknf);
+    return s;
+}
+
+
+
+const int UN_PREFIX_0           = 500644368     ; // 10 3A D7 1D
+const int UN_PREFIX_5           = 1850314036    ; // 34 8D 49 6E
+const int UN_PREFIX_9           = 725249589     ; // 35 6E 3A 2B
+const int UN_PREFIX_13          = 1610366518    ; // 36 3E FC 5F
+const int UN_PREFIX_14          = 482524730     ; // 3A BE C2 1C
+const int UN_PREFIX_1           = 351887441     ; // 51 60 F9 14
+const int UN_PREFIX_7           = 1880343637    ; // 55 C4 13 70
+const int UN_PREFIX_15          = 705591903     ; // 5F 7A 0E 2A
+const int UN_PREFIX_4           = 28559457      ; // 61 C8 B3 01
+const int UN_PREFIX_3           = 2069124466    ; // 72 55 54 7B
+const int UN_PREFIX_11          = 839790967     ; // 77 31 0E 32
+const int UN_PREFIX_16          = 1879331968    ; // 80 54 04 70
+const int UN_PREFIX_6           = 693979274     ; // 8A 48 5D 29
+const int UN_PREFIX_2           = 786529163     ; // 8B 7B E1 2E
+const int UN_PREFIX_10          = 1338793878    ; // 96 5F CC 4F
+const int UN_PREFIX_8           = 2097096908    ; // CC 28 FF 7C
+const int UN_PREFIX_17          = 805496014     ; // CE E4 02 30
+const int UN_PREFIX_12          = 283026906     ; // DA A5 DE 10
+
+
+typedef struct {
+    long    unkn[57];
+} UN_P_0;
+
+typedef struct {
+    long    unkn[27];
+} UN_P_1;
+
+typedef struct {
+    long    unkn[19];
+} UN_P_2;
+
+typedef struct {
+    long    unkn[28];
+} UN_P_3;
+
+typedef struct {
+    long    unkn[18];
+} UN_P_4;
+
+typedef struct {
+    long    unkn[44];
+    byte    unkn1;
+} UN_P_5;
+
+typedef struct {
+    long    unkn[33];
+    byte    unkn1;
+} UN_P_6;
+
+typedef struct {
+    long    unkn[22];
+} UN_P_7;
+
+typedef struct {
+    long    unkn[11];
+    byte    unkn1;
+} UN_P_8;
+
+typedef struct {
+    long    unkn[19];
+} UN_P_9;
+
+typedef struct {
+    long    unkn[12];
+} UN_P_10;
+
+typedef struct {
+    long    unkn[90];
+    byte    unkn1;
+} UN_P_11;
+
+typedef struct {
+    long    unkn[21];
+} UN_P_12;
+
+typedef struct {
+    long    unkn[40];
+    byte    unkn1;
+} UN_P_14;
+
+typedef struct {
+    long    unkn[18];
+} UN_P_15;
+
+typedef struct {
+    long    unkn[20];
+} UN_P_16;
+
+typedef struct {
+    long    unkn[39];
+    byte    unkn1;
+} UN_P_17;
+
+typedef struct (int t) {
+    if (t==UN_PREFIX_0) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        UN_P_0  up0[attri_count];
+    } else if (t==UN_PREFIX_1) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        UN_P_1  up1[attri_count];
+    } else if (t==UN_PREFIX_2) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        UN_P_2  up2[attri_count];
+    } else if (t==UN_PREFIX_3) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        UN_P_3  up3[attri_count];
+    } else if (t==UN_PREFIX_4) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        UN_P_4  up4[attri_count];
+    } else if (t==UN_PREFIX_5) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        UN_P_5  up5[attri_count];
+    } else if (t==UN_PREFIX_6) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        UN_P_6  up6[attri_count];
+    } else if (t==UN_PREFIX_7) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        UN_P_7  up7[attri_count];
+    } else if (t==UN_PREFIX_8) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        UN_P_8  up8[attri_count];
+    } else if (t==UN_PREFIX_9){
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        UN_P_9  up9[attri_count];
+    } else if (t==UN_PREFIX_10) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        UN_P_10 up10[attri_count];
+    } else if (t==UN_PREFIX_11) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        UN_P_11 up11[attri_count];
+    } else if (t==UN_PREFIX_12) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        UN_P_12 up12[attri_count];
+    } else if (t==UN_PREFIX_13) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        local int z;
+        for(z=0;z<attri_count;z++)
+            EFX_Behavior efx_behaiv;
+    } else if (t==UN_PREFIX_14) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        UN_P_14 up14[attri_count];
+    } else if (t==UN_PREFIX_15) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        UN_P_15 up15[attri_count];
+    } else if (t==UN_PREFIX_16) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        UN_P_16 up16[attri_count];
+    }  else if (t==UN_PREFIX_17) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        UN_P_17 up17[attri_count];
+    } 
+
+} UN_P;
+
+
+typedef struct (int x){
+    local int ord = x;
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    long    NULL0;
+    int     count<name="UNKNOWN Prefix Count",bgcolor=0xFF0000>;
+    long    NULL1;
+    local int n;
+    for (n=0;n<count;n++){
+        long    np<name="UNKNOWN P",format=hex,bgcolor=0x990000>;
+        UN_P    un_p(np);
+    }
+    
+
+} UN_Prefix;
+
+typedef struct {
+    local int k;
+    for(k=0;k<header.UNKN_Count;k++)
+        UN_Prefix up(k)<name="Unknown Prefix",read=ReadUNP>;
+} UN_PREFIX;
+
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x990000>;
+    int     unkn0[2];
+    float   unkn1[7];
+    long    NULL;
+} S_P_1;
+
+typedef struct {
+    int     path_len<name="Path Length",bgcolor=0x654321>;
+    char    p[path_len]<name="Path",bgcolor=0x123456>;
+} S_P_2_Path;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x990000>;
+    int     path_count<name="Path Count",bgcolor=0xFFFF00>;
+    local int i;
+//  Hard code 6
+    for(i=0;i<6;i++)
+        S_P_2_Path paths<name="Paths">;
+    long    NULL;
+    int     unkn0[6];
+    float   unkn1[9];
+} S_P_2;
+
+typedef struct {
+    int     block_type<bgcolor=0x339933>;
+    if (block_type > 0 && block_type < 6)
+        UN  p[count*2]<read=ReadUN>;
+    else if (block_type == 0 || block_type == 6)
+        UN  p[count*3]<read=ReadUN>;
+    else if (block_type == 7){
+        int unkn0;
+        UN  p[count*2 * unkn0]<read=ReadUN>;
+    } else
+        Printf("S_P_3_B BLOCK TYPE ERROR %d\n", block_type);
+
+} S_P_3_B;
+
+typedef struct {
+    int     count<bgcolor=0xFF9900>;
+    if(count>0) {
+        while (ReadInt() != -1)
+            S_P_3_B spb;
+        long    end<bgcolor=0xAAAAAA>;
+    }
+} S_P_3_Block;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x990000>;
+    int     unkn0;
+    int     block_count<bgcolor=0x00FF00>;
+    local int i;
+    for(i=0;i<block_count;i++)
+        S_P_3_Block spb;
+} S_P_3;
+
+typedef struct (int x) {
+    local int ord = x;
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     CONST0; // 1
+    int     count<name="Single Prefix Count",bgcolor=0xFF0000>;;
+    int     CONST1; // 0
+    
+    local int j;
+    for(j=0;j<count;j++)
+        if(ReadInt() == 1413509420) // 2C 71 40 54
+            S_P_1   sp1<name="Single Prefix Type 1">;
+        else if (ReadInt() == 2083659062) // 36 1D 32 7C
+            S_P_2   sp1<name="Single Prefix Type 2">;
+        else if (ReadInt() == 2050487542) // F6 F4 37 7A
+            S_P_3   sp1<name="Single Prefix Type 3">;
+
+} SINGLE_PREFIX;
+
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long    unkn1[4];
+    S_P_3_Block spb;
+} Unkn_26;
+
+
+typedef struct (int count){
+    local int j;
+    for(j=0;j<count && j <100;j++)
+        if      (ReadInt() == UNKN_00             )
+            Unkn_00             unkn_00             <bgcolor=0x1800ff>;
+        else if (ReadInt() == UNKN_01             )
+            Unkn_01             unkn_01             <bgcolor=0xff2400>;
+        else if (ReadInt() == UNKN_02             )
+            Unkn_02             unkn_02             <bgcolor=0xff2400>;
+        else if (ReadInt() == UNKN_03             )
+            Unkn_03             unkn_03             <bgcolor=0xffe400>;
+        else if (ReadInt() == UNKN_04             )
+            Unkn_04             unkn_04             <bgcolor=0x00d8ff>;
+        else if (ReadInt() == UNKN_05             )
+            Unkn_05             unkn_05             <bgcolor=0xff5a00>;
+        else if (ReadInt() == UNKN_06             )
+            Unkn_06             unkn_06             <bgcolor=0xe4ff00>;
+        else if (ReadInt() == UNKN_07             )
+            Unkn_07             unkn_07             <bgcolor=0xff003c>;
+        else if (ReadInt() == UNKN_08             )
+            Unkn_08             unkn_08             <bgcolor=0x4800ff>;
+        else if (ReadInt() == UNKN_09             )
+            Unkn_09             unkn_09             <bgcolor=0x7800ff>;
+        else if (ReadInt() == UNKN_10             )
+            Unkn_10             unkn_10             <bgcolor=0xff2400>;
+        else if (ReadInt() == UNKN_11             )
+            Unkn_11             unkn_11             <bgcolor=0x00ff06>;
+        else if (ReadInt() == UNKN_12             )
+            Unkn_12             unkn_12             <bgcolor=0x00ff06>;
+        else if (ReadInt() == UNKN_13             )
+            Unkn_13             unkn_13             <bgcolor=0x00d8ff>;
+        else if (ReadInt() == UNKN_14             )
+            Unkn_14             unkn_14             <bgcolor=0x0078ff>;
+        else if (ReadInt() == UNKN_15             )
+            Unkn_15             unkn_15             <bgcolor=0xff003c>;
+        else if (ReadInt() == UNKN_16             )
+            Unkn_16             unkn_16             <bgcolor=0xff0006>;
+        else if (ReadInt() == UNKN_17             )
+            Unkn_17             unkn_17             <bgcolor=0xffba00>;
+        else if (ReadInt() == UNKN_18             )
+            Unkn_18             unkn_18             <bgcolor=0x24ff00>;
+        else if (ReadInt() == UNKN_19             )
+            Unkn_19             unkn_19             <bgcolor=0x0018ff>;
+        else if (ReadInt() == UNKN_20             )
+            Unkn_20             unkn_20             <bgcolor=0xd800ff>;
+        else if (ReadInt() == UNKN_21             )
+            Unkn_21             unkn_21             <bgcolor=0x00a8ff>;
+        else if (ReadInt() == UNKN_22             )
+            Unkn_22             unkn_22             <bgcolor=0x5aff00>;
+        else if (ReadInt() == UNKN_23             )
+            Unkn_23             unkn_23             <bgcolor=0x00fff6>;
+        else if (ReadInt() == UNKN_24             )
+            Unkn_24             unkn_24             <bgcolor=0x00fff6>;
+        else if (ReadInt() == UNKN_25             )
+            Unkn_25             unkn_25             <bgcolor=0x00d8ff>;
+        else if (ReadInt() == UNKN_26             )
+            Unkn_26             unkn_26             <bgcolor=0x00a8ff>;
+        else if (ReadInt() == UNKN_27             )
+            Unkn_27             unkn_27             <bgcolor=0x0078ff>;
+        else if (ReadInt() == UNKN_28             )
+            Unkn_28             unkn_28             <bgcolor=0xffba00>;
+        else if (ReadInt() == UNKN_29             )
+            Unkn_29             unkn_29             <bgcolor=0xff00f6>;
+        else if (ReadInt() == UNKN_30             )
+            Unkn_30             unkn_30             <bgcolor=0xff8400>;
+        else if (ReadInt() == UNKN_31             )
+            Unkn_31             unkn_31             <bgcolor=0x00d8ff>;
+        else if (ReadInt() == UNKN_32             )
+            Unkn_32             unkn_32             <bgcolor=0x00a8ff>;
+        else if (ReadInt() == UNKN_33             )
+            Unkn_33             unkn_33             <bgcolor=0x00a8ff>;
+        else if (ReadInt() == UNKN_34             )
+            Unkn_34             unkn_34             <bgcolor=0xff5a00>;
+        else if (ReadInt() == UNKN_35             )
+            Unkn_35             unkn_35             <bgcolor=0x24ff00>;
+        else if (ReadInt() == UNKN_36             )
+            Unkn_36             unkn_36             <bgcolor=0xff0096>;
+        else if (ReadInt() == UNKN_37             )
+            Unkn_37             unkn_37             <bgcolor=0x00ff66>;
+        else if (ReadInt() == UNKN_38             )
+            Unkn_38             unkn_38             <bgcolor=0x1800ff>;
+        else if (ReadInt() == UNKN_39             )
+            Unkn_39             unkn_39             <bgcolor=0x0018ff>;
+        else if (ReadInt() == UNKN_40             )
+            Unkn_40             unkn_40             <bgcolor=0xff0096>;
+        else if (ReadInt() == UNKN_41             )
+            Unkn_41             unkn_41             <bgcolor=0xff2400>;
+        else if (ReadInt() == UNKN_42             )
+            Unkn_42             unkn_42             <bgcolor=0xff8400>;
+        else if (ReadInt() == UNKN_43             )
+            Unkn_43             unkn_43             <bgcolor=0x1800ff>;
+        else if (ReadInt() == UNKN_44             )
+            Unkn_44             unkn_44             <bgcolor=0x1800ff>;
+        else if (ReadInt() == UNKN_45             )
+            Unkn_45             unkn_45             ;
+        else if (ReadInt() == UNKN_46             )
+            Unkn_46             unkn_46             ;
+        else if (ReadInt() == UNKN_47             )
+            Unkn_47             unkn_47             ;
+        else if (ReadInt() == UNKN_48             )
+            Unkn_48             unkn_48             ;
+        else if (ReadInt() == UNKN_49             )
+            Unkn_49             unkn_49             ;
+        else if (ReadInt() == BASIC_TRANSFORM     )
+            Basic_Transform     basic_transform     <bgcolor=0x7800ff>;
+        else if (ReadInt() == LIMIT_TRANSFORM     )
+            Limit_Transform     limit_transform     <bgcolor=0xa800ff>;
+        else if (ReadInt() == LAUNCHER_PROPERTY   )
+            Launcher_Property   launcher_property   <bgcolor=0xff00c6>;
+        else if (ReadInt() == LIFE_CYCLE          )
+            Life_Cycle          life_cycle          <bgcolor=0xff0066>;
+        else if (ReadInt() == SYMMETRIC_COPY      )
+            Symmetric_Copy      symmetric_copy      <bgcolor=0xff8400>;
+        else if (ReadInt() == MOMENTUM_CONTROL    )
+            Momentum_Control    momentum_control    <bgcolor=0xff8400>;
+        else if (ReadInt() == VISIBLE_DIST        )
+            Visible_Dist        visible_dist        <bgcolor=0xff0006>;
+        else if (ReadInt() == DDS_TRACE_PROP      )
+            Dds_Trace_Prop      dds_trace_prop      <bgcolor=0xffba00>;
+        else if (ReadInt() == DDS_USEAGE          )
+            Dds_Useage          dds_useage          <bgcolor=0xffe400>;
+        else if (ReadInt() == LOOP_PLAY           )
+            Loop_Play           loop_play           <bgcolor=0x84ff00>;
+        else if (ReadInt() == UVS_USEAGE          )
+            Uvs_Useage          uvs_useage          <bgcolor=0x84ff00>;
+        else if (ReadInt() == TRANSPARENT_CONTROL )
+            Transparent_Control transparent_control <bgcolor=0x5aff00>;
+        else if (ReadInt() == LAYER_VISIBILITY    )
+            Layer_Visibility    layer_visibility    <bgcolor=0xf4ce7e>;
+        else if (ReadInt() == COLOR_PROP_CONTROL  )
+            Color_Prop_Control  color_prop_control  <bgcolor=0x00ff66>;
+        else if (ReadInt() == MOD3_USEAGE         )
+            Mod3_Useage         mod3_useage         <bgcolor=0xbaff00>;
+        else if (ReadInt() == SELF_SPIN_CONTROL   )
+            Self_Spin_Control   self_spin_control   <bgcolor=0x84ff00>;
+        else if (ReadInt() == AURAS               )
+            Auras               auras               <bgcolor=0xffba00>;
+        else if (ReadInt() == FOLLOW              )
+            Follow              follow              <bgcolor=0x0018ff>;
+        else if (ReadInt() == EFX_BEHAVIORS       )
+            EFX_Behaviors       efx_behaviors       <bgcolor=0x00ff3c>;
+        else if (ReadInt() == TEXTURE             )
+            Texture             texture             <bgcolor=0x00fff6>;
+        else if (ReadInt() == FLOWMAP             )
+            Flowmap             flowmap             <bgcolor=0xffe400>;
+        else if (ReadInt() == CUBEMAP             )
+            Cubemap             cubemap             <bgcolor=0x00ff96>;
+        else if (ReadInt() == CM_MAP              )
+            CM_Map              cm_map              <bgcolor=0x00ffc6>;
+        else
+            Printf("%d Not Found!\n", FTell());
+} MAIN_BODY;
+
+typedef struct (int x) {
+    local int ord = x;
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+    int     attr_count<name="Atribute Count",bgcolor=0xffffff>;
+    int     NULL;
+    int     timl_length;
+    if(timl_length>0)
+        Timl    timl<name="Keyframe Animation",bgcolor=0x0099ff>;
+    MAIN_BODY mb(attr_count);
+} MAIN_PREFIX;
+
+typedef struct {
+    local int k;
+    for(k=0;k<header.EFX_Count;k++)
+        if(ReadInt() == 1228515738) // 9A A9 39 49
+            SINGLE_PREFIX sp(k)<name="Single Prefix",bgcolor=0x882E61,read=ReadSingleP>;
+        else
+            MAIN_PREFIX mp(k)<read=ReadMainP>;
+} MAIN;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x0000ff>;
+    long    unkn0[3];
+    int     count<name="NULL EFX Entry Count",bgcolor=0x0000aa>;
+    int     entry[count]<name="NULL EFX Entry">;
+} NULL_EFX;
+
+typedef struct {
+    local int k;
+    for(k=0;k<header.NULL_Count;k++)
+        NULL_EFX  null_efx<name="NULL EFX">;
+} NULL;
+
+// #HEADER
+Header          header<name="Header",bgcolor=0x00ffff>;
+EFX_Type        efx_Type<name="EFX Type",bgcolor=0xf000ff>;
+IE_PREFIX       ie_p<name="External/Internal Useage",bgcolor=0x7C9F35>;
+UN_PREFIX       un_p<name="Unknown Prefix",bgcolor=0x277553>;
+MAIN            main<name="Main Body",bgcolor=0x1b1b1b>;
+NULL            null<name="NULL EFX",bgcolor=0xffffff>;
+int             end[header.End_Count]<name="End EFX (Acutal?)",bgcolor=0x999887>;
+
+
+// CRC string
+
+// Full function
+
+/*
+#include "EFXTYPECRC.bt"
+
+string ReadIEP(IE_Prefix &ie) {
+    string s;
+    SPrintf(s, "IE Map to: [%d] %s \t\t CRC: %s", ie.ord, efx_Type.efx_T[ie.ord].str, EFXTypeCRC(ie.type));
+    return s;
+}
+
+string ReadUNP(UN_Prefix &up) {
+    local int order = up.ord + header.IE_Count;
+    string s;
+    SPrintf(s, "UP Map to: [%d] %s \t\t CRC: %s", order, efx_Type.efx_T[order].str, EFXTypeCRC(up.type));
+    return s;
+}
+
+string ReadSingleP(SINGLE_PREFIX &sp) {
+    local int order = sp.ord + header.IE_Count + header.UNKN_Count;
+    string s;
+    SPrintf(s, "SP Map to: [%d] %s \t\t CRC: %s", order, efx_Type.efx_T[order].str, EFXTypeCRC(sp.type));
+    return s;
+}
+
+string ReadMainP(MAIN_PREFIX &mp) {
+    local int order = mp.ord + header.IE_Count + header.UNKN_Count;
+    string s;
+    SPrintf(s, "MP Map to: [%d] %s \t\t CRC: %s", order, efx_Type.efx_T[order].str, EFXTypeCRC(mp.type));
+    return s;
+}
+*/
+
+// Map Only
+
+string ReadIEP(IE_Prefix &ie) {
+    string s;
+    SPrintf(s, "IE Map to: [%d] %s", ie.ord, efx_Type.efx_T[ie.ord].str);
+    return s;
+}
+
+string ReadUNP(UN_Prefix &up) {
+    local int order = up.ord + header.IE_Count;
+    string s;
+    SPrintf(s, "UP Map to: [%d] %s", order, efx_Type.efx_T[order].str);
+    return s;
+}
+
+string ReadSingleP(SINGLE_PREFIX &sp) {
+    local int order = sp.ord + header.IE_Count + header.UNKN_Count;
+    string s;
+    SPrintf(s, "SP Map to: [%d] %s", order, efx_Type.efx_T[order].str);
+    return s;
+}
+
+string ReadMainP(MAIN_PREFIX &mp) {
+    local int order = mp.ord + header.IE_Count + header.UNKN_Count;
+    string s;
+    SPrintf(s, "MP Map to: [%d] %s", order, efx_Type.efx_T[order].str);
+    return s;
+}
+
+
+
+
+
+
+
+
+
+// ORDER (sort of)
+/*
+[(__main__.Unkn_00, 0),
+ (__main__.Unkn_38, 0),
+ (__main__.Unkn_43, 0),
+ (__main__.Unkn_44, 0),
+ (__main__.Unkn_08, 1),
+ (__main__.Basic_Transform, 2),
+ (__main__.Unkn_09, 2),
+ (__main__.Limit_Transform, 3),
+ (__main__.Unkn_20, 4),
+ (__main__.Unkn_29, 5),
+ (__main__.Launcher_Prop, 6),
+ (__main__.Unkn_36, 7),
+ (__main__.Unkn_40, 7),
+ (__main__.Life_Cycle, 8),
+ (__main__.Unkn_15, 9),
+ (__main__.Unkn_07, 9),
+ (__main__.Unkn_16, 10),
+ (__main__.Visible_Dist, 10),
+ (__main__.Unkn_10, 11),
+ (__main__.Unkn_01, 11),
+ (__main__.Unkn_02, 11),
+ (__main__.Unkn_41, 11),
+ (__main__.Unkn_05, 12),
+ (__main__.Unkn_34, 12),
+ (__main__.Symmetric_Copy, 13),
+ (__main__.Momentum_Control, 13),
+ (__main__.Unkn_30, 13),
+ (__main__.Unkn_42, 13),
+ (__main__.Auras, 14),
+ (__main__.Unkn_17, 14),
+ (__main__.Dds_Trace_Prop, 14),
+ (__main__.Unkn_28, 14),
+ (__main__.Dds_Useage, 15),
+ (__main__.Unkn_03, 15),
+ (__main__.Flowmap, 15),
+ (__main__.Unkn_06, 16),
+ (__main__.Mod3_Useage, 17),
+ (__main__.Uvs_Useage, 18),
+ (__main__.Loop_Play, 18),
+ (__main__.Self_Spin_Control, 18),
+ (__main__.Transparent_Control, 19),
+ (__main__.Unkn_22, 19),
+ (__main__.Unkn_18, 20),
+ (__main__.Unkn_35, 20),
+ (__main__.Unkn_11, 21),
+ (__main__.Unkn_12, 21),
+ (__main__.EFX_Behavior, 22),
+ (__main__.Color_Prop_Control, 23),
+ (__main__.Unkn_37, 23),
+ (__main__.Cubemap, 24),
+ (__main__.CM_Map, 25),
+ (__main__.Texture, 26),
+ (__main__.Unkn_24, 26),
+ (__main__.Unkn_23, 26),
+ (__main__.Unkn_04, 27),
+ (__main__.Unkn_13, 27),
+ (__main__.Unkn_25, 27),
+ (__main__.Unkn_31, 27),
+ (__main__.Unkn_21, 28),
+ (__main__.Unkn_32, 28),
+ (__main__.Unkn_33, 28),
+ (__main__.Unkn_26, 28),
+ (__main__.Unkn_27, 29),
+ (__main__.Unkn_14, 30),
+ (__main__.Unkn_19, 31),
+ (__main__.Follow, 31),
+ (__main__.Unkn_39, 31),
+ (__main__.Layer_Visibility, 32)]
+ */
+
+// COLOR
+/*
+0 <bgcolor=0x1800ff>
+1 <bgcolor=0x4800ff>
+2 <bgcolor=0x7800ff>
+3 <bgcolor=0xa800ff>
+4 <bgcolor=0xd800ff>
+5 <bgcolor=0xff00f6>
+6 <bgcolor=0xff00c6>
+7 <bgcolor=0xff0096>
+8 <bgcolor=0xff0066>
+9 <bgcolor=0xff003c>
+10 <bgcolor=0xff0006>
+11 <bgcolor=0xff2400>
+12 <bgcolor=0xff5a00>
+13 <bgcolor=0xff8400>
+14 <bgcolor=0xffba00>
+15 <bgcolor=0xffe400>
+16 <bgcolor=0xe4ff00>
+17 <bgcolor=0xbaff00>
+18 <bgcolor=0x84ff00>
+19 <bgcolor=0x5aff00>
+20 <bgcolor=0x24ff00>
+21 <bgcolor=0x00ff06>
+22 <bgcolor=0x00ff3c>
+23 <bgcolor=0x00ff66>
+24 <bgcolor=0x00ff96>
+25 <bgcolor=0x00ffc6>
+26 <bgcolor=0x00fff6>
+27 <bgcolor=0x00d8ff>
+28 <bgcolor=0x00a8ff>
+29 <bgcolor=0x0078ff>
+30 <bgcolor=0x0048ff>
+31 <bgcolor=0x0018ff>
+*/
