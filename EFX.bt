@@ -106,9 +106,9 @@
 //                      Some Main attribute has only few occur times on all files
 //
 //              3.2     Added in Crimson, Silvris and Asterisk's Research regarding: Unknown_21 now EmissiveRim, Unknown_30 now AlbedoBlend
-                        and Unknown03 now TrailPhysics;
-                        filled in attributes for Spin_Control, Textures, EmissiveRim, AlbedoBlend, BasicTransform, LimitTransform,
-                        MomentumControl, ColorPropControl, Mod3Properties, Auras, TrailPhysics, Unknown04.
+//                      and Unknown03 now TrailPhysics;
+//                      filled in attributes for Spin_Control, Textures, EmissiveRim, AlbedoBlend, BasicTransform, LimitTransform,
+//                      MomentumControl, ColorPropControl, Mod3Properties, Auras, TrailPhysics, Unknown04.
 // ------------------------------------------------
 
 // #HASH EFX
@@ -1380,11 +1380,11 @@ typedef struct {
     float   main_axis_speed;
     float   secondary_axis_speed;
     float   teleport_radius;
-    float   smooth_radius(randomized);
+    float   smooth_radius_randomized;
     float   main_axis_speed2;
     float   secondary_axis_speed2;
     float   teleport_radius2;
-    float   smooth_radius(randomized)2;
+    float   smooth_radius_randomized2;
 } Randomized_Oscillations;
 
 typedef struct {
