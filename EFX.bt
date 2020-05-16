@@ -109,6 +109,8 @@
 //                      and Unknown03 now TrailPhysics;
 //                      filled in attributes for Spin_Control, Textures, EmissiveRim, AlbedoBlend, BasicTransform, LimitTransform,
 //                      MomentumControl, ColorPropControl, Mod3Properties, Auras, TrailPhysics, Unknown04.
+//
+//              3.3     Labelling properties, specifically in Flowmap, Dds_Usage, and UNKN_06 now renamed to Texture_Animation
 // ------------------------------------------------
 
 // #HASH EFX
@@ -177,7 +179,7 @@ const int CM_MAP                = 937428146     ; // B2 04 E0 37 // CM_MAP
 const int UNKN_01               = 2116359897    ; // D9 16 25 7E 
 const int TRAIL_PHYSICS         = 733291506     ; // F2 23 B5 2B 
 const int RANDOMIZED_OSCILLATIONS= 523015778     ; // 62 96 2C 1F 
-const int UNKN_06               = 2020068998    ; // 86 CE 67 78 
+const int TEXTURE_ANIMATION     = 2020068998    ; // 86 CE 67 78 
 const int UNKN_07               = 1226136492    ; // AC 5B 15 49 
 
 const int UNKN_11               = 873436648     ; // E8 95 0F 34
@@ -937,40 +939,46 @@ typedef struct {
     float   param[4];
 } Visible_Dist;
 
+typedef struct{
+    long    EPVColorSlotHead;
+    XYZ     color1(2,0)<name="Color 1",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
+    long    NULL2;
+    XYZ     color2(2,0)<name="Color 2",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
+    int     spacer4;
+    int     unkn15;
+    float   size<bgcolor=0x91A480>;
+    int     unkn17;
+    byte    unkn18[2];
+    short   spacer5<bgcolor=0x91A480>;
+}EPVColorSlot;
+
 // I was like WTF, any way I labeled the float...
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn00;
     int     unkn01;
-    long    unkn02;
+    long    spacer0;
     int     unkn03;
     float   unkn04<bgcolor=0x91A480>;
     int     unkn05[2];
-    long    unkn06;
+    long    spacer1;
     int     unkn07[2];
-    float   unkn08[5]<bgcolor=0x91A480>;
-    long    unkn09;
+    
+    float   maxLengthLimit;
+    float   contractionSpeed;//0 Lingers, 1 retracts, infinity retracts instantly
+    float   colourTransitionPoint;// 0 is instantly start transition, 1 is start at the end
+    float   emissiveStrength;
+    float   unkn08;
+
+    long    spacer2;
     int     unkn10;
     float   unkn11<bgcolor=0x91A480>;
     int     unkn12[3];
-    long    unkn13;
-    long    NULL1;
-    XYZ     color1(2,0)<name="Color 1",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
-    long    NULL2;
-    XYZ     color2(2,0)<name="Color 2",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
-    long    unkn14;
-    int     unkn15;
-    float   unkn16<bgcolor=0x91A480>;
-    int     unkn17;
-    float   unkn18<bgcolor=0x91A480>;
-    long    NULL3;
-    XYZ     color3(2,0)<name="Color 3",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
-    long    NULL4;
-    XYZ     color4(2,0)<name="Color 4",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
-    int     unkn19[2];
-    float   unkn20<bgcolor=0x91A480>;
-    int     unkn21;
-    long    unkn22;
+    long    spacer3;
+
+    EPVColorSlot head;
+    EPVColorSlot tailEnd;
+
     float   unkn23<bgcolor=0x91A480>;
     long    NULL5;
     float   unkn24<bgcolor=0x91A480>;
@@ -984,47 +992,52 @@ typedef struct {
     char    p[path_len]<name="Path",bgcolor=0x123456>;
 } Dds_Trace_Prop;
 
-typedef struct {
+typedef struct{
     long    type<name="Type",format=hex,bgcolor=0x000000>;
-    int     unkn0[2];
+    int     unkn0;
+    int     applicationRule;//Enum that determine how long and how many times it applies
     XYZ     color(2,0)[2]<name="Color",read=ReadbyteXYZ,bgcolor=0xFFFF00,optimize=true>;
-    float   brightness<name="Brightness",bgcolor=0x55aaaa>;
-    int     unkn2_1[2];
-    int     efx_slot;
-    int     slot_override;
-    int     unkn2_2;
-    float   unkn3[2];
-    float   scale[2]<name="Scale",bgcolor=0xaa55aa>;
-    float   height<name="Height",bgcolor=0xaaaa55>;
-    float   NULL;
+    float   brightness<name="Brightness",bgcolor=0x00aaaa>;
+    int     unkn2[3];
+    int     EPVColorSlot1;
+    int     SlotOverride1;
+    int     EPVColorSlot2;
+    int     SlotOverride2;
+    float   scale<name="Scale",bgcolor=0xaa55aa>;
+    float   scaleJitter;
     float   width<name="Width",bgcolor=0xaaaa55>;
-    float   unkn4[9];
+    float   widthJitter;
+    float   height<name="Height",bgcolor=0xaaaa55>;
+    float   heightJitter;
+
+    float   flowmapSpeed;
+    float   flowmapSpeedJitter;
+    float   flowmapAcceleration;
+    float   flowmapAccelerationJitter;
+    float   flowmapStrength;
+    float   flowmapStrengthJitter;
+    float   flowmapStrengthAcceleration;
+    float   flowmapStrengthAccelerationJitter;
+
     int     path_len<name="Path Length",bgcolor=0x123456>;
+}dds_data;
+
+typedef struct {
+    dds_data dds;
     int     unkn5;
     uint64  unkn6;
     float   unkn7;
     int     unkn8;
     int     unkn9;
-    char    p[path_len]<name="Path",bgcolor=0x123456>;
+    char    p[dds.path_len]<name="Path",bgcolor=0x123456>;
 } Dds_Useage;
 
 typedef struct {
-    long    type<name="Type",format=hex,bgcolor=0x000000>;
-    int     unkn0[2];
-    XYZ     color(2,0)[2]<name="Color",read=ReadbyteXYZ,bgcolor=0xFFFF00,optimize=true>;
-    float   brightness<name="Brightness",bgcolor=0x00aaaa>;
-    int     unkn2[5];
-    float   unkn3[2];
-    float   scale[2]<name="Scale",bgcolor=0xaa55aa>;
-    float   height<name="Height",bgcolor=0xaaaa55>;
-    float   NULL;
-    float   width<name="Width",bgcolor=0xaaaa55>;
-    float   unkn4[9];
-    int     path_len<name="Path Length",bgcolor=0x123456>;
-    int     unkn5[6];
-    float   unkn6[4];
+    dds_data    dds;
+    int     unkn5[4];
+    XYZ     rotation(0,1);
     uint64  unkn7;
-    char    p[path_len]<name="Path",bgcolor=0x123456>;
+    char    p[dds.path_len]<name="Path",bgcolor=0x123456>;
 } Flowmap;
 
 typedef struct {
@@ -1234,9 +1247,36 @@ typedef struct {
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
-    float   unkn0[23];
-    int     unkn1[2];
-    float   unkn2[3];
+
+    float initialPosition;
+    float initialPositionJitter;
+    float speed;
+    float speedJitter;
+    float accel;//Maybe
+    float accelJitter;//Maybe
+    float innerRadius;
+    float innerRadiusJitter;
+    float outerRadius;
+    float outerRadiusJitter;
+
+    float restitutionDelay;
+    float restitutionDelayJitter;
+    float restitutionEccentricity;
+    float restitutionEccentricityJitter;
+    float restitutionElasticity;
+    float restitutionElasticityJitter;
+    float unkn16;
+    float unkn17;
+    float unkn18;
+    float unkn19;
+
+    float unkn20;
+    float unkn21;
+    float unkn22;
+
+    int     int_unkn1[2];
+    float   float_unkn2[3];    
+
 } Follow;
 
 typedef struct {
@@ -1387,14 +1427,38 @@ typedef struct {
     float   smooth_radius_randomized2;
 } Randomized_Oscillations;
 
+typedef struct{
+    float u;
+    float uJitter;
+    float v;
+    float vJitter;
+}uv_transform;
+
+typedef struct{
+    int     unkn0;
+    uv_transform initialPosition;
+    uv_transform speed;
+    uv_transform acceleration;//Multiplies speed every second
+    uv_transform scale;
+    uv_transform scaleSpeed;
+    uv_transform scaleAcceleration;
+}Texture_Animation_Data;
+
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
-    int     unkn0;
-    int64   NULL0[3];
-    float   unkn1[43];
+    Texture_Animation_Data uv1;
+    Texture_Animation_Data uv2;
     int     unkn2;
-    float   unkn3[8];
-} Unkn_06;
+    float   extraTextureInitialPosition;
+    float   extraTextureInitialPositionJitter;
+    float   extraTextureSpeed;
+    float   extraTextureSpeedJitter;
+    float   opacity;
+    float   opacityJitter;
+    float   opacityAcceleration;//Multiplies opacity every second
+    float   opacityAccelerationJitter;    
+    
+} Texture_Animation;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1744,8 +1808,8 @@ typedef struct (int count){
             Randomized_Oscillations  randomized_oscillations             <bgcolor=0x00d8ff>;
         else if (ReadInt() == UNKN_05             )
             Unkn_05             unkn_05             <bgcolor=0xff5a00>;
-        else if (ReadInt() == UNKN_06             )
-            Unkn_06             unkn_06             <bgcolor=0xe4ff00>;
+        else if (ReadInt() == TEXTURE_ANIMATION   )
+            Texture_Animation   texture_animation <bgcolor=0xe4ff00>;
         else if (ReadInt() == UNKN_07             )
             Unkn_07             unkn_07             <bgcolor=0xff003c>;
         else if (ReadInt() == UNKN_08             )
@@ -1872,7 +1936,7 @@ typedef struct (int count){
             EFX_Behaviors       efx_behaviors       <bgcolor=0x00ff3c>;
         else if (ReadInt() == TEXTURE             )
             Texture             texture             <bgcolor=0x00fff6>;
-        else if (ReadInt() == FLOWMAP             )
+        else if (ReadInt() == FLOWMAP              )
             Flowmap             flowmap             <bgcolor=0xffe400>;
         else if (ReadInt() == CUBEMAP             )
             Cubemap             cubemap             <bgcolor=0x00ff96>;
@@ -2035,7 +2099,7 @@ string ReadMainP(MAIN_PREFIX &mp) {
  (__main__.Dds_Useage, 15),
  (__main__.Trail_Physics, 15),
  (__main__.Flowmap, 15),
- (__main__.Unkn_06, 16),
+ (__main__.Texture_Animation, 16),
  (__main__.Mod3_Useage, 17),
  (__main__.Uvs_Useage, 18),
  (__main__.Loop_Play, 18),
