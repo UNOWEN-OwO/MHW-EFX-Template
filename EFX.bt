@@ -111,12 +111,19 @@
 //                      MomentumControl, ColorPropControl, Mod3Properties, Auras, TrailPhysics, Unknown04.
 //
 //              3.3     Labelling properties, specifically in Flowmap, Dds_Usage, and UNKN_06 now renamed to Texture_Animation
+//
+//              3.4     Renamed UNKN_12 to Parenting, renamed UNKN_17 to Lightning, Renamed UNKN_35 to Catenary_Physics and labelled properties.
 // ------------------------------------------------
 
 // #HASH EFX
 
 const int EXTERNAL              = 1965813039    ; // 25 31 AF 44 // 外部调用
 const int INTERNAL              = 1152332069    ; // 2F ED 2B 75 // 内部调用
+
+// #INTERNAL EXTERNAL HASHES
+//const int CHILD_OF            = ; //5B 76 9F BF // CHILD OF
+//Attributes is the index of the children, indexed in the main body. Those are excluded in the end declaration
+//in general if you are a target of internal external you are excluded in the end declaration
 
 // NEW DISCOVERERD
 const int UNKN_00               = 351869514     ; // 4A 1A F9 14
@@ -129,27 +136,29 @@ const int UNKN_13               = 1354601878    ; // 96 95 BD 50
 const int UNKN_14               = 71967929      ; // B9 24 4A 04
 const int UNKN_15               = 584030352     ; // 90 98 CF 22
 const int UNKN_16               = 341394325     ; // 95 43 59 14
-const int UNKN_17               = 1558046267    ; // 3B E6 DD 5C
 const int UNKN_18               = 957228464     ; // B0 25 0E 39
 const int UNKN_19               = 1616705008    ; // F0 F5 5C 60
 const int UNKN_20               = 275476317     ; // 5D 6F 6B 10
-
-const int EMISSIVE_RIM          = 14579343      ; // 8F 76 DE 00
 const int UNKN_22               = 252064274     ; // 12 32 06 0F
 const int UNKN_23               = 697457224     ; // 48 5A 92 29
-const int UNKN_24               = 280719621     ; // 05 71 BB 10
 const int UNKN_25               = 1240420851    ; // F3 51 EF 49
 const int UNKN_26               = 156539255     ; // 77 99 54 09
 const int UNKN_27               = 212167510     ; // 56 6B A5 0C
 const int UNKN_28               = 842043995     ; // 5B 92 30 32
 const int UNKN_29               = 812022019     ; // 03 79 66 30
-const int ALBEDO_BLEND          = 1267346617    ; // B9 2C 8A 4B
+const int UNKN_31               = 2115227124    ; // F4 CD 13 7E
+const int UNKN_32               = 1217635032    ; // D8 A2 93 48
+const int UNKN_33               = 1535857470    ; // 3E 53 8B 5B
+const int UNKN_34               = 1111321825    ; // E1 6C 3D 42
+const int UNKN_36               = 1916268445    ; // 9D EF 37 72
+const int UNKN_37               = 283684959     ; // 5F B0 E8 10
+const int UNKN_38               = 845585410     ; // 02 9C 66 32
+const int UNKN_39               = 1293936879    ; // EF E8 1F 4D
 
 // 31-45 See below
 
 
 const int TIML                  = 1819109748    ; // 74 69 6D 6C // 关键帧动画
-
 const int BASIC_TRANSFORM       = 10286765      ; // AD F6 9C 00 // 基本变换
 const int LIMIT_TRANSFORM       = 368199626     ; // CA 47 F2 15 // 变换约束
 const int LAUNCHER_PROPERTY     = 1921765292    ; // AC CF 8B 72 // 发射器属性
@@ -168,22 +177,23 @@ const int MOD3_USEAGE           = 276670093     ; // 8D A6 7D 10 // mod3调用
 const int SELF_SPIN_CONTROL     = 1774142981    ; // 05 46 BF 69 // 自旋转控制 
 const int AURAS                 = 597394907     ; // DB 85 9B 23 // 光圈
 const int FOLLOW                = 1123011591    ; // 07 CC EF 42 // 跟随
-
+const int LIGHTNING             = 1558046267    ; // 3B E6 DD 5C
+const int EMISSIVE_RIM          = 14579343      ; // 8F 76 DE 00
+const int EXTERNAL_BIND         = 280719621     ; // 05 71 BB 10
+const int ALBEDO_BLEND          = 1267346617    ; // B9 2C 8A 4B
 const int EFX_BEHAVIORS         = 1179069619    ; // B3 2C 47 46 // EFX行为
 const int TEXTURE               = 1659025771    ; // 6B B9 E2 62 // 材质
 const int FLOWMAP               = 37870541      ; // CD DB 41 02 // FLOWMAP
 const int CUBEMAP               = 1660327299    ; // 83 95 F6 62 // CUBEMAP
 const int CM_MAP                = 937428146     ; // B2 04 E0 37 // CM_MAP
-
-
 const int UNKN_01               = 2116359897    ; // D9 16 25 7E 
 const int TRAIL_PHYSICS         = 733291506     ; // F2 23 B5 2B 
 const int RANDOMIZED_OSCILLATIONS= 523015778     ; // 62 96 2C 1F 
 const int TEXTURE_ANIMATION     = 2020068998    ; // 86 CE 67 78 
 const int UNKN_07               = 1226136492    ; // AC 5B 15 49 
-
 const int UNKN_11               = 873436648     ; // E8 95 0F 34
-const int UNKN_12               = 493311524     ; // 24 56 67 1D
+const int RELATIONSHIP          = 493311524     ; // 24 56 67 1D
+const int CATENARY_PHYSICS         = 1062052310    ; // D6 A1 4D 3F
 
 
 // #HEADER STRUCT
@@ -196,7 +206,7 @@ typedef struct {
     float   NULL;
     int     EFX_Count<name="NON-NULL EFX Type Entry Count">;
     int     EFX_type_len<name="EFX Type Entry Length">;
-    int     IE_Count<name="Internal/External Useage Count">;
+    int     IE_Count<name="Internal/External Relationship Count">;
     int     UNKN_Count<name="Unknown Prefix Count">;
     int     NULL_Count<name="NULL EFX Type Count">;
     int     NULL_Lenth<name="NULL EFX Entry Length (END OF EFX)">;
@@ -224,9 +234,9 @@ typedef union {
     int     unkni;
 } UN;
 
-// type 0 - float; 1 - int; 2 - ubyte
+// type 0 - float; 1 - int; 2 - ubyte; 3 - jitterless float
 typedef struct (int type, int skip){
-    if(type==0){
+    if(type==0 || type == 3){
         if (skip==1){
             float fixed_x;
             float random_x;
@@ -341,17 +351,88 @@ typedef struct {
     int     unkn4[3];
 } Unkn_16;
 
+typedef struct{
+    long    EPVColorSlotHead;
+    XYZ     color1(2,0)<name="Color 1",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
+    long    NULL2;
+    XYZ     color2(2,0)<name="Color 2",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
+    int     spacer4;
+    int     unkn15;
+    float   size<bgcolor=0x91A480>;
+    int     unkn17;
+    byte    unkn18[2];
+    short   spacer5<bgcolor=0x91A480>;
+}EPVColorSlot;
+
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn00[2];
-    long    unkn01;
+    long    spacer0;
     XYZ     color1(2,0);
     long    unkn02;
     XYZ     color2(2,0);
     long    unkn03;
-    XYZ     color3(2,0);
+    XYZ     emissive(2,0);
     long    unkn04;
-    float   unkn05[49];
+    //float   unkn05[49];
+//Break this one
+    int     spacer05_00;
+    int     unkn05_01;
+    float   sineWaveFreq;
+    float   sineWaveFreqJitter;
+    float   alphaThreshold;
+    float   unkn05_05;
+    float   unkn05_06;
+    float   unkn05_07;
+    float   unkn05_08;
+    float   unkn05_09;
+
+    float   unkn05_10;
+    int     unkn05_11;
+    int     unkn05_12;
+    int     unkn05_13;
+    int     spacer05_14;
+    int     targetBoneID;
+    int     unkn05_16;
+    float   unkn05_17;
+    int     EPVColorSlot1;
+    int     EPVColorSlot2;
+
+    int     unkn05_20;
+    int     unkn05_21;
+    int     unkn05_22;
+    float   unkn05_23;
+    float   unkn05_24;
+
+    int     inflectionPointCount;
+    float   uInflectionAngleLimit;
+    float   uInflectionAngleLimitJitter;
+    float   vInflectionAngleLimit;
+    float   vInflectionAngleLimitJitter;
+
+    int     inflectionPointCount2;
+    float   uInflectionAngleLimit2;
+    float   uInflectionAngleLimitJitter2;
+    float   vInflectionAngleLimit2;
+    float   vInflectionAngleLimitJitter2;
+
+    float   glow;
+    float   glowJitter;
+    float   length;
+    float   lengthJitter;
+
+    float   width;
+    float   widthJitter;
+
+    float   startWidth;//startWidth
+    float   uvRepetitionStart;//Fucking Cursed
+    float   endWidth;
+    float   uvRepetitionEnd;
+    int     unkn05_45;
+    int     unkn05_46;
+    int     unkn05_47;
+    int     unkn05_48;
+
     int     unkn06[2];
     float   unkn07[28];
     int     unkn08[2];
@@ -366,7 +447,7 @@ typedef struct {
     int     path_len<name="Path Length",bgcolor=0x123456>;
     if(path_len>0)
         char    p[path_len]<name="Path",bgcolor=0x123456>;
-} Unkn_17;
+} Lightning;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -425,13 +506,35 @@ typedef struct {
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[8];
+
+    int     unkn00;
+    int     physicsEnum;//0 Fall Through, 1 Bounce and Fade, 2 Bounce and Fall Through, 3 For Remaining after Bouncing (Set multiplier to 0), 
+    int     unkn02;
+    int     unkn03;
+    int     unkn04;
+    int     unkn05;
+    float   unkn06;
+    int     unkn07;  
+
+    //unkn01 physicsEnum //
     float   unkn1[3];
     int     unkn2[2];
-    float   unkn3[9];
+    //float   unkn3[9];
+    float   bounceElasticity;//Bounce Elasticity On Collision
+    float   bounceElasticityJitter;//Bounce Elasticity Jitters
+    float   bounceElasticityMultiplier;
+    float   horizontalBounce;//Multiplier of bounce elasticity
+    float   unkn34;
+    float   unkn35;
+    float   unkn36;
+    float   unkn37;
+    int     unkn38;
+
     int     unkn4[2];
-    float   unkn5;
+    int     unkn5;//0 Call External Index?, FF FF FF FF Null
     int     unkn6[3];
-} Unkn_24;
+} External_Binding;
+
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     long    unkn0[17];
@@ -489,18 +592,6 @@ typedef struct {
     
 } Albedo_Blend;
 
-
-const int UNKN_31               = 2115227124    ; // F4 CD 13 7E
-const int UNKN_32               = 1217635032    ; // D8 A2 93 48
-const int UNKN_33               = 1535857470    ; // 3E 53 8B 5B
-const int UNKN_34               = 1111321825    ; // E1 6C 3D 42
-const int UNKN_35               = 1062052310    ; // D6 A1 4D 3F
-const int UNKN_36               = 1916268445    ; // 9D EF 37 72
-const int UNKN_37               = 283684959     ; // 5F B0 E8 10
-const int UNKN_38               = 845585410     ; // 02 9C 66 32
-const int UNKN_39               = 1293936879    ; // EF E8 1F 4D
-
-
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[2];
@@ -538,26 +629,109 @@ typedef struct {
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn00[2];
-    long    unkn01;
+    long    spacer00;
     XYZ     color1(2,0);
-    long    unkn02;
+    long    spacer01;
     XYZ     color2(2,0);
-    float   unkn03[20];
-    int     unkn04[3];
-    float   unkn05[3];
+    long    spacer02;
+
+    float   emissionStrength;
+    float   unkn03_01;
+    long    spacer03;
+
+    float   unkn03_03;
+    float   unkn03_04;
+    float   unkn03_05;
+    float   unkn03_06;
+    XYZ     endPosition(3,0);
+
+    float   unkn03_10;
+    float   width;
+    float   widthJitter;
+    float   length;
+    float   lengthJitter;
+    float   startWidth;
+    float   startOpacity;
+    float   endWidth;
+    float   endOpacity;
+
+    int     subdivisionCount;
+    int     unkn04_01;
+    int     uvRepetition;//Set to 1 or 2
+
+    float   widthwiseUVScalingAlpha;//Higher values shrink it
+    int     spacer04;
+    float   widthwiseUVScalingBML;//Higher values shrink it
+
     XYZ     color3(2,0);
-    float   unkn06[25];
-    int     unkn07[6];
-    float   unkn08[6];
-    int     unkn09[6];
-    float   unkn10[3];
+
+    float   unkn06_00;//Probably Flow Map Related
+    float   unkn06_01;//Probably Flow Map Related
+    float   unkn06_02;//Probably Flow Map Related
+    float   unkn06_03;//Probably Flow Map Related
+    float   unkn06_04;//Probably Flow Map Related
+    float   unkn06_05;//Probably Flow Map Related
+    float   unkn06_06;//Probably Flow Map Related
+    float   unkn06_07;//Probably Flow Map Related
+
+    short   unkn06_08_00;
+    short   unkn06_08_01;//Break Enum 0 Unbreakable, 1 Breakable
+
+    float   lengthBreakpoint;
+    float   lengthBreakpointJitter;
+
+    float   breakpointLocation;
+    float   breakpointLocationJitter;
+
+    float   breakDelay;//Maybe
+    float   breakDelayJitter;//Maybe
+
+    float   tension;
+    float   tensionJitter;
+
+    float   unkn06_17;
+    float   unkn06_18;
+
+    float   gravityMultiplier;
+    float   gravityMultiplierJitter;
+
+    float   inertia;
+    float   inertiaJitter;
+
+    float   poseSnapping;
+    float   poseSnappingJitter;
+
+    int     endBoneID;//1 1-1, 3 Higher
+    int     positionalAberration_01;
+    int     positionalAberration_02;
+    int     positionalAberration_03;
+    int     positionalAberration_04;
+    int     positionalAberration_05;
+
+    XYZ     displacement(0,1);//Z doesn't seem to be working
+
+    int     displacementToggle;//0 everything works, 1, 2 - kills the previous displacement, 3 - kills displacement
+    float   unkn09_01;
+    float   unkn09_02;
+    float   unkn09_03;
+    float   unkn09_04;
+    float   unkn09_05;
+
+    int     unkn10_00;
+    float   unkn10_01;//Angle Related
+    float   unkn10_02;//Angle Related Jitter
+
     int     unkn11;
-    float   unkn12[4];
+    int     unkn12_00;
+    float   unkn12_01;
+    float   unkn12_02;
+    float   unkn12_03;
+
     int     unkn13;
     int     path_len<name="Path Length",bgcolor=0x123456>;
     if(path_len>0)
         char    p[path_len]<name="Path",bgcolor=0x123456>;
-} Unkn_35;
+} Catenary_Physics;
 
 // 2 cases
 typedef struct {
@@ -701,9 +875,9 @@ typedef struct {
     int     unkn[7];
     XYZ     xyz(0,0);
     int     NULL[3];
-    int     attri_count;
-    if (attri_count > 0)
-        int     attri[attri_count];
+    int     target_count;
+    if (target_count > 0)
+        int     targets[target_count];
 } Internal;
 
 typedef struct (int x) {
@@ -938,19 +1112,6 @@ typedef struct {
     int     unkn0;
     float   param[4];
 } Visible_Dist;
-
-typedef struct{
-    long    EPVColorSlotHead;
-    XYZ     color1(2,0)<name="Color 1",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
-    long    NULL2;
-    XYZ     color2(2,0)<name="Color 2",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
-    int     spacer4;
-    int     unkn15;
-    float   size<bgcolor=0x91A480>;
-    int     unkn17;
-    byte    unkn18[2];
-    short   spacer5<bgcolor=0x91A480>;
-}EPVColorSlot;
 
 // I was like WTF, any way I labeled the float...
 typedef struct {
@@ -1476,8 +1637,17 @@ typedef struct {
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
-    short   unkn[10];
-} Unkn_12;
+    short   unkn0;
+    short   unkn1;
+    short   unkn2;
+    short   unkn3;
+    short   relationIndex;//Internal External Index that will declare the children
+    short   unkn5;
+    short   unkn6;
+    short   unkn7;
+    short   unkn8;
+    short   unkn9;
+} Relationship_Binding;
 
 
 
@@ -1820,8 +1990,8 @@ typedef struct (int count){
             Unkn_10             unkn_10             <bgcolor=0xff2400>;
         else if (ReadInt() == UNKN_11             )
             Unkn_11             unkn_11             <bgcolor=0x00ff06>;
-        else if (ReadInt() == UNKN_12             )
-            Unkn_12             unkn_12             <bgcolor=0x00ff06>;
+        else if (ReadInt() == RELATIONSHIP        )
+            Relationship_Binding  relationship_binding<bgcolor=0x00ff06>;
         else if (ReadInt() == UNKN_13             )
             Unkn_13             unkn_13             <bgcolor=0x00d8ff>;
         else if (ReadInt() == UNKN_14             )
@@ -1830,8 +2000,8 @@ typedef struct (int count){
             Unkn_15             unkn_15             <bgcolor=0xff003c>;
         else if (ReadInt() == UNKN_16             )
             Unkn_16             unkn_16             <bgcolor=0xff0006>;
-        else if (ReadInt() == UNKN_17             )
-            Unkn_17             unkn_17             <bgcolor=0xffba00>;
+        else if (ReadInt() == LIGHTNING           )
+            Lightning          lightning            <bgcolor=0xffba00>;
         else if (ReadInt() == UNKN_18             )
             Unkn_18             unkn_18             <bgcolor=0x24ff00>;
         else if (ReadInt() == UNKN_19             )
@@ -1844,8 +2014,8 @@ typedef struct (int count){
             Unkn_22             unkn_22             <bgcolor=0x5aff00>;
         else if (ReadInt() == UNKN_23             )
             Unkn_23             unkn_23             <bgcolor=0x00fff6>;
-        else if (ReadInt() == UNKN_24             )
-            Unkn_24             unkn_24             <bgcolor=0x00fff6>;
+        else if (ReadInt() == EXTERNAL_BIND       )
+            External_Binding    external_binding    <bgcolor=0x00fff6>;
         else if (ReadInt() == UNKN_25             )
             Unkn_25             unkn_25             <bgcolor=0x00d8ff>;
         else if (ReadInt() == UNKN_26             )
@@ -1866,8 +2036,8 @@ typedef struct (int count){
             Unkn_33             unkn_33             <bgcolor=0x00a8ff>;
         else if (ReadInt() == UNKN_34             )
             Unkn_34             unkn_34             <bgcolor=0xff5a00>;
-        else if (ReadInt() == UNKN_35             )
-            Unkn_35             unkn_35             <bgcolor=0x24ff00>;
+        else if (ReadInt() == CATENARY_PHYSICS       )
+            Catenary_Physics       catenary_physics       <bgcolor=0x24ff00>;
         else if (ReadInt() == UNKN_36             )
             Unkn_36             unkn_36             <bgcolor=0xff0096>;
         else if (ReadInt() == UNKN_37             )
@@ -1978,7 +2148,7 @@ typedef struct {
     local int k;
     for(k=0;k<header.NULL_Count;k++)
         NULL_EFX  null_efx<name="NULL EFX">;
-} NULL;
+} NULL;//Acts as a table of subselectable sections for the epv subselection calls
 
 // #HEADER
 Header          header<name="Header",bgcolor=0x00ffff>;
@@ -2093,7 +2263,7 @@ string ReadMainP(MAIN_PREFIX &mp) {
  (__main__.Albedo_Blend, 13),
  (__main__.Unkn_42, 13),
  (__main__.Auras, 14),
- (__main__.Unkn_17, 14),
+ (__main__.Lightning, 14),
  (__main__.Dds_Trace_Prop, 14),
  (__main__.Unkn_28, 14),
  (__main__.Dds_Useage, 15),
@@ -2107,16 +2277,16 @@ string ReadMainP(MAIN_PREFIX &mp) {
  (__main__.Transparent_Control, 19),
  (__main__.Unkn_22, 19),
  (__main__.Unkn_18, 20),
- (__main__.Unkn_35, 20),
+ (__main__.Catenary_Physics, 20),
  (__main__.Unkn_11, 21),
- (__main__.Unkn_12, 21),
+ (__main__.Parenting, 21),
  (__main__.EFX_Behavior, 22),
  (__main__.Color_Prop_Control, 23),
  (__main__.Unkn_37, 23),
  (__main__.Cubemap, 24),
  (__main__.CM_Map, 25),
  (__main__.Texture, 26),
- (__main__.Unkn_24, 26),
+ (__main__.External_Binding, 26),
  (__main__.Unkn_23, 26),
  (__main__.Randomized_Oscillations, 27),
  (__main__.Unkn_13, 27),
