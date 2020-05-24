@@ -503,9 +503,10 @@ typedef struct {
     int     unkn2[2];
     float   unkn3;
 } Unkn_23;
+
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
-    int     unkn0[8];
+    //int     unkn0[8];
 
     int     unkn00;
     int     physicsEnum;//0 Fall Through, 1 Bounce and Fade, 2 Bounce and Fall Through, 3 For Remaining after Bouncing (Set multiplier to 0), 
