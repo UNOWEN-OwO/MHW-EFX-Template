@@ -140,7 +140,6 @@ const int UNKN_18               = 957228464     ; // B0 25 0E 39
 const int UNKN_19               = 1616705008    ; // F0 F5 5C 60
 const int UNKN_20               = 275476317     ; // 5D 6F 6B 10
 const int UNKN_22               = 252064274     ; // 12 32 06 0F
-const int UNKN_23               = 697457224     ; // 48 5A 92 29
 const int UNKN_25               = 1240420851    ; // F3 51 EF 49
 const int UNKN_26               = 156539255     ; // 77 99 54 09
 const int UNKN_27               = 212167510     ; // 56 6B A5 0C
@@ -193,7 +192,8 @@ const int TEXTURE_ANIMATION     = 2020068998    ; // 86 CE 67 78
 const int UNKN_07               = 1226136492    ; // AC 5B 15 49 
 const int UNKN_11               = 873436648     ; // E8 95 0F 34
 const int RELATIONSHIP          = 493311524     ; // 24 56 67 1D
-const int CATENARY_PHYSICS         = 1062052310    ; // D6 A1 4D 3F
+const int CATENARY_PHYSICS      = 1062052310    ; // D6 A1 4D 3F
+const int COLLISION             = 697457224     ; // 48 5A 92 29
 
 
 // #HEADER STRUCT
@@ -496,13 +496,18 @@ typedef struct {
     if(path_len>0)
         char    p[path_len]<name="Path",bgcolor=0x123456>;
 } Unkn_22;
+
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[2];
-    float   unkn1[4];
-    int     unkn2[2];
-    float   unkn3;
-} Unkn_23;
+    long    spacer;
+    float   unkn1;
+    float   bounce;
+    float   bounceJitter;
+    int     lifespan;//0 for no interaction, higher values result in more bounce
+    int     lifespanJitter;
+    float   bounceConditional;
+} Collision;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -2013,8 +2018,8 @@ typedef struct (int count){
             Emissive_Rim        emissive_rim        <bgcolor=0x00a8ff>;
         else if (ReadInt() == UNKN_22             )
             Unkn_22             unkn_22             <bgcolor=0x5aff00>;
-        else if (ReadInt() == UNKN_23             )
-            Unkn_23             unkn_23             <bgcolor=0x00fff6>;
+        else if (ReadInt() == COLLISION           )
+            Collision           collision           <bgcolor=0x00fff6>;
         else if (ReadInt() == EXTERNAL_BIND       )
             External_Binding    external_binding    <bgcolor=0x00fff6>;
         else if (ReadInt() == UNKN_25             )
@@ -2288,7 +2293,7 @@ string ReadMainP(MAIN_PREFIX &mp) {
  (__main__.CM_Map, 25),
  (__main__.Texture, 26),
  (__main__.External_Binding, 26),
- (__main__.Unkn_23, 26),
+ (__main__.Collision, 26),
  (__main__.Randomized_Oscillations, 27),
  (__main__.Unkn_13, 27),
  (__main__.Unkn_25, 27),
