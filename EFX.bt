@@ -138,7 +138,6 @@ const int UNKN_15               = 584030352     ; // 90 98 CF 22
 const int UNKN_16               = 341394325     ; // 95 43 59 14
 const int UNKN_18               = 957228464     ; // B0 25 0E 39
 const int UNKN_19               = 1616705008    ; // F0 F5 5C 60
-const int UNKN_20               = 275476317     ; // 5D 6F 6B 10
 const int UNKN_22               = 252064274     ; // 12 32 06 0F
 const int UNKN_25               = 1240420851    ; // F3 51 EF 49
 const int UNKN_26               = 156539255     ; // 77 99 54 09
@@ -147,7 +146,7 @@ const int UNKN_28               = 842043995     ; // 5B 92 30 32
 const int UNKN_29               = 812022019     ; // 03 79 66 30
 const int UNKN_31               = 2115227124    ; // F4 CD 13 7E
 const int UNKN_32               = 1217635032    ; // D8 A2 93 48
-const int UNKN_33               = 1535857470    ; // 3E 53 8B 5B
+const int RADIAL_CONCENTRATION  = 1535857470    ; // 3E 53 8B 5B
 const int UNKN_34               = 1111321825    ; // E1 6C 3D 42
 const int UNKN_36               = 1916268445    ; // 9D EF 37 72
 const int UNKN_37               = 283684959     ; // 5F B0 E8 10
@@ -182,7 +181,7 @@ const int EXTERNAL_BIND         = 280719621     ; // 05 71 BB 10
 const int ALBEDO_BLEND          = 1267346617    ; // B9 2C 8A 4B
 const int EFX_BEHAVIORS         = 1179069619    ; // B3 2C 47 46 // EFX行为
 const int TEXTURE               = 1659025771    ; // 6B B9 E2 62 // 材质
-const int FLOWMAP               = 37870541      ; // CD DB 41 02 // FLOWMAP
+const int DDS_USEAGE_ALT        = 37870541      ; // CD DB 41 02 // ALTERNATIVE DDS USEAGE
 const int CUBEMAP               = 1660327299    ; // 83 95 F6 62 // CUBEMAP
 const int CM_MAP                = 937428146     ; // B2 04 E0 37 // CM_MAP
 const int UNKN_01               = 2116359897    ; // D9 16 25 7E 
@@ -194,7 +193,7 @@ const int UNKN_11               = 873436648     ; // E8 95 0F 34
 const int RELATIONSHIP          = 493311524     ; // 24 56 67 1D
 const int CATENARY_PHYSICS      = 1062052310    ; // D6 A1 4D 3F
 const int COLLISION             = 697457224     ; // 48 5A 92 29
-
+const int BEAM_COLLISION        = 275476317     ; // 5D 6F 6B 10
 
 // #HEADER STRUCT
 typedef struct {
@@ -434,7 +433,38 @@ typedef struct {
     int     unkn05_48;
 
     int     unkn06[2];
-    float   unkn07[28];
+
+    float   radiusLimit;
+    float   radiusLimitJitter;
+    float   unkn07_02;
+    float   unkn07_03;
+    int   unkn07_04;
+    float   unkn07_05;
+    float   unkn07_06;
+    float   unkn07_07;
+    float   unkn07_08;
+    float   unkn07_09;
+
+    float   unkn07_10;
+    float   branchLength;
+    float   branchLengthJitter;
+    float   unkn07_13;
+    float   unkn07_14;
+    float   unkn07_15;
+    float   unkn07_16;
+    float   unkn07_17;
+    float   unkn07_18;
+    float   unkn07_19;
+
+    float   unkn07_20;
+    float   unkn07_21;
+    float   unkn07_22;
+    float   unkn07_23;
+    float   unkn07_24;
+    float   unkn07_25;
+    float   unkn07_26;
+    float   unkn07_27;
+
     int     unkn08[2];
     float   unkn09[20];
     int     unkn10[4];
@@ -460,13 +490,32 @@ typedef struct {
 } Unkn_19;
 
 typedef struct {
-    long    type<name="Type",format=hex,bgcolor=0x000000>;
-    int     unkn0[2];
-    float   unkn1[5];
-    long    unkn2[3];
-    float   unkn3[9];
-    short   unkn4;
-} Unkn_20;
+    long type<name="Type",format=hex,bgcolor=0x000000>;
+    int unknown0;
+    int fixed70;
+    long spacer0;
+    float distanceMod0;
+    float distanceMod0Jitter;
+    float prop1;
+    float prop1Jitter;
+    long spacer1;
+    long spacer2;
+    long spacer3;
+    float prop2;
+    XYZ  prop3(0,0);
+    int direction;
+    //0 left
+    //1 down
+    //2 forward
+    //3 right
+    //4 up
+    //5 backward
+    float distanceMod1;
+    float distanceMod1Jitter;
+    long spacer;
+    int  unknown1;//(usually -1. saw one as 0)
+    short unknown2;//(it was 256 so not sure if it is a flag or something else)
+} Beam_Collision;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -518,7 +567,7 @@ typedef struct {
     int     unkn02;
     int     unkn03;
     int     unkn04;
-    int     unkn05;
+    int     unkn05;//
     float   unkn06;
     int     unkn07;  
 
@@ -537,7 +586,7 @@ typedef struct {
     int     unkn38;
 
     int     unkn4[2];
-    int     unkn5;//0 Call External Index?, FF FF FF FF Null
+    int     ieIndex;//0 Call External Index?, FF FF FF FF Null
     int     unkn6[3];
 } External_Binding;
 
@@ -604,6 +653,7 @@ typedef struct {
     long    unkn1;
     int     unkn2;
 } Unkn_31;
+
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[2];
@@ -614,12 +664,23 @@ typedef struct {
     int     unkn5[8];
     byte    unkn6;
 } Unkn_32;
+
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
-    int     unkn0[2];
-    long     unkn1;
-    float    unkn2[10];
-} Unkn_33;
+    int unknown;//
+    int unknown0;
+    long spacer;
+    float f0;
+    float speed;
+    float speedMultiplier;
+    float f3;
+    float f4;
+    float radius;
+    long i0;
+    long i1;//
+    int enableRadialVanish;// 1 Freak Speed, 3 disappear on inner radius
+    int unknown1;
+} Radial_Concentration;
 
 // Mod3 Useage
 typedef struct {
@@ -1060,13 +1121,16 @@ typedef struct {
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
-    int     unkn0;
-    long    unkn1[2];
-    int     duration[2]<name="Duration">;
-    int     unkn2[2];
-    int     unkn_count;
-    int     unkn3[3];
-    int     NULL;
+    long    unkn0;
+    long    fadeInDuration;
+    long    fadeInDurationJitter;
+    long    duration;
+    long    durationJitter;
+    long    unkn2[2];
+    long    fadeOutDuration;
+    long    fadeOutDurationJitter;
+    long    unkn3[2];
+    long    indefiniteLifespan;
 } Life_Cycle;
 
 typedef struct {
@@ -1110,7 +1174,10 @@ typedef struct {
     float gravity;
     float gravity_jitter;
 
-    long    NULL1[5];
+    long    NULL1[2];
+    int     gravityDelay;
+    int     gravityDelayJitter;
+    long    NULL2;
 } Momentum_Control;
 
 typedef struct {
@@ -1205,13 +1272,22 @@ typedef struct {
     XYZ     rotation(0,1);
     uint64  unkn7;
     char    p[dds.path_len]<name="Path",bgcolor=0x123456>;
-} Flowmap;
+} Dds_Useage_Alt;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0;
     XYZ     color(2,0)[2]<name="Color",read=ReadbyteXYZ,bgcolor=0xFFFF00,optimize=true>;
-    float   unkn1[10];
+    //float   unkn1[10];
+    float   brightnessSlot1;
+    float   emissiveMultiplier;
+    float   brightnessSlot2;
+    float   brightnessSlotMultiplier1;
+    float   brightnessSlotMultiplier2;
+    float   opacity;
+    float   unknownFloat;
+    int     unknownInt[3];
+    //
     int     unkn2[26];
     int     path_len<name="Path Length",bgcolor=0x123456>;
     char    p[path_len]<name="Path",bgcolor=0x123456>;
@@ -1228,12 +1304,15 @@ typedef struct {
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0;
-    int     dds_template_id<name="DDS Template ID",bgcolor=0xBB0000>;
+    int     uvs_index<name="UVS File Path Index",bgcolor=0xBB0000>;
     long    NULL;
     int     unkn2;
     int     unkn3;
-    float   unkn4[4];
-    int     unkn5;
+    float   animationSpeed;
+    float   animationSpeedJitter;
+    float   animationAcceleration;
+    float   animationAccelerationJitter;
+    int     loopingEnum<comment="0-NotAnimated, 2-RandomRestart,8-, 9-Continuous">;//looping related
     int     path_len<name="Path Length",bgcolor=0x123456>;
     char    p[path_len]<name="Path",bgcolor=0x123456>;
 } Uvs_Useage;
@@ -1250,22 +1329,27 @@ typedef struct {
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0;
-    float   outer_layer_radius<name="Outer Layer Radius",bgcolor=0xAAAA00>;
     int     unkn1;
-    float   inner_layer_radius<name="Inner Layer Radius",bgcolor=0x00AAAA>;
-    float   layerVisibilityDistance;
-    int     effect_contol<name="Effect Type Control",bgcolor=0xAA00AA>;
-    int     unkn3[3];
-    float   unkn4[17];
-    int     unkn5[3];
+    int     spacer;
+    int   unkn2;
+    float   zDepthModifierStart;
+    float   zDepthModifierEnd<bgcolor=0xAA00AA>;//<name="Effect Type Control",bgcolor=0xAA00AA>;
+    int     unkn3_0;
+    int     unkn3_1;
+    int     controlBitflag;//0 no alpha, 1 is alpha enabled, 2 is emissive behavior, 3 is inverted color + alpha, 6 is grey scale
+    float   unkn4[15];
+    byte    objectInteraction[4]<comment="Each byte determines a different family of objects 0 is off, 1 is on. Player Weapons and Interactables, Map, Weapon SubParts and Skybox, Player Skin">;//FF FF FF FF any material
+    float   unkn4_17;
+    int     visibleOnPreview;//bitflag
+    int     unkn5[2];
 } Layer_Visibility;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0;
-    XYZ     color1(2,0)<name="Color 1",read=ReadbyteXYZ,bgcolor=0xFFFF00,optimize=true>;
-    float   brightness1<name="Brightness 1">; //colors will combine
-    XYZ     color2(2,0)<name="Color 2",read=ReadbyteXYZ,bgcolor=0xFFFF00,optimize=true>;
+    XYZ     color1(2,0)<name="Color Channel 1 (Alpha)",read=ReadbyteXYZ,bgcolor=0xFFFF00,optimize=true>;
+    float   brightness1<name="Brightness 1 (Alpha)">; //colors will combine
+    XYZ     color2(2,0)<name="Color Channel 2 (RGB)",read=ReadbyteXYZ,bgcolor=0xFFFF00,optimize=true>;
     float   brightness2<name="Brightness 2">;
     float   unkn4;
     float   brightness3<name="Color Balance 1">; //seems to bring out color 1 without lowering overall brightness, might be more of a color balance
@@ -1304,7 +1388,9 @@ typedef struct {
                          //6 - Don't Track Rotation At All
                          //7 - Dissapears
                          //8 - Perpendicular to Ground, Don't Track
-    int     unkn4[3];
+    int     unkn40;
+    int     affectedByLight;
+    int     shadowCastBitflag;
     int     epv_color_slot1;
     int     unkn5;
     int     epv_color_slot2;
@@ -1338,7 +1424,7 @@ typedef struct {
 } Self_Spin_Control;
 
 typedef struct {
-    long    unkn;
+    long    unkn; // 56 3A 6D EE
     // long    const0<name="E2D9F0AB",format=hex>;
     long    const0<name="AFDB4043",format=hex>;
 
@@ -1359,10 +1445,10 @@ typedef struct {
     else if (t==0x14)
         XYZ     unkn1(0,0)<read=ReadfloatXYZ,bgcolor=0x00FFFF>;
     else if (t==0x15) {
-        float   unkn0;
-        long    unkn1;
-        float   unkn2;
-        long    unkn3;
+        float   unkn0;//float unkn0;
+        long    unkn1;//float unkn1;
+        float   unkn2;//float uScale;
+        long    unkn3;//float vScale;
     } else if (t==0x36 || t==0x37)
         int     unkn1[2];
     else if (t==0x40)
@@ -1535,7 +1621,10 @@ typedef struct {
     float   unkn15;
 
     long restitution_direction<comment = "0-Left,1-Up,2-Forward,3-Right,4-Down,5-Backwards,6-None">;//0-Left,1-Up,2-Forward,3-Right,4-Down,5-Backwards
-    long    unkn16[8];
+    long    unkn16[4];
+    long    startingAngle;
+    long    startingAngleJitter;
+    long    unkn16_0[2];
     short   unkn16_1;
     short   unkn16_2<comment = "0 - Align to World , Anything Else - Align to Source">;
     long    spacer3<hidden=true>;
@@ -2012,8 +2101,8 @@ typedef struct (int count){
             Unkn_18             unkn_18             <bgcolor=0x24ff00>;
         else if (ReadInt() == UNKN_19             )
             Unkn_19             unkn_19             <bgcolor=0x0018ff>;
-        else if (ReadInt() == UNKN_20             )
-            Unkn_20             unkn_20             <bgcolor=0xd800ff>;
+        else if (ReadInt() == BEAM_COLLISION      )
+            Beam_Collision      beam_collision    <bgcolor=0xd800ff>;
         else if (ReadInt() == EMISSIVE_RIM        )
             Emissive_Rim        emissive_rim        <bgcolor=0x00a8ff>;
         else if (ReadInt() == UNKN_22             )
@@ -2038,12 +2127,12 @@ typedef struct (int count){
             Unkn_31             unkn_31             <bgcolor=0x00d8ff>;
         else if (ReadInt() == UNKN_32             )
             Unkn_32             unkn_32             <bgcolor=0x00a8ff>;
-        else if (ReadInt() == UNKN_33             )
-            Unkn_33             unkn_33             <bgcolor=0x00a8ff>;
+        else if (ReadInt() == RADIAL_CONCENTRATION             )
+            Radial_Concentration radial_concentration <bgcolor=0x00a8ff>;
         else if (ReadInt() == UNKN_34             )
             Unkn_34             unkn_34             <bgcolor=0xff5a00>;
         else if (ReadInt() == CATENARY_PHYSICS       )
-            Catenary_Physics       catenary_physics       <bgcolor=0x24ff00>;
+            Catenary_Physics       catenary_physics  <bgcolor=0x24ff00>;
         else if (ReadInt() == UNKN_36             )
             Unkn_36             unkn_36             <bgcolor=0xff0096>;
         else if (ReadInt() == UNKN_37             )
@@ -2112,8 +2201,8 @@ typedef struct (int count){
             EFX_Behaviors       efx_behaviors       <bgcolor=0x00ff3c>;
         else if (ReadInt() == TEXTURE             )
             Texture             texture             <bgcolor=0x00fff6>;
-        else if (ReadInt() == FLOWMAP              )
-            Flowmap             flowmap             <bgcolor=0xffe400>;
+        else if (ReadInt() == DDS_USEAGE_ALT      )
+            Dds_Useage_Alt       dds_Useage_Alt     <bgcolor=0xffe400>;
         else if (ReadInt() == CUBEMAP             )
             Cubemap             cubemap             <bgcolor=0x00ff96>;
         else if (ReadInt() == CM_MAP              )
@@ -2248,7 +2337,7 @@ string ReadMainP(MAIN_PREFIX &mp) {
  (__main__.Basic_Transform, 2),
  (__main__.Unkn_09, 2),
  (__main__.Limit_Transform, 3),
- (__main__.Unkn_20, 4),
+ (__main__.Beam_Collision, 4),
  (__main__.Unkn_29, 5),
  (__main__.Launcher_Prop, 6),
  (__main__.Unkn_36, 7),
@@ -2274,7 +2363,7 @@ string ReadMainP(MAIN_PREFIX &mp) {
  (__main__.Unkn_28, 14),
  (__main__.Dds_Useage, 15),
  (__main__.Trail_Physics, 15),
- (__main__.Flowmap, 15),
+ (__main__.Dds_Useage_Alt, 15),
  (__main__.Texture_Animation, 16),
  (__main__.Mod3_Useage, 17),
  (__main__.Uvs_Useage, 18),
@@ -2300,7 +2389,7 @@ string ReadMainP(MAIN_PREFIX &mp) {
  (__main__.Unkn_31, 27),
  (__main__.Emissive_Rim, 28),
  (__main__.Unkn_32, 28),
- (__main__.Unkn_33, 28),
+ (__main__.Radial_Concentration, 28),
  (__main__.Unkn_26, 28),
  (__main__.Unkn_27, 29),
  (__main__.Unkn_14, 30),
