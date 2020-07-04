@@ -21,7 +21,7 @@
 //              1.2     naming correction for Spawn (bone id that mapped to need to be marked)
 //                      few counting parameter found for Keyframe_Anim, as least the structure is now filled up
 //                      updated & added structure accroding to wiki
-//                          structre of DDS_USEAGE
+//                          structre of BILLBOARD3D
 //                          added PLEMISSIVE structure
 //                      
 //              1.3     Removed the Post_Basic structure before the Transform3D
@@ -35,7 +35,7 @@
 //                      RandomFix -> Material, extended and structured, looks like mrl3
 //                      
 //              1.4     Added Guideing Effect
-//                      SHADERSETTINGS -Moved before-> DDS_USEAGE
+//                      SHADERSETTINGS -Moved before-> BILLBOARD3D
 //                      
 //                      
 //                      ***Note***
@@ -167,7 +167,7 @@ const int EMITTERSHAPE3D        = 1003792849    ; // D1 A9 D4 3B // 对称复制
 const int VELOCITY3D      = 222458580     ; // D4 72 42 0D // 动量控制
 const int FADEBYDEPTH          = 859243212     ; // CC 02 37 33 // 可见距离
 const int RIBBONBLADE        = 319363982     ; // 8E 1B 09 13 // DDS轨迹属性
-const int DDS_USEAGE            = 1136904414    ; // DE C8 C3 43 // DDS(CM)调用   // CM_Useage
+const int BILLBOARD3D            = 1136904414    ; // DE C8 C3 43 // DDS(CM)调用   // CM_Useage
 const int SCALEANIM             = 480396424     ; // 88 44 A2 1C // 播放循环
 const int UVSEQUENCE            = 1698970185    ; // 49 3A 44 65 // UVS调用
 const int ALPHACORRECTION   = 61219887      ; // 2F 24 A6 03 // 透明渐变控制
@@ -179,11 +179,11 @@ const int PLEMISSIVE                 = 597394907     ; // DB 85 9B 23 // 光圈
 const int GUIDE                = 1123011591    ; // 07 CC EF 42 // 跟随
 const int LIGHTNING             = 1558046267    ; // 3B E6 DD 5C
 const int PARENTEMISSIVE          = 14579343      ; // 8F 76 DE 00
-const int PTSCREENSPACESCREENSPACECOLLISION         = 280719621     ; // 05 71 BB 10
+const int PTSCREENSPACESCREENSPACESCREENSPACESCREENSPACECOLLISION         = 280719621     ; // 05 71 BB 10
 const int PLSNOW          = 1267346617    ; // B9 2C 8A 4B
 const int PTBEHAVIOR         = 1179069619    ; // B3 2C 47 46 // EFX行为
 const int MATERIAL               = 1659025771    ; // 6B B9 E2 62 // 材质
-const int DDS_USEAGE_ALT        = 37870541      ; // CD DB 41 02 // ALTERNATIVE DDS USEAGE
+const int BILLBOARD3D_ALT        = 37870541      ; // CD DB 41 02 // ALTERNATIVE DDS USEAGE
 const int RGBWATER               = 1660327299    ; // 83 95 F6 62 // RGBWATER
 const int TURBULENCE                = 937428146     ; // B2 04 E0 37 // TURBULENCE
 const int FADEBYEMITTERANGLE               = 2116359897    ; // D9 16 25 7E 
@@ -194,8 +194,8 @@ const int FADEBYANGLE               = 1226136492    ; // AC 5B 15 49
 const int EMITTERBOUNDARY               = 873436648     ; // E8 95 0F 34
 const int PTLIFE          = 493311524     ; // 24 56 67 1D
 const int STRAINRIBBON      = 1062052310    ; // D6 A1 4D 3F
-const int SCREENSPACESCREENSPACECOLLISION             = 697457224     ; // 48 5A 92 29
-const int BEAM_SCREENSPACESCREENSPACECOLLISION        = 275476317     ; // 5D 6F 6B 10
+const int SCREENSPACESCREENSPACESCREENSPACESCREENSPACECOLLISION             = 697457224     ; // 48 5A 92 29
+const int BEAM_SCREENSPACESCREENSPACESCREENSPACESCREENSPACECOLLISION        = 275476317     ; // 5D 6F 6B 10
 
 // Unused So Far
 
@@ -602,7 +602,7 @@ typedef struct {
     long spacer;
     int  unknown1;//(usually -1. saw one as 0)
     short unknown2;//(it was 256 so not sure if it is a flag or something else)
-} Beam_ScreenSpaceScreenSpaceScreenSpaceCollision;
+} Beam_ScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollision;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -643,7 +643,7 @@ typedef struct {
     int     lifespan;//0 for no interaction, higher values result in more bounce
     int     lifespanJitter;
     float   bounceConditional;
-} ScreenSpaceScreenSpaceScreenSpaceCollision;
+} ScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollision;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -662,7 +662,7 @@ typedef struct {
     float   unkn1[3];
     int     unkn2[2];
     //float   unkn3[9];
-    float   bounceElasticity;//Bounce Elasticity On ScreenSpaceScreenSpaceScreenSpaceCollision
+    float   bounceElasticity;//Bounce Elasticity On ScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollision
     float   bounceElasticityJitter;//Bounce Elasticity Jitters
     float   bounceElasticityMultiplier;
     float   horizontalBounce;//Multiplier of bounce elasticity
@@ -675,7 +675,7 @@ typedef struct {
     int     unkn4[2];
     int     ieIndex;//0 Call External Index?, FF FF FF FF Null
     int     unkn6[3];
-} PtScreenSpaceScreenSpaceScreenSpaceCollisioning;
+} PtScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollisioning;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1288,7 +1288,7 @@ typedef struct {
     short   NULL9;
     int     path_len<name="Path Length",bgcolor=0x123456>;
     char    p[path_len]<name="Path",bgcolor=0x123456>;
-} Dds_Trace_Prop;
+} RibbonBlade;
 
 typedef struct{
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1328,7 +1328,7 @@ typedef struct {
     int     unkn8;
     int     unkn9;
     char    p[dds.path_len]<name="Path",bgcolor=0x123456>;
-} Dds_Useage;
+} Billboard3D;
 
 typedef struct {
     dds_data    dds;
@@ -1336,7 +1336,7 @@ typedef struct {
     XYZ     rotation(0,1);
     uint64  unkn7;
     char    p[dds.path_len]<name="Path",bgcolor=0x123456>;
-} Dds_Useage_Alt;
+} Billboard3D_Alt;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1379,7 +1379,7 @@ typedef struct {
     int     loopingEnum<comment="0-NotAnimated, 2-RandomRestart,8-, 9-Continuous">;//looping related
     int     path_len<name="Path Length",bgcolor=0x123456>;
     char    p[path_len]<name="Path",bgcolor=0x123456>;
-} Uvs_Useage;
+} UVSequence;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -2164,16 +2164,16 @@ typedef struct (int count){
             Refraction         refraction           <bgcolor=0x24ff00>;
         else if (ReadInt() == MASTERONLY             )
             MasterOnly             masteronly             <bgcolor=0x0018ff>;
-        else if (ReadInt() == BEAM_SCREENSPACESCREENSPACECOLLISION      )
-            Beam_ScreenSpaceScreenSpaceScreenSpaceCollision      beam_screenspacescreenspacecollision    <bgcolor=0xd800ff>;
+        else if (ReadInt() == BEAM_SCREENSPACESCREENSPACESCREENSPACESCREENSPACECOLLISION      )
+            Beam_ScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollision      beam_screenspacescreenspacescreenspacescreenspacecollision    <bgcolor=0xd800ff>;
         else if (ReadInt() == PARENTEMISSIVE        )
             ParentEmissive        parentemissive        <bgcolor=0x00a8ff>;
         else if (ReadInt() == TUBELIGHT             )
             TubeLight             tubelight             <bgcolor=0x5aff00>;
-        else if (ReadInt() == SCREENSPACESCREENSPACECOLLISION           )
-            ScreenSpaceScreenSpaceScreenSpaceCollision           screenspacescreenspacecollision           <bgcolor=0x00fff6>;
-        else if (ReadInt() == PTSCREENSPACESCREENSPACECOLLISION       )
-            PtScreenSpaceScreenSpaceScreenSpaceCollisioning    ptscreenspacescreenspacecollisioning    <bgcolor=0x00fff6>;
+        else if (ReadInt() == SCREENSPACESCREENSPACESCREENSPACESCREENSPACECOLLISION           )
+            ScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollision           screenspacescreenspacescreenspacescreenspacecollision           <bgcolor=0x00fff6>;
+        else if (ReadInt() == PTSCREENSPACESCREENSPACESCREENSPACESCREENSPACECOLLISION       )
+            PtScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollisioning    ptscreenspacescreenspacescreenspacescreenspacecollisioning    <bgcolor=0x00fff6>;
         else if (ReadInt() == SHOVEL             )
             Shovel             shovel             <bgcolor=0x00d8ff>;
         else if (ReadInt() == LAYOUT             )
@@ -2229,13 +2229,13 @@ typedef struct (int count){
         else if (ReadInt() == FADEBYDEPTH        )
             FadeByDepth        fadebydepth        <bgcolor=0xff0006>;
         else if (ReadInt() == RIBBONBLADE      )
-            Dds_Trace_Prop      ribbonblade      <bgcolor=0xffba00>;
-        else if (ReadInt() == DDS_USEAGE          )
-            Dds_Useage          dds_useage          <bgcolor=0xffe400>;
+            RibbonBlade      ribbonblade      <bgcolor=0xffba00>;
+        else if (ReadInt() == BILLBOARD3D          )
+            Billboard3D          billboard3d          <bgcolor=0xffe400>;
         else if (ReadInt() == SCALEANIM           )
             ScaleAnim           scaleanim           <bgcolor=0x84ff00>;
         else if (ReadInt() == UVSEQUENCE          )
-            Uvs_Useage          uvsequence          <bgcolor=0x84ff00>;
+            UVSequence          uvsequence          <bgcolor=0x84ff00>;
         else if (ReadInt() == ALPHACORRECTION )
             AlphaCorrection alphacorrection <bgcolor=0x5aff00>;
         else if (ReadInt() == SHADERSETTINGS    )
@@ -2254,8 +2254,8 @@ typedef struct (int count){
             PtBehavior       ptbehavior       <bgcolor=0x00ff3c>;
         else if (ReadInt() == MATERIAL             )
             Material             material             <bgcolor=0x00fff6>;
-        else if (ReadInt() == DDS_USEAGE_ALT      )
-            Dds_Useage_Alt       dds_Useage_Alt     <bgcolor=0xffe400>;
+        else if (ReadInt() == BILLBOARD3D_ALT      )
+            Billboard3D_Alt       billboard3D_Alt     <bgcolor=0xffe400>;
         else if (ReadInt() == RGBWATER             )
             RgbWater             rgbwater             <bgcolor=0x00ff96>;
         else if (ReadInt() == TURBULENCE              )
@@ -2390,7 +2390,7 @@ string ReadMainP(MAIN_PREFIX &mp) {
  (__main__.Transform3D, 2),
  (__main__.Transform2D, 2),
  (__main__.ParentOptions, 3),
- (__main__.Beam_ScreenSpaceScreenSpaceScreenSpaceCollision, 4),
+ (__main__.Beam_ScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollision, 4),
  (__main__.LinkPartsVisible, 5),
  (__main__.Launcher_Prop, 6),
  (__main__.SpawnByAngle, 7),
@@ -2412,14 +2412,14 @@ string ReadMainP(MAIN_PREFIX &mp) {
  (__main__.ParentSnow, 13),
  (__main__.PlEmissive, 14),
  (__main__.Lightning, 14),
- (__main__.Dds_Trace_Prop, 14),
+ (__main__.RibbonBlade, 14),
  (__main__.RepeatArea, 14),
- (__main__.Dds_Useage, 15),
+ (__main__.Billboard3D, 15),
  (__main__.Ribbon, 15),
- (__main__.Dds_Useage_Alt, 15),
+ (__main__.Billboard3D_Alt, 15),
  (__main__.Material_Animation, 16),
  (__main__.Mesh, 17),
- (__main__.Uvs_Useage, 18),
+ (__main__.UVSequence, 18),
  (__main__.ScaleAnim, 18),
  (__main__.RotateAnim, 18),
  (__main__.AlphaCorrection, 19),
@@ -2434,8 +2434,8 @@ string ReadMainP(MAIN_PREFIX &mp) {
  (__main__.RgbWater, 24),
  (__main__.Turbulence, 25),
  (__main__.Material, 26),
- (__main__.PtScreenSpaceScreenSpaceScreenSpaceCollisioning, 26),
- (__main__.ScreenSpaceScreenSpaceScreenSpaceCollision, 26),
+ (__main__.PtScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollisioning, 26),
+ (__main__.ScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollision, 26),
  (__main__.Noise, 27),
  (__main__.Blink, 27),
  (__main__.Shovel, 27),
