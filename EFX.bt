@@ -829,27 +829,26 @@ typedef struct {
     if(path_len>0)
         char    p[path_len]<name="Path",bgcolor=0x123456>;
 } TonemapFilter;
+
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[4];
     float   unkn1[168];
 } ColorCorrectFilter;
 
-
-
-typedef struct {
-    long    type<name="Type",format=hex,bgcolor=0x000000>;
-int     unkn0[2];
-    long    unkn1;
-    float   unkn2[2];
-    int     unkn3[2];
-    int     unkn4[2];
-    int     unkn5[2];
-    int     unkn6[2];
-    int     unkn7[2];
-    int     unkn8[2];
-    int     unkn9[2];
-} DUMMY;
+//typedef struct {
+//    long    type<name="Type",format=hex,bgcolor=0x000000>;
+//    int     unkn0[2];
+//    long    unkn1;
+//    float   unkn2[2];
+//    int     unkn3[2];
+//    int     unkn4[2];
+//    int     unkn5[2];
+//    int     unkn6[2];
+//    int     unkn7[2];
+//    int     unkn8[2];
+//    int     unkn9[2];
+//} Dummy;
 
 const int SPAWNBYOCCLUSION               = 1913890808    ; // F8 A7 13 72
 const int FADEBYOCCLUSION               = 64111316      ; // D4 42 D2 03
