@@ -113,6 +113,8 @@
 //              3.3     Labelling properties, specifically in Flowmap, Dds_Usage, and UNKN_06 now renamed to Material_Animation
 //
 //              3.4     Renamed UNKN_12 to Parenting, renamed UNKN_17 to Lightning, Renamed UNKN_35 to StrainRibbon and labelled properties.
+//
+//              3.5     Renamed structures to follow the exe naming conventions found by Silvris. Renamed externs to follow attribute conventions.
 // ------------------------------------------------
 
 // #HASH EFX
@@ -194,6 +196,89 @@ const int PTLIFE          = 493311524     ; // 24 56 67 1D
 const int STRAINRIBBON      = 1062052310    ; // D6 A1 4D 3F
 const int SCREENSPACECOLLISION             = 697457224     ; // 48 5A 92 29
 const int BEAM_SCREENSPACECOLLISION        = 275476317     ; // 5D 6F 6B 10
+
+// Unused So Far
+
+const int EffectAttrColorTbl                                = 1690896576; // 64C908C0
+const int MhEffectDecalBehavior                             = 1128324015; // 4340DBAF
+const int MhEffectDecalBehavior_getTotalFireLifeFrame       = 1250245974; // 4A853D56
+const int MhEffectDecalBehavior_getTotalSmokeLifeFrame      = 409149100; // 18631EAC
+const int MhEffectDecalBehavior_getTotalSpecularLifeFrame   = 173467491; // 0A56E763
+const int MhEffectDecalBehavior_getTotalSheetLifeFrame      = 1969325070; // 7561840E
+const int MhEffectDecalBehavior_getTotalGtoBLifeFrame       = 1296538020; // 4D4799A4
+const int cCoordParameter                                   = 1892103853; // 70C736AD
+const int IEffectItem                                       = 19434345; // 01288B69
+const int Item                                              = 1215086948; // 486CC164
+const int DynamicRay                                        = 1708014292; // 65CE3AD4
+const int FlowmapSettings                                   = 1184613359; // 469BC3EF
+const int EffectExecutor                                    = 1213896611; // 485A97A3
+const int ExternFadeByAngle                                 = 1415485201; // 545E9711
+const int ExternFadeByDepth                                 = 779931249; // 2E7CCE71
+const int ExternStrainRibbon                                = 167781675; // 0A00252B
+const int ExternUVControl                                   = 1243935109; // 4A24F185
+const int ExternTurbulence                                  = 777721399; // 2E5B1637
+const int ExternItem                                        = 1226458230; // 491A4476
+const int BasicExternItem                                   = 1771113640; // 69910CA8
+const int EffectEvent                                       = 1923506186; // 72A6600A
+const int EventBehaviorProperty                             = 346395602; // 14A593D2
+const int DecalBehavior                                     = 657374606; // 272EBD8E
+const int Variant                                           = 588732697; // 23175919
+const int LightBehavior                                     = 603167555; // 23F39B43
+const int PointLightBehavior                                = 110612213; // 0697CEF5
+const int SpotLightBehavior                                 = 804054309; // 2FECE525
+const int uEffectRadialBlurFilter                           = 1183727815; // 468E40C7
+const int FilterBehavior                                    = 618247822; // 24D9B68E
+const int RadialBlurFilterBehavior                          = 1161774816; // 453F46E0
+const int EffectData                                        = 1135895459; // 43B463A3
+const int EmitterExecutor                                   = 2097355886; // 7D031C6E
+const int TypeMie3D                                         = 1771758423; // 699AE357
+const int PlayEfx                                           = 1965813039; // 752BED2F
+const int Shovel                                            = 1240420851; // 49EF51F3
+const int PlayEmitter                                       = 1152332069; // 44AF3125
+const int GroupItem                                         = 2043222009; // 79C917F9
+const int GpuPhysics                                        = 393634900; // 17766454
+const int EmitterShape3DOverrider                           = 1105989980; // 41EC115C
+const int MemoItem                                          = 1484483739; // 587B6C9B
+const int IItemPropertyInfo                                 = 716000960; // 2AAD4EC0
+const int EffectDatabase_ItemPropertyInfo                   = 997811050; // 3B79636A
+const int EffectDatabase                                    = 1987779161; // 767B1A59
+const int TimelineResource                                  = 610766284; // 24678DCC
+const int TimelineListResource                              = 1650401859; // 625F2243
+const int INode                                             = 881621517; // 348C7A0D
+const int Node                                              = 1376259135; // 52080C3F
+const int Root                                              = 1099111713; // 41831D21
+const int Group                                             = 256197774; // 0F45448E
+const int Emitter                                           = 668609413; // 27DA2B85
+const int Action                                            = 1956806151; // 74A27E07
+const int Field                                             = 963659027; // 39704513
+const int Extern                                            = 242552826; // 0E750FFA
+const int Node_getType                                      = 1929273712; // 72FE6170
+const int VelocityBase                                      = 261120345; // 0F906159
+const int TypeBillboardBase                                 = 1590369728; // 5ECB1DC0
+const int EffectGroupData                                   = 1608814288; // 5FE48ED0
+const int EffectGroup                                       = 617098856; // 24C82E68
+const int BoundaryBase                                      = 1100150108; // 4192F55C
+const int RenderTarget_Target                               = 1478767196; // 5824325C
+const int TexturePath                                       = 386986771; // 1710F313
+const int TypeLightning_Branch                              = 2120416030; // 7E62FB1E
+const int TypeRibbonBladeSection                            = 19293690; // 012665FA
+const int TubeLightSection                                  = 292704954; // 117252BA
+const int EffectSettingPreset                               = 712996915; // 2A7F7833
+const int EffectTimeRedeemPreset                            = 916096233; // 369A84E9
+const int Material_MaterialParam                            = 312479394; // 12A00EA2
+const int Material_MaterialNodeData                         = 1851897063; // 6E61B4E7
+const int ShapeMeshHolder                                   = 738773001; // 2C08C809
+const int cEffectProviderCustomData_ActionElement           = 510816299; // 1E72702B
+const int cEffectProviderCustomData_UnitElement             = 1178760989; // 4642771D
+const int cEffectProviderCustomData                         = 1867843721; // 6F550889
+const int PlEmissiveManager                                 = 910471525; // 3644B165
+const int ExternGuide                                       = 766474541; // 2DAF792D
+const int ExternParentSnow                                  = 74649634; // 04731022
+const int ExternOtomoSnow                                   = 1181241355; // 4668500B
+const int Guide_MoveType_AlwaysThrough                      = 1168412664; // 45A48FF8
+const int Guide_MoveType_SkipNear                           = 889775412; // 3508E534
+const int Guide_MoveType_OldType                            = 594406925; // 236DEE0D
+const int Guide                                             = 1123011591; // 42EFCC07
 
 // #HEADER STRUCT
 typedef struct {
@@ -1758,199 +1843,198 @@ string ReadUN(UN &u) {
 
 
 
-const int ExternTransform3D           = 500644368     ; // 10 3A D7 1D
-const int ExternMesh           = 1850314036    ; // 34 8D 49 6E
-const int ExternPlEmissive           = 725249589     ; // 35 6E 3A 2B
-const int ExternPtBehavior          = 1610366518    ; // 36 3E FC 5F
-const int ExternRgbWater          = 482524730     ; // 3A BE C2 1C
-const int ExternVelocity3D           = 351887441     ; // 51 60 F9 14
-const int ExternEmitterShape3D           = 1880343637    ; // 55 C4 13 70
-const int ExternVelocity3D5          = 705591903     ; // 5F 7A 0E 2A
-const int ExternSpawn           = 28559457      ; // 61 C8 B3 01
-const int ExternRgbFire           = 2069124466    ; // 72 55 54 7B
-const int ExternVelocity3D1          = 839790967     ; // 77 31 0E 32
-const int ExternVelocity3D6          = 1879331968    ; // 80 54 04 70
-const int ExternBillboard3D           = 693979274     ; // 8A 48 5D 29
-const int ExternScaleAnim           = 786529163     ; // 8B 7B E1 2E
-const int ExternVelocity3D0          = 1338793878    ; // 96 5F CC 4F
-const int ExternUVSequence           = 2097096908    ; // CC 28 FF 7C
-const int ExternVelocity3D7          = 805496014     ; // CE E4 02 30
-const int ExternVelocity3D2          = 283026906     ; // DA A5 DE 10
-
+const int EXTERNTRANSFORM3D           = 500644368     ; // 10 3A D7 1D
+const int EXTERNMESH           = 1850314036    ; // 34 8D 49 6E
+const int EXTERNPLEMISSIVE           = 725249589     ; // 35 6E 3A 2B
+const int EXTERNPTBEHAVIOR          = 1610366518    ; // 36 3E FC 5F
+const int EXTERNRGBWATER          = 482524730     ; // 3A BE C2 1C
+const int EXTERNVELOCITY3D           = 351887441     ; // 51 60 F9 14
+const int EXTERNEMITTERSHAPE3D           = 1880343637    ; // 55 C4 13 70
+const int EXTERNVELOCITY3D5          = 705591903     ; // 5F 7A 0E 2A
+const int EXTERNSPAWN           = 28559457      ; // 61 C8 B3 01
+const int EXTERNRGBFIRE           = 2069124466    ; // 72 55 54 7B
+const int EXTERNVELOCITY3D1          = 839790967     ; // 77 31 0E 32
+const int EXTERNVELOCITY3D6          = 1879331968    ; // 80 54 04 70
+const int EXTERNBILLBOARD3D           = 693979274     ; // 8A 48 5D 29
+const int EXTERNSCALEANIM           = 786529163     ; // 8B 7B E1 2E
+const int EXTERNVELOCITY3D0          = 1338793878    ; // 96 5F CC 4F
+const int EXTERNUVSEQUENCE           = 2097096908    ; // CC 28 FF 7C
+const int EXTERNVELOCITY3D7          = 805496014     ; // CE E4 02 30
+const int EXTERNVELOCITY3D2          = 283026906     ; // DA A5 DE 10
 
 typedef struct {
     long    unkn[57];
-} UN_P_0;
+} ExternTransform3D;
 
 typedef struct {
     long    unkn[27];
-} UN_P_1;
+} ExternVelocity3D;
 
 typedef struct {
     long    unkn[19];
-} UN_P_2;
+} ExternScaleAnim;
 
 typedef struct {
     long    unkn[28];
-} UN_P_3;
+} ExternRgbFire;
 
 typedef struct {
     long    unkn[18];
-} UN_P_4;
+} ExternSpawn;
 
 typedef struct {
     long    unkn[44];
     byte    unkn1;
-} UN_P_5;
+} ExternMesh;
 
 typedef struct {
     long    unkn[33];
     byte    unkn1;
-} UN_P_6;
+} ExternBillboard3D;
 
 typedef struct {
     long    unkn[22];
-} UN_P_7;
+} ExternEmitterShape3D;
 
 typedef struct {
     long    unkn[11];
     byte    unkn1;
-} UN_P_8;
+} ExternUVSequence;
 
 typedef struct {
     long    unkn[19];
-} UN_P_9;
+} ExternPlEmissive;
 
 typedef struct {
     long    unkn[12];
-} UN_P_10;
+} ExternVelocity3D0;
 
 typedef struct {
     long    unkn[90];
     byte    unkn1;
-} UN_P_11;
+} ExternVelocity3D1;
 
 typedef struct {
     long    unkn[21];
-} UN_P_12;
+} ExternVelocity3D2;
 
 typedef struct {
     long    unkn[40];
     byte    unkn1;
-} UN_P_14;
+} ExternRgbWater;
 
 typedef struct {
     long    unkn[18];
-} UN_P_15;
+} ExternVelocity3D5;
 
 typedef struct {
     long    unkn[20];
-} UN_P_16;
+} ExternVelocity3D6;
 
 typedef struct {
     long    unkn[39];
     byte    unkn1;
-} UN_P_17;
+} ExternVelocity3D7;
 
 typedef struct (int t) {
-    if (t==ExternTransform3D) {
+    if (t==EXTERNTRANSFORM3D) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
-        UN_P_0  up0[attri_count];
-    } else if (t==ExternVelocity3D) {
+        ExternTransform3D  transform3D[attri_count];
+    } else if (t==EXTERNVELOCITY3D) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
-        UN_P_1  up1[attri_count];
-    } else if (t==ExternScaleAnim) {
+        ExternVelocity3D  velocity3D[attri_count];
+    } else if (t==EXTERNSCALEANIM) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
-        UN_P_2  up2[attri_count];
-    } else if (t==ExternRgbFire) {
+        ExternScaleAnim  scaleAnim[attri_count];
+    } else if (t==EXTERNRGBFIRE) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
-        UN_P_3  up3[attri_count];
-    } else if (t==ExternSpawn) {
+        ExternRgbFire  rgbFire[attri_count];
+    } else if (t==EXTERNSPAWN) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
-        UN_P_4  up4[attri_count];
-    } else if (t==ExternMesh) {
+        ExternSpawn  spawn[attri_count];
+    } else if (t==EXTERNMESH) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
-        UN_P_5  up5[attri_count];
-    } else if (t==ExternBillboard3D) {
+        ExternMesh  mesh[attri_count];
+    } else if (t==EXTERNBILLBOARD3D) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
-        UN_P_6  up6[attri_count];
-    } else if (t==ExternEmitterShape3D) {
+        ExternBillboard3D  billboard3d[attri_count];
+    } else if (t==EXTERNEMITTERSHAPE3D) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
-        UN_P_7  up7[attri_count];
-    } else if (t==ExternUVSequence) {
+        ExternEmitterShape3D  emitterShape3D[attri_count];
+    } else if (t==EXTERNUVSEQUENCE) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
-        UN_P_8  up8[attri_count];
-    } else if (t==ExternPlEmissive){
+        ExternUVSequence  uvSequence[attri_count];
+    } else if (t==EXTERNPLEMISSIVE){
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
-        UN_P_9  up9[attri_count];
-    } else if (t==ExternVelocity3D0) {
+        ExternPlEmissive  p1Emissive[attri_count];
+    } else if (t==EXTERNVELOCITY3D0) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
-        UN_P_10 up10[attri_count];
-    } else if (t==ExternVelocity3D1) {
+        ExternVelocity3D0 velocity3D0[attri_count];
+    } else if (t==EXTERNVELOCITY3D1) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
-        UN_P_11 up11[attri_count];
-    } else if (t==ExternVelocity3D2) {
+        ExternVelocity3D1 velocity3D1[attri_count];
+    } else if (t==EXTERNVELOCITY3D2) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
-        UN_P_12 up12[attri_count];
-    } else if (t==ExternPtBehavior) {
+        ExternVelocity3D2 velocity3D2[attri_count];
+    } else if (t==EXTERNPTBEHAVIOR) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         local int z;
         for(z=0;z<attri_count;z++)
             EFX_Behavior efx_behaiv;
-    } else if (t==ExternRgbWater) {
+    } else if (t==EXTERNRGBWATER) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
-        UN_P_14 up14[attri_count];
-    } else if (t==ExternVelocity3D5) {
+        ExternRgbWater rgbWater[attri_count];
+    } else if (t==EXTERNVELOCITY3D5) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
-        UN_P_15 up15[attri_count];
-    } else if (t==ExternVelocity3D6) {
+        ExternVelocity3D5 velocity3D5[attri_count];
+    } else if (t==EXTERNVELOCITY3D6) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
-        UN_P_16 up16[attri_count];
-    }  else if (t==ExternVelocity3D7) {
+        ExternVelocity3D6 velocity3D6[attri_count];
+    }  else if (t==EXTERNVELOCITY3D7) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
-        UN_P_17 up17[attri_count];
+        ExternVelocity3D7 velocity3D7[attri_count];
     } 
 
-} UN_P;
+} Extern_Data;
 
 
 typedef struct (int x){
     local int ord = x;
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     long    NULL0;
-    int     count<name="UNKNOWN Prefix Count",bgcolor=0xFF0000>;
+    int     count<name="Extern Prefix Count",bgcolor=0xFF0000>;
     long    NULL1;
     local int n;
     for (n=0;n<count;n++){
-        long    np<name="UNKNOWN P",format=hex,bgcolor=0x990000>;
-        UN_P    un_p(np);
+        long    np<name="Extern P",format=hex,bgcolor=0x990000>;
+        Extern_Data    data(np);
     }
     
 
-} UN_Prefix;
+} Extern_Attribute;
 
 typedef struct {
     local int k;
     for(k=0;k<header.UNKN_Count;k++)
-        UN_Prefix up(k)<name="Unknown Prefix",read=ReadUNP>;
+        Extern_Attribute attribute(k)<name="Extern Prefix",read=ReadExtern>;
 } Extern;
 
 
@@ -2218,7 +2302,7 @@ typedef struct {
 Header          header<name="Header",bgcolor=0x00ffff>;
 EFX_Type        efx_Type<name="EFX Type",bgcolor=0xf000ff>;
 IE_PREFIX       ie_p<name="External/Internal Useage",bgcolor=0x7C9F35>;
-Extern       un_p<name="Unknown Prefix",bgcolor=0x277553>;
+Extern          extern<name="Unknown Prefix",bgcolor=0x277553>;
 MAIN            main<name="Main Body",bgcolor=0x1b1b1b>;
 NULL            null<name="NULL EFX",bgcolor=0xffffff>;
 int             end[header.End_Count]<name="End EFX (Acutal?)",bgcolor=0x999887>;
@@ -2237,7 +2321,7 @@ string ReadIEP(IE_Prefix &ie) {
     return s;
 }
 
-string ReadUNP(UN_Prefix &up) {
+string ReadExtern(Extern_Attribute &up) {
     local int order = up.ord + header.IE_Count;
     string s;
     SPrintf(s, "UP Map to: [%d] %s \t\t CRC: %s", order, efx_Type.efx_T[order].str, EFXTypeCRC(up.type));
@@ -2267,7 +2351,7 @@ string ReadIEP(IE_Prefix &ie) {
     return s;
 }
 
-string ReadUNP(UN_Prefix &up) {
+string ReadExtern(Extern_Attribute &up) {
     local int order = up.ord + header.IE_Count;
     string s;
     SPrintf(s, "UP Map to: [%d] %s", order, efx_Type.efx_T[order].str);
@@ -2403,3 +2487,84 @@ string ReadMainP(MAIN_PREFIX &mp) {
 30 <bgcolor=0x0048ff>
 31 <bgcolor=0x0018ff>
 */
+
+
+//Unused Dummies
+
+typedef struct{}EffectAttrColorTbl;
+typedef struct{}MhEffectDecalBehavior;
+typedef struct{}MhEffectDecalBehavior_getTotalFireLifeFrame;
+typedef struct{}MhEffectDecalBehavior_getTotalSmokeLifeFrame;
+typedef struct{}MhEffectDecalBehavior_getTotalSpecularLifeFrame;
+typedef struct{}MhEffectDecalBehavior_getTotalSheetLifeFrame;
+typedef struct{}MhEffectDecalBehavior_getTotalGtoBLifeFrame;
+typedef struct{}cCoordParameter;
+typedef struct{}IEffectItem;
+typedef struct{}Item;
+typedef struct{}DynamicRay;
+typedef struct{}FlowmapSettings;
+typedef struct{}EffectExecutor;
+typedef struct{}ExternFadeByAngle;
+typedef struct{}ExternFadeByDepth;
+typedef struct{}ExternStrainRibbon;
+typedef struct{}ExternUVControl;
+typedef struct{}ExternTurbulence;
+typedef struct{}ExternItem;
+typedef struct{}BasicExternItem;
+typedef struct{}EffectEvent;
+typedef struct{}EventBehaviorProperty;
+typedef struct{}DecalBehavior;
+typedef struct{}Variant;
+typedef struct{}LightBehavior;
+typedef struct{}PointLightBehavior;
+typedef struct{}SpotLightBehavior;
+typedef struct{}uEffectRadialBlurFilter;
+typedef struct{}FilterBehavior;
+typedef struct{}RadialBlurFilterBehavior;
+typedef struct{}EffectData;
+typedef struct{}EmitterExecutor;
+typedef struct{}TypeMie3D;
+typedef struct{}PlayEfx;
+typedef struct{}PlayEmitter;
+typedef struct{}GroupItem;
+typedef struct{}GpuPhysics;
+typedef struct{}EmitterShape3DOverrider;
+typedef struct{}MemoItem;
+typedef struct{}IItemPropertyInfo;
+typedef struct{}EffectDatabase_ItemPropertyInfo;
+typedef struct{}EffectDatabase;
+typedef struct{}TimelineResource;
+typedef struct{}TimelineListResource;
+typedef struct{}INode;
+typedef struct{}Node;
+typedef struct{}Root;
+typedef struct{}Group;
+typedef struct{}Emitter;
+typedef struct{}Action;
+typedef struct{}Field;
+typedef struct{}Node_getType;
+typedef struct{}VelocityBase;
+typedef struct{}TypeBillboardBase;
+typedef struct{}EffectGroupData;
+typedef struct{}EffectGroup;
+typedef struct{}BoundaryBase;
+typedef struct{}RenderTarget_Target;
+typedef struct{}TexturePath;
+typedef struct{}TypeLightning_Branch;
+typedef struct{}TypeRibbonBladeSection;
+typedef struct{}TubeLightSection;
+typedef struct{}EffectSettingPreset;
+typedef struct{}EffectTimeRedeemPreset;
+typedef struct{}Material_MaterialParam;
+typedef struct{}Material_MaterialNodeData;
+typedef struct{}ShapeMeshHolder;
+typedef struct{}cEffectProviderCustomData_ActionElement;
+typedef struct{}cEffectProviderCustomData_UnitElement;
+typedef struct{}cEffectProviderCustomData;
+typedef struct{}PlEmissiveManager;
+typedef struct{}ExternGuide;
+typedef struct{}ExternParentSnow;
+typedef struct{}ExternOtomoSnow;
+typedef struct{}Guide_MoveType_AlwaysThrough;
+typedef struct{}Guide_MoveType_SkipNear;
+typedef struct{}Guide_MoveType_OldType;
