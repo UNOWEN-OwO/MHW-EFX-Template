@@ -136,7 +136,7 @@ const int UNKN_13               = 1354601878    ; // 96 95 BD 50
 const int UNKN_14               = 71967929      ; // B9 24 4A 04
 const int UNKN_15               = 584030352     ; // 90 98 CF 22
 const int UNKN_16               = 341394325     ; // 95 43 59 14
-const int UNKN_18               = 957228464     ; // B0 25 0E 39
+const int REFRACTION            = 957228464     ; // B0 25 0E 39
 const int UNKN_19               = 1616705008    ; // F0 F5 5C 60
 const int UNKN_22               = 252064274     ; // 12 32 06 0F
 const int UNKN_25               = 1240420851    ; // F3 51 EF 49
@@ -481,8 +481,10 @@ typedef struct {
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
-    int     unkn0[3];
-} Unkn_18;
+    int     unkn0;
+    int     pixelNormalOffset;
+    int     unkn2;
+} Refraction;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1183,7 +1185,10 @@ typedef struct {
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0;
-    float   param[4];
+    float   viewAngleLimit;//360 visible from every angle
+    float   clipMin;
+    float   fadeStart;
+    float   clipMax;
 } Visible_Dist;
 
 // I was like WTF, any way I labeled the float...
@@ -2097,8 +2102,8 @@ typedef struct (int count){
             Unkn_16             unkn_16             <bgcolor=0xff0006>;
         else if (ReadInt() == LIGHTNING           )
             Lightning          lightning            <bgcolor=0xffba00>;
-        else if (ReadInt() == UNKN_18             )
-            Unkn_18             unkn_18             <bgcolor=0x24ff00>;
+        else if (ReadInt() == REFRACTION          )
+            Refraction         refraction           <bgcolor=0x24ff00>;
         else if (ReadInt() == UNKN_19             )
             Unkn_19             unkn_19             <bgcolor=0x0018ff>;
         else if (ReadInt() == BEAM_COLLISION      )
@@ -2371,7 +2376,7 @@ string ReadMainP(MAIN_PREFIX &mp) {
  (__main__.Self_Spin_Control, 18),
  (__main__.Transparent_Control, 19),
  (__main__.Unkn_22, 19),
- (__main__.Unkn_18, 20),
+ (__main__.Refraction, 20),
  (__main__.Catenary_Physics, 20),
  (__main__.Unkn_11, 21),
  (__main__.Parenting, 21),
