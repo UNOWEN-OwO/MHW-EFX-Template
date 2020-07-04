@@ -14,28 +14,28 @@
 //                      more efx type hash marked
 //                      research and generalisation from DMQW Group
 //
-//              1.1     add new type EFX_Behavior (UNKN_02)
-//                      added notes about 20 bytes (type Post_Basic) before type Basic_Transform
+//              1.1     add new type EFX_Behavior (FAKEPLANE)
+//                      added notes about 20 bytes (type Post_Basic) before type Transform3D
 //                      more parameter type found on EFX_Behavior
 //
-//              1.2     naming correction for Launcher_Property (bone id that mapped to need to be marked)
+//              1.2     naming correction for Spawn (bone id that mapped to need to be marked)
 //                      few counting parameter found for Keyframe_Anim, as least the structure is now filled up
 //                      updated & added structure accroding to wiki
 //                          structre of DDS_USEAGE
-//                          added AURAS structure
+//                          added PLEMISSIVE structure
 //                      
-//              1.3     Removed the Post_Basic structure before the Basic_Transform
+//              1.3     Removed the Post_Basic structure before the Transform3D
 //                          as there is too many varies and hard to tell if there exists one
-//                      Remove Unkn_05 as it is one of the Post_Basic struct
+//                      Remove Dummy as it is one of the Post_Basic struct
 //                      DDS_Useage ( = CM_Useage) -> marked brightness, scale, height/width, color
-//                      Unkn_09 -> Flowmap, marked brightness, scale, height/width, color
-//                      Unkn_10 -> Cubemap, marked brightness, scale, height/width, color
-//                      Added CM_Map
-//                      Added Unkn_11 and Unkn_12 struct, usually occur before CM_Map
-//                      Unkn_08 -> Texture, extended and structured, looks like mrl3
+//                      Transform2D -> Flowmap, marked brightness, scale, height/width, color
+//                      Billboard2D -> RgbWater, marked brightness, scale, height/width, color
+//                      Added Turbulence
+//                      Added EmitterBoundary and Unkn_12 struct, usually occur before Turbulence
+//                      RandomFix -> Material, extended and structured, looks like mrl3
 //                      
-//              1.4     Added Following Effect
-//                      LAYER_VISIBILITY -Moved before-> DDS_USEAGE
+//              1.4     Added Guideing Effect
+//                      SHADERSETTINGS -Moved before-> DDS_USEAGE
 //                      
 //                      
 //                      ***Note***
@@ -52,7 +52,7 @@
 //                      Global_Control -Reestimate-> Prefix & Internal / External Efx useage (I/E Function Tested by Canni)
 //                      Mod3 Path: No longer have a length indicator, instead, having fixed two entry
 //                                  -> Mod3 Path 1 & Mod3 Path 2 -> identified by end of string [00]
-//                      Texture & relating attri path: Not fixed yet
+//                      Material & relating attri path: Not fixed yet
 //                      Header: unkn2[4] function mostly discovered
 //                                  EFX_type (Count) = EFX_Count + IE_Count + UNKN_Count + NULL_Efx
 //                                  Null Entry in EFX_type [00] = NULL_Efx
@@ -68,19 +68,19 @@
 //                      There is 17 types of discovered prefix header, two of them only have one instance
 //                      THEY ARE NOT SORTED and only filled with LONG ARRAY
 //                      
-//              2.2.1   Marked EFX/EPV Color Slot for DDS/MOD3/AURAS/EFX Behavior according to Crimson
+//              2.2.1   Marked EFX/EPV Color Slot for DDS/MOD3/PLEMISSIVE/EFX Behavior according to Crimson
 //
 //              3.0     Fixing a length for Unknown Prefix type 12 (DA A5 DE 10)
 //                      Introduce the true header of EFX main part
 //                      A unique type of main part, header = [9A A9 39 49]
 //                          Discovered Three Types of Block, see detail in the template Single_Prefix
-//                              One of the Main Body Attribute (Unkn_26 [77 99 54 09]) 
+//                              One of the Main Body Attribute (Layout [77 99 54 09]) 
 //                              having the same structure to Type 3 Block [F6 F4 37 7A]
 //                      Merged TIML template by Dave uRrr, mapped TIML Foot value marked by 叶子
 //                      Fixed Main Body Attribute:
-//                          Texture [6B B9 E2 62]
-//                          Layer_Visibility [5A F8 E9 75]
-//                          CM_Map [B2 04 E0 37]
+//                          Material [6B B9 E2 62]
+//                          ShaderSettings [5A F8 E9 75]
+//                          Turbulence [B2 04 E0 37]
 //
 //                      Added path deceleration to few attribute
 //                      Fix some type error when serializing
@@ -93,9 +93,9 @@
 //
 //                      Restructure the EFX template, it reads the EFX sequentially instead to find key header
 //                      Main attribute are repainted in occur order (See order at and of this template)
-//                          * Note * The order is not exact as some of attribute not strictly follow the order and 
+//                          * Note * The order is not exact as some of attribute not strictly guide the order and 
 //                            forming a loop when sorting at all efxs
-//                              [Layer_Visibility,Symmetric_Copy,Texture,Self_Spin_Control,Randomized_Oscillations,Unkn_35,Loop_Play,Unkn_11]
+//                              [ShaderSettings,EmitterShape3D,Material,RotateAnim,Noise,Unkn_35,ScaleAnim,EmitterBoundary]
 //                      Tested on all 8858 EFXs (with script ported python, in which the template also should do)
 //
 //              3.1     Added CRC string check for prefix headers (Thanks to Asterisk pointing out JAMCRC)
@@ -107,12 +107,12 @@
 //
 //              3.2     Added in Crimson, Silvris and Asterisk's Research regarding: Unknown_21 now EmissiveRim, Unknown_30 now AlbedoBlend
 //                      and Unknown03 now TrailPhysics;
-//                      filled in attributes for Spin_Control, Textures, EmissiveRim, AlbedoBlend, BasicTransform, LimitTransform,
-//                      MomentumControl, ColorPropControl, Mod3Properties, Auras, TrailPhysics, Unknown04.
+//                      filled in attributes for Spin_Control, Materials, EmissiveRim, AlbedoBlend, BasicTransform, LimitTransform,
+//                      MomentumControl, ColorPropControl, Mod3Properties, PlEmissive, TrailPhysics, Unknown04.
 //
-//              3.3     Labelling properties, specifically in Flowmap, Dds_Usage, and UNKN_06 now renamed to Texture_Animation
+//              3.3     Labelling properties, specifically in Flowmap, Dds_Usage, and UNKN_06 now renamed to Material_Animation
 //
-//              3.4     Renamed UNKN_12 to Parenting, renamed UNKN_17 to Lightning, Renamed UNKN_35 to Catenary_Physics and labelled properties.
+//              3.4     Renamed UNKN_12 to Parenting, renamed UNKN_17 to Lightning, Renamed UNKN_35 to StrainRibbon and labelled properties.
 // ------------------------------------------------
 
 // #HASH EFX
@@ -126,74 +126,74 @@ const int INTERNAL              = 1152332069    ; // 2F ED 2B 75 // 内部调用
 //in general if you are a target of internal external you are excluded in the end declaration
 
 // NEW DISCOVERERD
-const int UNKN_00               = 351869514     ; // 4A 1A F9 14
-const int UNKN_02               = 1257264016    ; // 90 53 F0 4A
-const int UNKN_05               = 201720946     ; // 72 04 06 0C
-const int UNKN_08               = 674258598     ; // A6 5E 30 28
-const int UNKN_09               = 428328940     ; // EC C7 87 19
-const int UNKN_10               = 1524169119    ; // 9F F9 D8 5A
-const int UNKN_13               = 1354601878    ; // 96 95 BD 50
-const int UNKN_14               = 71967929      ; // B9 24 4A 04
-const int UNKN_15               = 584030352     ; // 90 98 CF 22
-const int UNKN_16               = 341394325     ; // 95 43 59 14
+const int EXTERNREFERENCE               = 351869514     ; // 4A 1A F9 14
+const int FAKEPLANE               = 1257264016    ; // 90 53 F0 4A
+const int DUMMY               = 201720946     ; // 72 04 06 0C
+const int RANDOMFIX               = 674258598     ; // A6 5E 30 28
+const int TRANSFORM2D               = 428328940     ; // EC C7 87 19
+const int BILLBOARD2D               = 1524169119    ; // 9F F9 D8 5A
+const int BLINK               = 1354601878    ; // 96 95 BD 50
+const int LUMINANCEBLEED               = 71967929      ; // B9 24 4A 04
+const int EMITTERSHAPE2D               = 584030352     ; // 90 98 CF 22
+const int VELOCITY2D               = 341394325     ; // 95 43 59 14
 const int REFRACTION            = 957228464     ; // B0 25 0E 39
-const int UNKN_19               = 1616705008    ; // F0 F5 5C 60
-const int UNKN_22               = 252064274     ; // 12 32 06 0F
-const int UNKN_25               = 1240420851    ; // F3 51 EF 49
-const int UNKN_26               = 156539255     ; // 77 99 54 09
-const int UNKN_27               = 212167510     ; // 56 6B A5 0C
-const int UNKN_28               = 842043995     ; // 5B 92 30 32
-const int UNKN_29               = 812022019     ; // 03 79 66 30
-const int UNKN_31               = 2115227124    ; // F4 CD 13 7E
-const int UNKN_32               = 1217635032    ; // D8 A2 93 48
-const int RADIAL_CONCENTRATION  = 1535857470    ; // 3E 53 8B 5B
-const int UNKN_34               = 1111321825    ; // E1 6C 3D 42
-const int UNKN_36               = 1916268445    ; // 9D EF 37 72
-const int UNKN_37               = 283684959     ; // 5F B0 E8 10
-const int UNKN_38               = 845585410     ; // 02 9C 66 32
-const int UNKN_39               = 1293936879    ; // EF E8 1F 4D
+const int MASTERONLY               = 1616705008    ; // F0 F5 5C 60
+const int TUBELIGHT               = 252064274     ; // 12 32 06 0F
+const int SHOVEL               = 1240420851    ; // F3 51 EF 49
+const int LAYOUT               = 156539255     ; // 77 99 54 09
+const int FAKEDOF               = 212167510     ; // 56 6B A5 0C
+const int REPEATAREA               = 842043995     ; // 5B 92 30 32
+const int LINKPARTSVISIBLE               = 812022019     ; // 03 79 66 30
+const int PTTRIGGER               = 2115227124    ; // F4 CD 13 7E
+const int PATHCHAIN               = 1217635032    ; // D8 A2 93 48
+const int HOMING  = 1535857470    ; // 3E 53 8B 5B
+const int EMITTERSHAPEMESH               = 1111321825    ; // E1 6C 3D 42
+const int SPAWNBYANGLE               = 1916268445    ; // 9D EF 37 72
+const int CHECKPUREATTRIBUTE               = 283684959     ; // 5F B0 E8 10
+const int TONEMAPFILTER               = 845585410     ; // 02 9C 66 32
+const int COLORCORRECTFILTER               = 1293936879    ; // EF E8 1F 4D
 
 // 31-45 See below
 
 
 const int TIML                  = 1819109748    ; // 74 69 6D 6C // 关键帧动画
-const int BASIC_TRANSFORM       = 10286765      ; // AD F6 9C 00 // 基本变换
-const int LIMIT_TRANSFORM       = 368199626     ; // CA 47 F2 15 // 变换约束
-const int LAUNCHER_PROPERTY     = 1921765292    ; // AC CF 8B 72 // 发射器属性
-const int LIFE_CYCLE            = 1320868484    ; // 84 DA BA 4E // 生命周期
-const int SYMMETRIC_COPY        = 1003792849    ; // D1 A9 D4 3B // 对称复制
-const int MOMENTUM_CONTROL      = 222458580     ; // D4 72 42 0D // 动量控制
-const int VISIBLE_DIST          = 859243212     ; // CC 02 37 33 // 可见距离
-const int DDS_TRACE_PROP        = 319363982     ; // 8E 1B 09 13 // DDS轨迹属性
+const int TRANSFORM3D       = 10286765      ; // AD F6 9C 00 // 基本变换
+const int PARENTOPTIONS       = 368199626     ; // CA 47 F2 15 // 变换约束
+const int SPAWN     = 1921765292    ; // AC CF 8B 72 // 发射器属性
+const int LIFE            = 1320868484    ; // 84 DA BA 4E // 生命周期
+const int EMITTERSHAPE3D        = 1003792849    ; // D1 A9 D4 3B // 对称复制
+const int VELOCITY3D      = 222458580     ; // D4 72 42 0D // 动量控制
+const int FADEBYDEPTH          = 859243212     ; // CC 02 37 33 // 可见距离
+const int RIBBONBLADE        = 319363982     ; // 8E 1B 09 13 // DDS轨迹属性
 const int DDS_USEAGE            = 1136904414    ; // DE C8 C3 43 // DDS(CM)调用   // CM_Useage
-const int LOOP_PLAY             = 480396424     ; // 88 44 A2 1C // 播放循环
+const int SCALEANIM             = 480396424     ; // 88 44 A2 1C // 播放循环
 const int UVS_USEAGE            = 1698970185    ; // 49 3A 44 65 // UVS调用
-const int TRANSPARENT_CONTROL   = 61219887      ; // 2F 24 A6 03 // 透明渐变控制
-const int LAYER_VISIBILITY      = 1978267738    ; // 5A F8 E9 75 // 层级可见性
-const int COLOR_PROP_CONTROL    = 459578090     ; // EA 9A 64 1B // 颜色属性控制
+const int ALPHACORRECTION   = 61219887      ; // 2F 24 A6 03 // 透明渐变控制
+const int SHADERSETTINGS      = 1978267738    ; // 5A F8 E9 75 // 层级可见性
+const int RGBFIRE    = 459578090     ; // EA 9A 64 1B // 颜色属性控制
 const int MOD3_USEAGE           = 276670093     ; // 8D A6 7D 10 // mod3调用
-const int SELF_SPIN_CONTROL     = 1774142981    ; // 05 46 BF 69 // 自旋转控制 
-const int AURAS                 = 597394907     ; // DB 85 9B 23 // 光圈
-const int FOLLOW                = 1123011591    ; // 07 CC EF 42 // 跟随
+const int ROTATEANIM     = 1774142981    ; // 05 46 BF 69 // 自旋转控制 
+const int PLEMISSIVE                 = 597394907     ; // DB 85 9B 23 // 光圈
+const int GUIDE                = 1123011591    ; // 07 CC EF 42 // 跟随
 const int LIGHTNING             = 1558046267    ; // 3B E6 DD 5C
-const int EMISSIVE_RIM          = 14579343      ; // 8F 76 DE 00
-const int EXTERNAL_BIND         = 280719621     ; // 05 71 BB 10
-const int ALBEDO_BLEND          = 1267346617    ; // B9 2C 8A 4B
-const int EFX_BEHAVIORS         = 1179069619    ; // B3 2C 47 46 // EFX行为
-const int TEXTURE               = 1659025771    ; // 6B B9 E2 62 // 材质
+const int PARENTEMISSIVE          = 14579343      ; // 8F 76 DE 00
+const int PTSCREENSPACECOLLISION         = 280719621     ; // 05 71 BB 10
+const int PLSNOW          = 1267346617    ; // B9 2C 8A 4B
+const int PTBEHAVIOR         = 1179069619    ; // B3 2C 47 46 // EFX行为
+const int MATERIAL               = 1659025771    ; // 6B B9 E2 62 // 材质
 const int DDS_USEAGE_ALT        = 37870541      ; // CD DB 41 02 // ALTERNATIVE DDS USEAGE
-const int CUBEMAP               = 1660327299    ; // 83 95 F6 62 // CUBEMAP
-const int CM_MAP                = 937428146     ; // B2 04 E0 37 // CM_MAP
-const int UNKN_01               = 2116359897    ; // D9 16 25 7E 
-const int TRAIL_PHYSICS         = 733291506     ; // F2 23 B5 2B 
-const int RANDOMIZED_OSCILLATIONS= 523015778     ; // 62 96 2C 1F 
-const int TEXTURE_ANIMATION     = 2020068998    ; // 86 CE 67 78 
-const int UNKN_07               = 1226136492    ; // AC 5B 15 49 
-const int UNKN_11               = 873436648     ; // E8 95 0F 34
-const int RELATIONSHIP          = 493311524     ; // 24 56 67 1D
-const int CATENARY_PHYSICS      = 1062052310    ; // D6 A1 4D 3F
-const int COLLISION             = 697457224     ; // 48 5A 92 29
-const int BEAM_COLLISION        = 275476317     ; // 5D 6F 6B 10
+const int RGBWATER               = 1660327299    ; // 83 95 F6 62 // RGBWATER
+const int TURBULENCE                = 937428146     ; // B2 04 E0 37 // TURBULENCE
+const int FADEBYEMITTERANGLE               = 2116359897    ; // D9 16 25 7E 
+const int RIBBON         = 733291506     ; // F2 23 B5 2B 
+const int NOISE= 523015778     ; // 62 96 2C 1F 
+const int MATERIAL_ANIMATION     = 2020068998    ; // 86 CE 67 78 
+const int FADEBYANGLE               = 1226136492    ; // AC 5B 15 49 
+const int EMITTERBOUNDARY               = 873436648     ; // E8 95 0F 34
+const int PTLIFE          = 493311524     ; // 24 56 67 1D
+const int STRAINRIBBON      = 1062052310    ; // D6 A1 4D 3F
+const int SCREENSPACECOLLISION             = 697457224     ; // 48 5A 92 29
+const int BEAM_SCREENSPACECOLLISION        = 275476317     ; // 5D 6F 6B 10
 
 // #HEADER STRUCT
 typedef struct {
@@ -205,7 +205,7 @@ typedef struct {
     float   NULL;
     int     EFX_Count<name="NON-NULL EFX Type Entry Count">;
     int     EFX_type_len<name="EFX Type Entry Length">;
-    int     IE_Count<name="Internal/External Relationship Count">;
+    int     IE_Count<name="Internal/External PtLife Count">;
     int     UNKN_Count<name="Unknown Prefix Count">;
     int     NULL_Count<name="NULL EFX Type Count">;
     int     NULL_Lenth<name="NULL EFX Entry Length (END OF EFX)">;
@@ -280,7 +280,7 @@ typedef struct{
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[9];
-} Unkn_00;
+} ExternReference;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -290,24 +290,24 @@ typedef struct {
     int     unkn3;
     long    unkn4;
     float   unkn5[9];
-} Unkn_02;
+} FakePlane;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[2];
     byte    unkn1;
-} Unkn_05;
+} Dummy;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[10];
-} Unkn_08;
+} RandomFix;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int64   unkn0[2];
     float   unkn1[2];
-} Unkn_09;
+} Transform2D;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -320,26 +320,26 @@ typedef struct {
     int     unkn5[2];
     if(path_len>0)
         char    p[path_len]<name="Path",bgcolor=0x123456>;
-} Unkn_10;
+} Billboard2D;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[2];
     float   unkn1[11];
-} Unkn_13;
+} Blink;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     long    unkn0;
     float   unkn1[3];
-} Unkn_14;
+} LuminanceBleed;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0;
     float   unkn1[4];
     int     unkn2[4];
-} Unkn_15;
+} EmitterShape2D;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -348,7 +348,7 @@ typedef struct {
     int     unkn2;
     float   unkn3[3];
     int     unkn4[3];
-} Unkn_16;
+} Velocity2D;
 
 typedef struct{
     long    EPVColorSlotHead;
@@ -489,7 +489,7 @@ typedef struct {
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0;
-} Unkn_19;
+} MasterOnly;
 
 typedef struct {
     long type<name="Type",format=hex,bgcolor=0x000000>;
@@ -517,7 +517,7 @@ typedef struct {
     long spacer;
     int  unknown1;//(usually -1. saw one as 0)
     short unknown2;//(it was 256 so not sure if it is a flag or something else)
-} Beam_Collision;
+} Beam_ScreenSpaceScreenSpaceCollision;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -531,7 +531,7 @@ typedef struct {
     long    unkn4;
     float   blendParam[3]<name="Emissive Rim Blend Parameters",bgcolor=0x0000FF>;
     float   unkn8[5];
-} Emissive_Rim;
+} ParentEmissive;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -546,7 +546,7 @@ typedef struct {
     int     path_len<name="Path Length",bgcolor=0x123456>;
     if(path_len>0)
         char    p[path_len]<name="Path",bgcolor=0x123456>;
-} Unkn_22;
+} TubeLight;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -558,7 +558,7 @@ typedef struct {
     int     lifespan;//0 for no interaction, higher values result in more bounce
     int     lifespanJitter;
     float   bounceConditional;
-} Collision;
+} ScreenSpaceScreenSpaceCollision;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -577,7 +577,7 @@ typedef struct {
     float   unkn1[3];
     int     unkn2[2];
     //float   unkn3[9];
-    float   bounceElasticity;//Bounce Elasticity On Collision
+    float   bounceElasticity;//Bounce Elasticity On ScreenSpaceScreenSpaceCollision
     float   bounceElasticityJitter;//Bounce Elasticity Jitters
     float   bounceElasticityMultiplier;
     float   horizontalBounce;//Multiplier of bounce elasticity
@@ -590,15 +590,15 @@ typedef struct {
     int     unkn4[2];
     int     ieIndex;//0 Call External Index?, FF FF FF FF Null
     int     unkn6[3];
-} External_Binding;
+} PtScreenSpaceScreenSpaceCollisioning;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     long    unkn0[17];
     short   unkn1;
-} Unkn_25;
+} Shovel;
 
-// UNKN_26 see after single prefix
+// LAYOUT see after single prefix
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -607,7 +607,7 @@ typedef struct {
     long    unkn1[length/4-5];
     float   unkn2[3];
     int     unkn3[2];
-} Unkn_27;
+} FakeDoF;
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0;
@@ -615,18 +615,18 @@ typedef struct {
     long    unkn1[length/4-5];
     float   unkn2[3];
     int     unkn3[2];
-} Unkn_28;
+} RepeatArea;
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[3];
-} Unkn_29;
+} LinkPartsVisible;
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[2];
     long    spacer<hidden=true>;
     //int     unkn2[2];
     int body_part_id;//1F Everything, 1,2,3,4,5 as usual
-    int weapon_id;//Same as Auras
+    int weapon_id;//Same as PlEmissive
     colour color;
     int epvcolorslot;
     int   alpha_effect;//unknown
@@ -647,14 +647,14 @@ typedef struct {
     float unkn6_1; 
     float craquelure_smoothing_threshold;
     
-} Albedo_Blend;
+} PlSnow;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[2];
     long    unkn1;
     int     unkn2;
-} Unkn_31;
+} PtTrigger;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -665,7 +665,7 @@ typedef struct {
     float   unkn4[6];
     int     unkn5[8];
     byte    unkn6;
-} Unkn_32;
+} PathChain;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -682,7 +682,7 @@ typedef struct {
     long i1;//
     int enableRadialVanish;// 1 Freak Speed, 3 disappear on inner radius
     int unknown1;
-} Radial_Concentration;
+} Homing;
 
 // Mod3 Useage
 typedef struct {
@@ -692,7 +692,7 @@ typedef struct {
     byte    unkn2[8];
     int     unkn3;
     STRING  path1<name="Mod3 Path1",bgcolor=0x123456,read=ReadStr>;
-} Unkn_34;
+} EmitterShapeMesh;
 
 // NM Useage
 typedef struct {
@@ -800,7 +800,7 @@ typedef struct {
     int     path_len<name="Path Length",bgcolor=0x123456>;
     if(path_len>0)
         char    p[path_len]<name="Path",bgcolor=0x123456>;
-} Catenary_Physics;
+} StrainRibbon;
 
 // 2 cases
 typedef struct {
@@ -810,14 +810,14 @@ typedef struct {
     float   unkn2[1];
     int     unkn3;
     short   unkn4;
-} Unkn_36;
+} SpawnByAngle;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[2];
     long    unkn1;
     int     unkn2[7];
-} Unkn_37;
+} CheckPureAttribute;
 
 // 1 case CC_Effect cm_flash_000
 typedef struct {
@@ -828,12 +828,12 @@ typedef struct {
     int     path_len<name="Path Length",bgcolor=0x123456>;
     if(path_len>0)
         char    p[path_len]<name="Path",bgcolor=0x123456>;
-} Unkn_38;
+} TonemapFilter;
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[4];
     float   unkn1[168];
-} Unkn_39;
+} ColorCorrectFilter;
 
 
 
@@ -851,17 +851,11 @@ int     unkn0[2];
     int     unkn9[2];
 } DUMMY;
 
-const int UNKN_40               = 1913890808    ; // F8 A7 13 72
-const int UNKN_41               = 64111316      ; // D4 42 D2 03
-const int UNKN_42               = 215153612     ; // CC FB D2 0C
-const int UNKN_43               = 180261702     ; // 46 93 BE 0A
-const int UNKN_44               = 638869640     ; // 88 60 14 26
-const int UNKN_45               = 11111; // 
-const int UNKN_46               = 11111; // 
-const int UNKN_47               = 11111; // 
-const int UNKN_48               = 11111; // 
-const int UNKN_49               = 11111; // 
-
+const int SPAWNBYOCCLUSION               = 1913890808    ; // F8 A7 13 72
+const int FADEBYOCCLUSION               = 64111316      ; // D4 42 D2 03
+const int PARENTSNOW               = 215153612     ; // CC FB D2 0C
+const int OTOMOSNOW               = 180261702     ; // 46 93 BE 0A
+const int PARENTMATERIAL               = 638869640     ; // 88 60 14 26
 
 
 typedef struct {
@@ -870,7 +864,7 @@ typedef struct {
     long    unkn1;
     float   unkn2;
     int     unkn3;
-} Unkn_40;
+} SpawnByOcclusion;
 
 // 1 case
 typedef struct {
@@ -878,7 +872,7 @@ typedef struct {
     int     unkn0[2];
     long    unkn1;
     float   unkn2[3];
-} Unkn_41;
+} FadeByOcclusion;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -888,7 +882,7 @@ typedef struct {
     XYZ     color(2,0);
     long    unkn3[2];
     float   unkn4[13];
-} Unkn_42;
+} ParentSnow;
 
 // 2 cases
 typedef struct {
@@ -902,33 +896,14 @@ typedef struct {
     float   unkn5[4];
     long    unkn6;
     float   unkn7[8];
-} Unkn_43;
+} OtomoSnow;
 
 // 1 case
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[2];
     float   unkn1;
-} Unkn_44;
-
-typedef struct {
-    long    type<name="Type",format=hex,bgcolor=0x000000>;
-} Unkn_45;
-typedef struct {
-    long    type<name="Type",format=hex,bgcolor=0x000000>;
-} Unkn_46;
-typedef struct {
-    long    type<name="Type",format=hex,bgcolor=0x000000>;
-} Unkn_47;
-typedef struct {
-    long    type<name="Type",format=hex,bgcolor=0x000000>;
-} Unkn_48;
-typedef struct {
-    long    type<name="Type",format=hex,bgcolor=0x000000>;
-} Unkn_49;
-
-
-
+} ParentMaterial;
 
 typedef struct {
     int     unkn0;
@@ -1083,7 +1058,7 @@ typedef struct {
     XYZ     Scale_Velocity_Modifier(0,1)<optimize=true,read=ReadfloatXYZ>;//Multiplier/Acceleration? [0,1]
 
     int     enableVelocityBitflag;  // {0: 26795, 1: 2438, 2: 340, 3: 59} Bitflag: Pos0: Enable Velocity, Pos1: Enable Acceleration?
-} Basic_Transform;
+} Transform3D;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1100,7 +1075,7 @@ typedef struct {
     int     spawnLock<name="Lock To Position (Frames)",bgcolor=0x0000AA0>;
     int     bleedPos<name="Progressively Lock Elements to Position (Frames)">;
     int     bone_lim<name="Bone Limitation">;
-} Limit_Transform;
+} ParentOptions;
 
 
 typedef struct {
@@ -1119,7 +1094,7 @@ typedef struct {
     uint64  unkn1;
     uint64  unkn2;
     uint64  unkn3;
-} Launcher_Property;
+} Spawn;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1133,7 +1108,7 @@ typedef struct {
     long    fadeOutDurationJitter;
     long    unkn3[2];
     long    indefiniteLifespan;
-} Life_Cycle;
+} Life;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1150,7 +1125,7 @@ typedef struct {
     float   unkn3_f2[3];
 
     int     unkn4;
-} Symmetric_Copy;
+} EmitterShape3D;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1180,7 +1155,7 @@ typedef struct {
     int     gravityDelay;
     int     gravityDelayJitter;
     long    NULL2;
-} Momentum_Control;
+} Velocity3D;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1189,7 +1164,7 @@ typedef struct {
     float   clipMin;
     float   fadeStart;
     float   clipMax;
-} Visible_Dist;
+} FadeByDepth;
 
 // I was like WTF, any way I labeled the float...
 typedef struct {
@@ -1296,7 +1271,7 @@ typedef struct {
     int     unkn2[26];
     int     path_len<name="Path Length",bgcolor=0x123456>;
     char    p[path_len]<name="Path",bgcolor=0x123456>;
-} Cubemap;
+} RgbWater;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1304,7 +1279,7 @@ typedef struct {
     float   speed<name="Speed",bgcolor=0x0000BB>;
     long    NULL;
     float   unkn2[4*4];
-} Loop_Play;
+} ScaleAnim;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1329,7 +1304,7 @@ typedef struct {
     float   transparentness<name="Transparentness & Brigntness",bgcolor=0x00BB00>;
     long    NULL;
     int     unkn2;
-} Transparent_Control;
+} AlphaCorrection;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1347,7 +1322,7 @@ typedef struct {
     float   unkn4_17;
     int     visibleOnPreview;//bitflag
     int     unkn5[2];
-} Layer_Visibility;
+} ShaderSettings;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1361,7 +1336,7 @@ typedef struct {
     float   brightness4<name="Color Balance 2">; //setting either to 0 will make all disappear
     int     unkn6[10]<name="Color 1 Params">; //the 10th param kills color when set to 1
     int     unkn7[10]<name="Color 2 Params">; //I have no idea what else it does
-} Color_Prop_Control;
+} RgbFire;
 
 typedef struct {
     int     unkn0[2];
@@ -1384,11 +1359,11 @@ typedef struct {
     colour     color3;
     colour     color4;
     int     unkn7[3];
-    int     tracking_flags;//0 - Follow Source, 
+    int     tracking_flags;//0 - Guide Source, 
                          //1 - Away from Source,
                          //2 - Look Away From Camera
                          //3 - WTF Occupies entire map
-                         //4 - Follow Camera
+                         //4 - Guide Camera
                          //5 - Dissapears
                          //6 - Don't Track Rotation At All
                          //7 - Dissapears
@@ -1400,8 +1375,8 @@ typedef struct {
     int     unkn5;
     int     epv_color_slot2;
     int     unkn6_1;
-    byte    colorize_texture1[4];//byte controls
-    byte    colorize_texture2[4];//byte controls
+    byte    colorize_material1[4];//byte controls
+    byte    colorize_material2[4];//byte controls
     int     unkn6_2;
     
     short   NULL1;
@@ -1426,7 +1401,7 @@ typedef struct {
     XYZ     spin_acceleration(0,1);    
     float unkn1_2;
     //int unkn1_3;
-} Self_Spin_Control;
+} RotateAnim;
 
 typedef struct {
     long    unkn; // 56 3A 6D EE
@@ -1482,7 +1457,7 @@ typedef struct {
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     EFX_Behavior    efx_behav<name="Behavior Parameter">;
-} EFX_Behaviors;
+} PtBehavior;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1501,7 +1476,7 @@ typedef struct {
     float radii_effect_unkn1;
     float radii_effect_unkn2;
     float   unkn5[5];
-} Auras;
+} PlEmissive;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1535,7 +1510,7 @@ typedef struct {
     int     int_unkn1[2];
     float   float_unkn2[3];    
 
-} Follow;
+} Guide;
 
 typedef struct {
     long    set<bgcolor=0x990000>;
@@ -1574,7 +1549,7 @@ typedef struct {
     local int j;
     for(j=0;j<block_count;j++)
         Tex_Block   block;
-} Texture;
+} Material;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1588,7 +1563,7 @@ typedef struct {
     float   unkn2[12];
     XYZ     unkn_set_2(0,1);
     float   unkn3[5];
-} CM_Map;
+} Turbulence;
 
 
 
@@ -1598,7 +1573,7 @@ typedef struct {
     int     unkn0[2];
     long    unkn;
     float   unkn2[4];
-} Unkn_01;
+} FadeByEmitterAngle;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1618,8 +1593,8 @@ typedef struct {
     float   length;
     float   length_jitter;
     long    uv_map_height;
-    float   texture_tesselation_density;//Texture Repeating Density
-    float   texture_tesselation_jitter;
+    float   material_tesselation_density;//Material Repeating Density
+    float   material_tesselation_jitter;
     float   uv_map_width;
     long horizontal_physics_subdivision_count<comment="Disney Magic at 5000">;//Number of Subdivisions+1 (Number of horizontal dividers, minimum 2)
     long vertical_physics_subdivision_count;//Maybe, untested for vertical repetitions
@@ -1670,7 +1645,7 @@ typedef struct {
     float tip_flap_amount_jitter;
     byte ib_junk[32]<hidden=true>;
     STRING  path1<name="UNKN 03 Path",bgcolor=0x123456,read=ReadStr>;
-} Trail_Physics;
+} Ribbon;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1686,7 +1661,7 @@ typedef struct {
     float   secondary_axis_speed2;
     float   teleport_radius2;
     float   smooth_radius_randomized2;
-} Randomized_Oscillations;
+} Noise;
 
 typedef struct{
     float u;
@@ -1703,23 +1678,23 @@ typedef struct{
     uv_transform scale;
     uv_transform scaleSpeed;
     uv_transform scaleAcceleration;
-}Texture_Animation_Data;
+}Material_Animation_Data;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
-    Texture_Animation_Data uv1;
-    Texture_Animation_Data uv2;
+    Material_Animation_Data uv1;
+    Material_Animation_Data uv2;
     int     unkn2;
-    float   extraTextureInitialPosition;
-    float   extraTextureInitialPositionJitter;
-    float   extraTextureSpeed;
-    float   extraTextureSpeedJitter;
+    float   extraMaterialInitialPosition;
+    float   extraMaterialInitialPositionJitter;
+    float   extraMaterialSpeed;
+    float   extraMaterialSpeedJitter;
     float   opacity;
     float   opacityJitter;
     float   opacityAcceleration;//Multiplies opacity every second
     float   opacityAccelerationJitter;    
     
-} Texture_Animation;
+} Material_Animation;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1727,13 +1702,13 @@ typedef struct {
     float   unkn1[4];
     int64   NULL;
     int     unkn2[2];
-} Unkn_07;
+} FadeByAngle;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[2];
     float   unkn1[8];
-} Unkn_11;
+} EmitterBoundary;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1747,7 +1722,7 @@ typedef struct {
     short   unkn7;
     short   unkn8;
     short   unkn9;
-} Relationship_Binding;
+} PtLife_Binding;
 
 
 
@@ -1784,24 +1759,24 @@ string ReadUN(UN &u) {
 
 
 
-const int UN_PREFIX_0           = 500644368     ; // 10 3A D7 1D
-const int UN_PREFIX_5           = 1850314036    ; // 34 8D 49 6E
-const int UN_PREFIX_9           = 725249589     ; // 35 6E 3A 2B
-const int UN_PREFIX_13          = 1610366518    ; // 36 3E FC 5F
-const int UN_PREFIX_14          = 482524730     ; // 3A BE C2 1C
-const int UN_PREFIX_1           = 351887441     ; // 51 60 F9 14
-const int UN_PREFIX_7           = 1880343637    ; // 55 C4 13 70
-const int UN_PREFIX_15          = 705591903     ; // 5F 7A 0E 2A
-const int UN_PREFIX_4           = 28559457      ; // 61 C8 B3 01
-const int UN_PREFIX_3           = 2069124466    ; // 72 55 54 7B
-const int UN_PREFIX_11          = 839790967     ; // 77 31 0E 32
-const int UN_PREFIX_16          = 1879331968    ; // 80 54 04 70
-const int UN_PREFIX_6           = 693979274     ; // 8A 48 5D 29
-const int UN_PREFIX_2           = 786529163     ; // 8B 7B E1 2E
-const int UN_PREFIX_10          = 1338793878    ; // 96 5F CC 4F
-const int UN_PREFIX_8           = 2097096908    ; // CC 28 FF 7C
-const int UN_PREFIX_17          = 805496014     ; // CE E4 02 30
-const int UN_PREFIX_12          = 283026906     ; // DA A5 DE 10
+const int ExternTransform3D           = 500644368     ; // 10 3A D7 1D
+const int ExternMesh           = 1850314036    ; // 34 8D 49 6E
+const int ExternPlEmissive           = 725249589     ; // 35 6E 3A 2B
+const int ExternPtBehavior          = 1610366518    ; // 36 3E FC 5F
+const int ExternRgbWater          = 482524730     ; // 3A BE C2 1C
+const int ExternVelocity3D           = 351887441     ; // 51 60 F9 14
+const int ExternEmitterShape3D           = 1880343637    ; // 55 C4 13 70
+const int ExternVelocity3D5          = 705591903     ; // 5F 7A 0E 2A
+const int ExternSpawn           = 28559457      ; // 61 C8 B3 01
+const int ExternRgbFire           = 2069124466    ; // 72 55 54 7B
+const int ExternVelocity3D1          = 839790967     ; // 77 31 0E 32
+const int ExternVelocity3D6          = 1879331968    ; // 80 54 04 70
+const int ExternBillboard3D           = 693979274     ; // 8A 48 5D 29
+const int ExternScaleAnim           = 786529163     ; // 8B 7B E1 2E
+const int ExternVelocity3D0          = 1338793878    ; // 96 5F CC 4F
+const int ExternUVSequence           = 2097096908    ; // CC 28 FF 7C
+const int ExternVelocity3D7          = 805496014     ; // CE E4 02 30
+const int ExternVelocity3D2          = 283026906     ; // DA A5 DE 10
 
 
 typedef struct {
@@ -1879,77 +1854,77 @@ typedef struct {
 } UN_P_17;
 
 typedef struct (int t) {
-    if (t==UN_PREFIX_0) {
+    if (t==ExternTransform3D) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         UN_P_0  up0[attri_count];
-    } else if (t==UN_PREFIX_1) {
+    } else if (t==ExternVelocity3D) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         UN_P_1  up1[attri_count];
-    } else if (t==UN_PREFIX_2) {
+    } else if (t==ExternScaleAnim) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         UN_P_2  up2[attri_count];
-    } else if (t==UN_PREFIX_3) {
+    } else if (t==ExternRgbFire) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         UN_P_3  up3[attri_count];
-    } else if (t==UN_PREFIX_4) {
+    } else if (t==ExternSpawn) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         UN_P_4  up4[attri_count];
-    } else if (t==UN_PREFIX_5) {
+    } else if (t==ExternMesh) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         UN_P_5  up5[attri_count];
-    } else if (t==UN_PREFIX_6) {
+    } else if (t==ExternBillboard3D) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         UN_P_6  up6[attri_count];
-    } else if (t==UN_PREFIX_7) {
+    } else if (t==ExternEmitterShape3D) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         UN_P_7  up7[attri_count];
-    } else if (t==UN_PREFIX_8) {
+    } else if (t==ExternUVSequence) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         UN_P_8  up8[attri_count];
-    } else if (t==UN_PREFIX_9){
+    } else if (t==ExternPlEmissive){
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         UN_P_9  up9[attri_count];
-    } else if (t==UN_PREFIX_10) {
+    } else if (t==ExternVelocity3D0) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         UN_P_10 up10[attri_count];
-    } else if (t==UN_PREFIX_11) {
+    } else if (t==ExternVelocity3D1) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         UN_P_11 up11[attri_count];
-    } else if (t==UN_PREFIX_12) {
+    } else if (t==ExternVelocity3D2) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         UN_P_12 up12[attri_count];
-    } else if (t==UN_PREFIX_13) {
+    } else if (t==ExternPtBehavior) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         local int z;
         for(z=0;z<attri_count;z++)
             EFX_Behavior efx_behaiv;
-    } else if (t==UN_PREFIX_14) {
+    } else if (t==ExternRgbWater) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         UN_P_14 up14[attri_count];
-    } else if (t==UN_PREFIX_15) {
+    } else if (t==ExternVelocity3D5) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         UN_P_15 up15[attri_count];
-    } else if (t==UN_PREFIX_16) {
+    } else if (t==ExternVelocity3D6) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         UN_P_16 up16[attri_count];
-    }  else if (t==UN_PREFIX_17) {
+    }  else if (t==ExternVelocity3D7) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
         UN_P_17 up17[attri_count];
@@ -1977,7 +1952,7 @@ typedef struct {
     local int k;
     for(k=0;k<header.UNKN_Count;k++)
         UN_Prefix up(k)<name="Unknown Prefix",read=ReadUNP>;
-} UN_PREFIX;
+} Extern;
 
 
 typedef struct {
@@ -1985,12 +1960,12 @@ typedef struct {
     int     unkn0[2];
     float   unkn1[7];
     long    NULL;
-} S_P_1;
+} UnitBoundary;
 
 typedef struct {
     int     path_len<name="Path Length",bgcolor=0x654321>;
     char    p[path_len]<name="Path",bgcolor=0x123456>;
-} S_P_2_Path;
+} RenderTarget_Path;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x990000>;
@@ -1998,11 +1973,11 @@ typedef struct {
     local int i;
 //  Hard code 6
     for(i=0;i<6;i++)
-        S_P_2_Path paths<name="Paths">;
+        RenderTarget_Path paths<name="Paths">;
     long    NULL;
     int     unkn0[6];
     float   unkn1[9];
-} S_P_2;
+} RenderTarget;
 
 typedef struct {
     int     block_type<bgcolor=0x339933>;
@@ -2014,18 +1989,18 @@ typedef struct {
         int unkn0;
         UN  p[count*2 * unkn0]<read=ReadUN>;
     } else
-        Printf("S_P_3_B BLOCK TYPE ERROR %d\n", block_type);
+        Printf("LayoutBank_B BLOCK TYPE ERROR %d\n", block_type);
 
-} S_P_3_B;
+} LayoutBank_B;
 
 typedef struct {
     int     count<bgcolor=0xFF9900>;
     if(count>0) {
         while (ReadInt() != -1)
-            S_P_3_B spb;
+            LayoutBank_B spb;
         long    end<bgcolor=0xAAAAAA>;
     }
-} S_P_3_Block;
+} LayoutBank_Block;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x990000>;
@@ -2033,8 +2008,8 @@ typedef struct {
     int     block_count<bgcolor=0x00FF00>;
     local int i;
     for(i=0;i<block_count;i++)
-        S_P_3_Block spb;
-} S_P_3;
+        LayoutBank_Block spb;
+} LayoutBank;
 
 typedef struct (int x) {
     local int ord = x;
@@ -2046,11 +2021,11 @@ typedef struct (int x) {
     local int j;
     for(j=0;j<count;j++)
         if(ReadInt() == 1413509420) // 2C 71 40 54
-            S_P_1   sp1<name="Single Prefix Type 1">;
+            UnitBoundary   sp1<name="Single Prefix Type 1">;
         else if (ReadInt() == 2083659062) // 36 1D 32 7C
-            S_P_2   sp1<name="Single Prefix Type 2">;
+            RenderTarget   sp1<name="Single Prefix Type 2">;
         else if (ReadInt() == 2050487542) // F6 F4 37 7A
-            S_P_3   sp1<name="Single Prefix Type 3">;
+            LayoutBank   sp1<name="Single Prefix Type 3">;
 
 } SINGLE_PREFIX;
 
@@ -2059,159 +2034,149 @@ typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[2];
     long    unkn1[4];
-    S_P_3_Block spb;
-} Unkn_26;
+    LayoutBank_Block spb;
+} Layout;
 
 
 typedef struct (int count){
     local int j;
     for(j=0;j<count && j <100;j++)
-        if      (ReadInt() == UNKN_00             )
-            Unkn_00             unkn_00             <bgcolor=0x1800ff>;
-        else if (ReadInt() == UNKN_01             )
-            Unkn_01             unkn_01             <bgcolor=0xff2400>;
-        else if (ReadInt() == UNKN_02             )
-            Unkn_02             unkn_02             <bgcolor=0xff2400>;
-        else if (ReadInt() == TRAIL_PHYSICS       )
-            Trail_Physics       trail_physics       <bgcolor=0xffe400>;
-        else if (ReadInt() == RANDOMIZED_OSCILLATIONS             )
-            Randomized_Oscillations  randomized_oscillations             <bgcolor=0x00d8ff>;
-        else if (ReadInt() == UNKN_05             )
-            Unkn_05             unkn_05             <bgcolor=0xff5a00>;
-        else if (ReadInt() == TEXTURE_ANIMATION   )
-            Texture_Animation   texture_animation <bgcolor=0xe4ff00>;
-        else if (ReadInt() == UNKN_07             )
-            Unkn_07             unkn_07             <bgcolor=0xff003c>;
-        else if (ReadInt() == UNKN_08             )
-            Unkn_08             unkn_08             <bgcolor=0x4800ff>;
-        else if (ReadInt() == UNKN_09             )
-            Unkn_09             unkn_09             <bgcolor=0x7800ff>;
-        else if (ReadInt() == UNKN_10             )
-            Unkn_10             unkn_10             <bgcolor=0xff2400>;
-        else if (ReadInt() == UNKN_11             )
-            Unkn_11             unkn_11             <bgcolor=0x00ff06>;
-        else if (ReadInt() == RELATIONSHIP        )
-            Relationship_Binding  relationship_binding<bgcolor=0x00ff06>;
-        else if (ReadInt() == UNKN_13             )
-            Unkn_13             unkn_13             <bgcolor=0x00d8ff>;
-        else if (ReadInt() == UNKN_14             )
-            Unkn_14             unkn_14             <bgcolor=0x0078ff>;
-        else if (ReadInt() == UNKN_15             )
-            Unkn_15             unkn_15             <bgcolor=0xff003c>;
-        else if (ReadInt() == UNKN_16             )
-            Unkn_16             unkn_16             <bgcolor=0xff0006>;
+        if      (ReadInt() == EXTERNREFERENCE             )
+            ExternReference             externreference             <bgcolor=0x1800ff>;
+        else if (ReadInt() == FADEBYEMITTERANGLE             )
+            FadeByEmitterAngle             fadebyemitterangle             <bgcolor=0xff2400>;
+        else if (ReadInt() == FAKEPLANE             )
+            FakePlane             fakeplane             <bgcolor=0xff2400>;
+        else if (ReadInt() == RIBBON       )
+            Ribbon       ribbon       <bgcolor=0xffe400>;
+        else if (ReadInt() == NOISE             )
+            Noise  noise             <bgcolor=0x00d8ff>;
+        else if (ReadInt() == DUMMY             )
+            Dummy             dummy             <bgcolor=0xff5a00>;
+        else if (ReadInt() == MATERIAL_ANIMATION   )
+            Material_Animation   material_animation <bgcolor=0xe4ff00>;
+        else if (ReadInt() == FADEBYANGLE             )
+            FadeByAngle             fadebyangle             <bgcolor=0xff003c>;
+        else if (ReadInt() == RANDOMFIX             )
+            RandomFix             randomfix             <bgcolor=0x4800ff>;
+        else if (ReadInt() == TRANSFORM2D             )
+            Transform2D             transform2d             <bgcolor=0x7800ff>;
+        else if (ReadInt() == BILLBOARD2D             )
+            Billboard2D             billboard2d             <bgcolor=0xff2400>;
+        else if (ReadInt() == EMITTERBOUNDARY             )
+            EmitterBoundary             emitterboundary             <bgcolor=0x00ff06>;
+        else if (ReadInt() == PTLIFE        )
+            PtLife_Binding  ptlife_binding<bgcolor=0x00ff06>;
+        else if (ReadInt() == BLINK             )
+            Blink             blink             <bgcolor=0x00d8ff>;
+        else if (ReadInt() == LUMINANCEBLEED             )
+            LuminanceBleed             luminancebleed             <bgcolor=0x0078ff>;
+        else if (ReadInt() == EMITTERSHAPE2D             )
+            EmitterShape2D             emittershape2d             <bgcolor=0xff003c>;
+        else if (ReadInt() == VELOCITY2D             )
+            Velocity2D             velocity2d             <bgcolor=0xff0006>;
         else if (ReadInt() == LIGHTNING           )
             Lightning          lightning            <bgcolor=0xffba00>;
         else if (ReadInt() == REFRACTION          )
             Refraction         refraction           <bgcolor=0x24ff00>;
-        else if (ReadInt() == UNKN_19             )
-            Unkn_19             unkn_19             <bgcolor=0x0018ff>;
-        else if (ReadInt() == BEAM_COLLISION      )
-            Beam_Collision      beam_collision    <bgcolor=0xd800ff>;
-        else if (ReadInt() == EMISSIVE_RIM        )
-            Emissive_Rim        emissive_rim        <bgcolor=0x00a8ff>;
-        else if (ReadInt() == UNKN_22             )
-            Unkn_22             unkn_22             <bgcolor=0x5aff00>;
-        else if (ReadInt() == COLLISION           )
-            Collision           collision           <bgcolor=0x00fff6>;
-        else if (ReadInt() == EXTERNAL_BIND       )
-            External_Binding    external_binding    <bgcolor=0x00fff6>;
-        else if (ReadInt() == UNKN_25             )
-            Unkn_25             unkn_25             <bgcolor=0x00d8ff>;
-        else if (ReadInt() == UNKN_26             )
-            Unkn_26             unkn_26             <bgcolor=0x00a8ff>;
-        else if (ReadInt() == UNKN_27             )
-            Unkn_27             unkn_27             <bgcolor=0x0078ff>;
-        else if (ReadInt() == UNKN_28             )
-            Unkn_28             unkn_28             <bgcolor=0xffba00>;
-        else if (ReadInt() == UNKN_29             )
-            Unkn_29             unkn_29             <bgcolor=0xff00f6>;
-        else if (ReadInt() == ALBEDO_BLEND        )
-            Albedo_Blend        albedo_blend        <bgcolor=0xff8400>;
-        else if (ReadInt() == UNKN_31             )
-            Unkn_31             unkn_31             <bgcolor=0x00d8ff>;
-        else if (ReadInt() == UNKN_32             )
-            Unkn_32             unkn_32             <bgcolor=0x00a8ff>;
-        else if (ReadInt() == RADIAL_CONCENTRATION             )
-            Radial_Concentration radial_concentration <bgcolor=0x00a8ff>;
-        else if (ReadInt() == UNKN_34             )
-            Unkn_34             unkn_34             <bgcolor=0xff5a00>;
-        else if (ReadInt() == CATENARY_PHYSICS       )
-            Catenary_Physics       catenary_physics  <bgcolor=0x24ff00>;
-        else if (ReadInt() == UNKN_36             )
-            Unkn_36             unkn_36             <bgcolor=0xff0096>;
-        else if (ReadInt() == UNKN_37             )
-            Unkn_37             unkn_37             <bgcolor=0x00ff66>;
-        else if (ReadInt() == UNKN_38             )
-            Unkn_38             unkn_38             <bgcolor=0x1800ff>;
-        else if (ReadInt() == UNKN_39             )
-            Unkn_39             unkn_39             <bgcolor=0x0018ff>;
-        else if (ReadInt() == UNKN_40             )
-            Unkn_40             unkn_40             <bgcolor=0xff0096>;
-        else if (ReadInt() == UNKN_41             )
-            Unkn_41             unkn_41             <bgcolor=0xff2400>;
-        else if (ReadInt() == UNKN_42             )
-            Unkn_42             unkn_42             <bgcolor=0xff8400>;
-        else if (ReadInt() == UNKN_43             )
-            Unkn_43             unkn_43             <bgcolor=0x1800ff>;
-        else if (ReadInt() == UNKN_44             )
-            Unkn_44             unkn_44             <bgcolor=0x1800ff>;
-        else if (ReadInt() == UNKN_45             )
-            Unkn_45             unkn_45             ;
-        else if (ReadInt() == UNKN_46             )
-            Unkn_46             unkn_46             ;
-        else if (ReadInt() == UNKN_47             )
-            Unkn_47             unkn_47             ;
-        else if (ReadInt() == UNKN_48             )
-            Unkn_48             unkn_48             ;
-        else if (ReadInt() == UNKN_49             )
-            Unkn_49             unkn_49             ;
-        else if (ReadInt() == BASIC_TRANSFORM     )
-            Basic_Transform     basic_transform     <bgcolor=0x7800ff>;
-        else if (ReadInt() == LIMIT_TRANSFORM     )
-            Limit_Transform     limit_transform     <bgcolor=0xa800ff>;
-        else if (ReadInt() == LAUNCHER_PROPERTY   )
-            Launcher_Property   launcher_property   <bgcolor=0xff00c6>;
-        else if (ReadInt() == LIFE_CYCLE          )
-            Life_Cycle          life_cycle          <bgcolor=0xff0066>;
-        else if (ReadInt() == SYMMETRIC_COPY      )
-            Symmetric_Copy      symmetric_copy      <bgcolor=0xff8400>;
-        else if (ReadInt() == MOMENTUM_CONTROL    )
-            Momentum_Control    momentum_control    <bgcolor=0xff8400>;
-        else if (ReadInt() == VISIBLE_DIST        )
-            Visible_Dist        visible_dist        <bgcolor=0xff0006>;
-        else if (ReadInt() == DDS_TRACE_PROP      )
-            Dds_Trace_Prop      dds_trace_prop      <bgcolor=0xffba00>;
+        else if (ReadInt() == MASTERONLY             )
+            MasterOnly             masteronly             <bgcolor=0x0018ff>;
+        else if (ReadInt() == BEAM_SCREENSPACECOLLISION      )
+            Beam_ScreenSpaceScreenSpaceCollision      beam_screenspacecollision    <bgcolor=0xd800ff>;
+        else if (ReadInt() == PARENTEMISSIVE        )
+            ParentEmissive        parentemissive        <bgcolor=0x00a8ff>;
+        else if (ReadInt() == TUBELIGHT             )
+            TubeLight             tubelight             <bgcolor=0x5aff00>;
+        else if (ReadInt() == SCREENSPACECOLLISION           )
+            ScreenSpaceScreenSpaceCollision           screenspacecollision           <bgcolor=0x00fff6>;
+        else if (ReadInt() == PTSCREENSPACECOLLISION       )
+            PtScreenSpaceScreenSpaceCollisioning    ptscreenspacecollisioning    <bgcolor=0x00fff6>;
+        else if (ReadInt() == SHOVEL             )
+            Shovel             shovel             <bgcolor=0x00d8ff>;
+        else if (ReadInt() == LAYOUT             )
+            Layout             layout             <bgcolor=0x00a8ff>;
+        else if (ReadInt() == FAKEDOF             )
+            FakeDoF             fakedof             <bgcolor=0x0078ff>;
+        else if (ReadInt() == REPEATAREA             )
+            RepeatArea             repeatarea             <bgcolor=0xffba00>;
+        else if (ReadInt() == LINKPARTSVISIBLE             )
+            LinkPartsVisible             linkpartsvisible             <bgcolor=0xff00f6>;
+        else if (ReadInt() == PLSNOW        )
+            PlSnow        plsnow        <bgcolor=0xff8400>;
+        else if (ReadInt() == PTTRIGGER             )
+            PtTrigger             pttrigger             <bgcolor=0x00d8ff>;
+        else if (ReadInt() == PATHCHAIN             )
+            PathChain             pathchain             <bgcolor=0x00a8ff>;
+        else if (ReadInt() == HOMING             )
+            Homing homing <bgcolor=0x00a8ff>;
+        else if (ReadInt() == EMITTERSHAPEMESH             )
+            EmitterShapeMesh             emittershapemesh             <bgcolor=0xff5a00>;
+        else if (ReadInt() == STRAINRIBBON       )
+            StrainRibbon       strainribbon  <bgcolor=0x24ff00>;
+        else if (ReadInt() == SPAWNBYANGLE             )
+            SpawnByAngle             spawnbyangle             <bgcolor=0xff0096>;
+        else if (ReadInt() == CHECKPUREATTRIBUTE             )
+            CheckPureAttribute             checkpureattribute             <bgcolor=0x00ff66>;
+        else if (ReadInt() == TONEMAPFILTER             )
+            TonemapFilter             tonemapfilter             <bgcolor=0x1800ff>;
+        else if (ReadInt() == COLORCORRECTFILTER             )
+            ColorCorrectFilter             colorcorrectfilter             <bgcolor=0x0018ff>;
+        else if (ReadInt() == SPAWNBYOCCLUSION             )
+            SpawnByOcclusion             spawnbyocclusion             <bgcolor=0xff0096>;
+        else if (ReadInt() == FADEBYOCCLUSION             )
+            FadeByOcclusion             fadebyocclusion             <bgcolor=0xff2400>;
+        else if (ReadInt() == PARENTSNOW             )
+            ParentSnow             parentsnow             <bgcolor=0xff8400>;
+        else if (ReadInt() == OTOMOSNOW             )
+            OtomoSnow             otomosnow             <bgcolor=0x1800ff>;
+        else if (ReadInt() == PARENTMATERIAL             )
+            ParentMaterial             parentmaterial             <bgcolor=0x1800ff>;
+        else if (ReadInt() == TRANSFORM3D     )
+            Transform3D     transform3d     <bgcolor=0x7800ff>;
+        else if (ReadInt() == PARENTOPTIONS     )
+            ParentOptions     parentoptions     <bgcolor=0xa800ff>;
+        else if (ReadInt() == SPAWN   )
+            Spawn   spawn   <bgcolor=0xff00c6>;
+        else if (ReadInt() == LIFE          )
+            Life          life          <bgcolor=0xff0066>;
+        else if (ReadInt() == EMITTERSHAPE3D      )
+            EmitterShape3D      emittershape3d      <bgcolor=0xff8400>;
+        else if (ReadInt() == VELOCITY3D    )
+            Velocity3D    velocity3d    <bgcolor=0xff8400>;
+        else if (ReadInt() == FADEBYDEPTH        )
+            FadeByDepth        fadebydepth        <bgcolor=0xff0006>;
+        else if (ReadInt() == RIBBONBLADE      )
+            Dds_Trace_Prop      ribbonblade      <bgcolor=0xffba00>;
         else if (ReadInt() == DDS_USEAGE          )
             Dds_Useage          dds_useage          <bgcolor=0xffe400>;
-        else if (ReadInt() == LOOP_PLAY           )
-            Loop_Play           loop_play           <bgcolor=0x84ff00>;
+        else if (ReadInt() == SCALEANIM           )
+            ScaleAnim           scaleanim           <bgcolor=0x84ff00>;
         else if (ReadInt() == UVS_USEAGE          )
             Uvs_Useage          uvs_useage          <bgcolor=0x84ff00>;
-        else if (ReadInt() == TRANSPARENT_CONTROL )
-            Transparent_Control transparent_control <bgcolor=0x5aff00>;
-        else if (ReadInt() == LAYER_VISIBILITY    )
-            Layer_Visibility    layer_visibility    <bgcolor=0xf4ce7e>;
-        else if (ReadInt() == COLOR_PROP_CONTROL  )
-            Color_Prop_Control  color_prop_control  <bgcolor=0x00ff66>;
+        else if (ReadInt() == ALPHACORRECTION )
+            AlphaCorrection alphacorrection <bgcolor=0x5aff00>;
+        else if (ReadInt() == SHADERSETTINGS    )
+            ShaderSettings    shadersettings    <bgcolor=0xf4ce7e>;
+        else if (ReadInt() == RGBFIRE  )
+            RgbFire  rgbfire  <bgcolor=0x00ff66>;
         else if (ReadInt() == MOD3_USEAGE         )
             Mod3_Useage         mod3_useage         <bgcolor=0xbaff00>;
-        else if (ReadInt() == SELF_SPIN_CONTROL   )
-            Self_Spin_Control   self_spin_control   <bgcolor=0x84ff00>;
-        else if (ReadInt() == AURAS               )
-            Auras               auras               <bgcolor=0xffba00>;
-        else if (ReadInt() == FOLLOW              )
-            Follow              follow              <bgcolor=0x0018ff>;
-        else if (ReadInt() == EFX_BEHAVIORS       )
-            EFX_Behaviors       efx_behaviors       <bgcolor=0x00ff3c>;
-        else if (ReadInt() == TEXTURE             )
-            Texture             texture             <bgcolor=0x00fff6>;
+        else if (ReadInt() == ROTATEANIM   )
+            RotateAnim   rotateanim   <bgcolor=0x84ff00>;
+        else if (ReadInt() == PLEMISSIVE               )
+            PlEmissive               plemissive               <bgcolor=0xffba00>;
+        else if (ReadInt() == GUIDE              )
+            Guide              guide              <bgcolor=0x0018ff>;
+        else if (ReadInt() == PTBEHAVIOR       )
+            PtBehavior       ptbehavior       <bgcolor=0x00ff3c>;
+        else if (ReadInt() == MATERIAL             )
+            Material             material             <bgcolor=0x00fff6>;
         else if (ReadInt() == DDS_USEAGE_ALT      )
             Dds_Useage_Alt       dds_Useage_Alt     <bgcolor=0xffe400>;
-        else if (ReadInt() == CUBEMAP             )
-            Cubemap             cubemap             <bgcolor=0x00ff96>;
-        else if (ReadInt() == CM_MAP              )
-            CM_Map              cm_map              <bgcolor=0x00ffc6>;
+        else if (ReadInt() == RGBWATER             )
+            RgbWater             rgbwater             <bgcolor=0x00ff96>;
+        else if (ReadInt() == TURBULENCE              )
+            Turbulence              turbulence              <bgcolor=0x00ffc6>;
         else
             Printf("%d Not Found!\n", FTell());
 } MAIN_BODY;
@@ -2254,7 +2219,7 @@ typedef struct {
 Header          header<name="Header",bgcolor=0x00ffff>;
 EFX_Type        efx_Type<name="EFX Type",bgcolor=0xf000ff>;
 IE_PREFIX       ie_p<name="External/Internal Useage",bgcolor=0x7C9F35>;
-UN_PREFIX       un_p<name="Unknown Prefix",bgcolor=0x277553>;
+Extern       un_p<name="Unknown Prefix",bgcolor=0x277553>;
 MAIN            main<name="Main Body",bgcolor=0x1b1b1b>;
 NULL            null<name="NULL EFX",bgcolor=0xffffff>;
 int             end[header.End_Count]<name="End EFX (Acutal?)",bgcolor=0x999887>;
@@ -2334,74 +2299,74 @@ string ReadMainP(MAIN_PREFIX &mp) {
 
 // ORDER (sort of)
 /*
-[(__main__.Unkn_00, 0),
- (__main__.Unkn_38, 0),
- (__main__.Unkn_43, 0),
- (__main__.Unkn_44, 0),
- (__main__.Unkn_08, 1),
- (__main__.Basic_Transform, 2),
- (__main__.Unkn_09, 2),
- (__main__.Limit_Transform, 3),
- (__main__.Beam_Collision, 4),
- (__main__.Unkn_29, 5),
+[(__main__.ExternReference, 0),
+ (__main__.TonemapFilter, 0),
+ (__main__.OtomoSnow, 0),
+ (__main__.ParentMaterial, 0),
+ (__main__.RandomFix, 1),
+ (__main__.Transform3D, 2),
+ (__main__.Transform2D, 2),
+ (__main__.ParentOptions, 3),
+ (__main__.Beam_ScreenSpaceScreenSpaceCollision, 4),
+ (__main__.LinkPartsVisible, 5),
  (__main__.Launcher_Prop, 6),
- (__main__.Unkn_36, 7),
- (__main__.Unkn_40, 7),
- (__main__.Life_Cycle, 8),
- (__main__.Unkn_15, 9),
- (__main__.Unkn_07, 9),
- (__main__.Unkn_16, 10),
- (__main__.Visible_Dist, 10),
- (__main__.Unkn_10, 11),
- (__main__.Unkn_01, 11),
- (__main__.Unkn_02, 11),
- (__main__.Unkn_41, 11),
- (__main__.Unkn_05, 12),
- (__main__.Unkn_34, 12),
- (__main__.Symmetric_Copy, 13),
- (__main__.Momentum_Control, 13),
- (__main__.Albedo_Blend, 13),
- (__main__.Unkn_42, 13),
- (__main__.Auras, 14),
+ (__main__.SpawnByAngle, 7),
+ (__main__.SpawnByOcclusion, 7),
+ (__main__.Life, 8),
+ (__main__.EmitterShape2D, 9),
+ (__main__.FadeByAngle, 9),
+ (__main__.Velocity2D, 10),
+ (__main__.FadeByDepth, 10),
+ (__main__.Billboard2D, 11),
+ (__main__.FadeByEmitterAngle, 11),
+ (__main__.FakePlane, 11),
+ (__main__.FadeByOcclusion, 11),
+ (__main__.Dummy, 12),
+ (__main__.EmitterShapeMesh, 12),
+ (__main__.EmitterShape3D, 13),
+ (__main__.Velocity3D, 13),
+ (__main__.PlSnow, 13),
+ (__main__.ParentSnow, 13),
+ (__main__.PlEmissive, 14),
  (__main__.Lightning, 14),
  (__main__.Dds_Trace_Prop, 14),
- (__main__.Unkn_28, 14),
+ (__main__.RepeatArea, 14),
  (__main__.Dds_Useage, 15),
- (__main__.Trail_Physics, 15),
+ (__main__.Ribbon, 15),
  (__main__.Dds_Useage_Alt, 15),
- (__main__.Texture_Animation, 16),
+ (__main__.Material_Animation, 16),
  (__main__.Mod3_Useage, 17),
  (__main__.Uvs_Useage, 18),
- (__main__.Loop_Play, 18),
- (__main__.Self_Spin_Control, 18),
- (__main__.Transparent_Control, 19),
- (__main__.Unkn_22, 19),
+ (__main__.ScaleAnim, 18),
+ (__main__.RotateAnim, 18),
+ (__main__.AlphaCorrection, 19),
+ (__main__.TubeLight, 19),
  (__main__.Refraction, 20),
- (__main__.Catenary_Physics, 20),
- (__main__.Unkn_11, 21),
+ (__main__.StrainRibbon, 20),
+ (__main__.EmitterBoundary, 21),
  (__main__.Parenting, 21),
  (__main__.EFX_Behavior, 22),
- (__main__.Color_Prop_Control, 23),
- (__main__.Unkn_37, 23),
- (__main__.Cubemap, 24),
- (__main__.CM_Map, 25),
- (__main__.Texture, 26),
- (__main__.External_Binding, 26),
- (__main__.Collision, 26),
- (__main__.Randomized_Oscillations, 27),
- (__main__.Unkn_13, 27),
- (__main__.Unkn_25, 27),
- (__main__.Unkn_31, 27),
- (__main__.Emissive_Rim, 28),
- (__main__.Unkn_32, 28),
- (__main__.Radial_Concentration, 28),
- (__main__.Unkn_26, 28),
- (__main__.Unkn_27, 29),
- (__main__.Unkn_14, 30),
- (__main__.Unkn_19, 31),
- (__main__.Follow, 31),
- (__main__.Unkn_39, 31),
- (__main__.Layer_Visibility, 32)]
+ (__main__.RgbFire, 23),
+ (__main__.CheckPureAttribute, 23),
+ (__main__.RgbWater, 24),
+ (__main__.Turbulence, 25),
+ (__main__.Material, 26),
+ (__main__.PtScreenSpaceScreenSpaceCollisioning, 26),
+ (__main__.ScreenSpaceScreenSpaceCollision, 26),
+ (__main__.Noise, 27),
+ (__main__.Blink, 27),
+ (__main__.Shovel, 27),
+ (__main__.PtTrigger, 27),
+ (__main__.ParentEmissive, 28),
+ (__main__.PathChain, 28),
+ (__main__.Homing, 28),
+ (__main__.Layout, 28),
+ (__main__.FakeDoF, 29),
+ (__main__.LuminanceBleed, 30),
+ (__main__.MasterOnly, 31),
+ (__main__.Guide, 31),
+ (__main__.ColorCorrectFilter, 31),
+ (__main__.ShaderSettings, 32)]
  */
 
 // COLOR
