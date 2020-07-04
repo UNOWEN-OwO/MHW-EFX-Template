@@ -114,7 +114,7 @@
 //
 //              3.4     Renamed UNKN_12 to Parenting, renamed UNKN_17 to Lightning, Renamed UNKN_35 to StrainRibbon and labelled properties.
 //
-//              3.5     Renamed structures to follow the exe naming conventions found by Silvris. Renamed externs to follow attribute conventions.
+//              3.5     Renamed structures to guide the exe naming conventions found by Silvris. Renamed externs to guide attribute conventions.
 // ------------------------------------------------
 
 // #HASH EFX
@@ -169,17 +169,17 @@ const int FADEBYDEPTH          = 859243212     ; // CC 02 37 33 // 可见距离
 const int RIBBONBLADE        = 319363982     ; // 8E 1B 09 13 // DDS轨迹属性
 const int DDS_USEAGE            = 1136904414    ; // DE C8 C3 43 // DDS(CM)调用   // CM_Useage
 const int SCALEANIM             = 480396424     ; // 88 44 A2 1C // 播放循环
-const int UVS_USEAGE            = 1698970185    ; // 49 3A 44 65 // UVS调用
+const int UVSEQUENCE            = 1698970185    ; // 49 3A 44 65 // UVS调用
 const int ALPHACORRECTION   = 61219887      ; // 2F 24 A6 03 // 透明渐变控制
 const int SHADERSETTINGS      = 1978267738    ; // 5A F8 E9 75 // 层级可见性
 const int RGBFIRE    = 459578090     ; // EA 9A 64 1B // 颜色属性控制
-const int MOD3_USEAGE           = 276670093     ; // 8D A6 7D 10 // mod3调用
+const int MESH           = 276670093     ; // 8D A6 7D 10 // mod3调用
 const int ROTATEANIM     = 1774142981    ; // 05 46 BF 69 // 自旋转控制 
 const int PLEMISSIVE                 = 597394907     ; // DB 85 9B 23 // 光圈
 const int GUIDE                = 1123011591    ; // 07 CC EF 42 // 跟随
 const int LIGHTNING             = 1558046267    ; // 3B E6 DD 5C
 const int PARENTEMISSIVE          = 14579343      ; // 8F 76 DE 00
-const int PTSCREENSPACECOLLISION         = 280719621     ; // 05 71 BB 10
+const int PTSCREENSPACESCREENSPACECOLLISION         = 280719621     ; // 05 71 BB 10
 const int PLSNOW          = 1267346617    ; // B9 2C 8A 4B
 const int PTBEHAVIOR         = 1179069619    ; // B3 2C 47 46 // EFX行为
 const int MATERIAL               = 1659025771    ; // 6B B9 E2 62 // 材质
@@ -194,8 +194,8 @@ const int FADEBYANGLE               = 1226136492    ; // AC 5B 15 49
 const int EMITTERBOUNDARY               = 873436648     ; // E8 95 0F 34
 const int PTLIFE          = 493311524     ; // 24 56 67 1D
 const int STRAINRIBBON      = 1062052310    ; // D6 A1 4D 3F
-const int SCREENSPACECOLLISION             = 697457224     ; // 48 5A 92 29
-const int BEAM_SCREENSPACECOLLISION        = 275476317     ; // 5D 6F 6B 10
+const int SCREENSPACESCREENSPACECOLLISION             = 697457224     ; // 48 5A 92 29
+const int BEAM_SCREENSPACESCREENSPACECOLLISION        = 275476317     ; // 5D 6F 6B 10
 
 // Unused So Far
 
@@ -259,7 +259,7 @@ const int EffectGroupData                                   = 1608814288; // 5FE
 const int EffectGroup                                       = 617098856; // 24C82E68
 const int BoundaryBase                                      = 1100150108; // 4192F55C
 const int RenderTarget_Target                               = 1478767196; // 5824325C
-const int TexturePath                                       = 386986771; // 1710F313
+const int MaterialPath                                       = 386986771; // 1710F313
 const int TypeLightning_Branch                              = 2120416030; // 7E62FB1E
 const int TypeRibbonBladeSection                            = 19293690; // 012665FA
 const int TubeLightSection                                  = 292704954; // 117252BA
@@ -602,7 +602,7 @@ typedef struct {
     long spacer;
     int  unknown1;//(usually -1. saw one as 0)
     short unknown2;//(it was 256 so not sure if it is a flag or something else)
-} Beam_ScreenSpaceScreenSpaceCollision;
+} Beam_ScreenSpaceScreenSpaceScreenSpaceCollision;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -643,7 +643,7 @@ typedef struct {
     int     lifespan;//0 for no interaction, higher values result in more bounce
     int     lifespanJitter;
     float   bounceConditional;
-} ScreenSpaceScreenSpaceCollision;
+} ScreenSpaceScreenSpaceScreenSpaceCollision;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -662,7 +662,7 @@ typedef struct {
     float   unkn1[3];
     int     unkn2[2];
     //float   unkn3[9];
-    float   bounceElasticity;//Bounce Elasticity On ScreenSpaceScreenSpaceCollision
+    float   bounceElasticity;//Bounce Elasticity On ScreenSpaceScreenSpaceScreenSpaceCollision
     float   bounceElasticityJitter;//Bounce Elasticity Jitters
     float   bounceElasticityMultiplier;
     float   horizontalBounce;//Multiplier of bounce elasticity
@@ -675,7 +675,7 @@ typedef struct {
     int     unkn4[2];
     int     ieIndex;//0 Call External Index?, FF FF FF FF Null
     int     unkn6[3];
-} PtScreenSpaceScreenSpaceCollisioning;
+} PtScreenSpaceScreenSpaceScreenSpaceCollisioning;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1472,7 +1472,7 @@ typedef struct {
     byte    BeginMod3;
     STRING  path1<name="Mod3 Path1",bgcolor=0x123456,read=ReadStr>;
     STRING  path2<name="Mod3 Path2",bgcolor=0x123456,read=ReadStr>;
-} Mod3_Useage;
+} Mesh;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -2164,16 +2164,16 @@ typedef struct (int count){
             Refraction         refraction           <bgcolor=0x24ff00>;
         else if (ReadInt() == MASTERONLY             )
             MasterOnly             masteronly             <bgcolor=0x0018ff>;
-        else if (ReadInt() == BEAM_SCREENSPACECOLLISION      )
-            Beam_ScreenSpaceScreenSpaceCollision      beam_screenspacecollision    <bgcolor=0xd800ff>;
+        else if (ReadInt() == BEAM_SCREENSPACESCREENSPACECOLLISION      )
+            Beam_ScreenSpaceScreenSpaceScreenSpaceCollision      beam_screenspacescreenspacecollision    <bgcolor=0xd800ff>;
         else if (ReadInt() == PARENTEMISSIVE        )
             ParentEmissive        parentemissive        <bgcolor=0x00a8ff>;
         else if (ReadInt() == TUBELIGHT             )
             TubeLight             tubelight             <bgcolor=0x5aff00>;
-        else if (ReadInt() == SCREENSPACECOLLISION           )
-            ScreenSpaceScreenSpaceCollision           screenspacecollision           <bgcolor=0x00fff6>;
-        else if (ReadInt() == PTSCREENSPACECOLLISION       )
-            PtScreenSpaceScreenSpaceCollisioning    ptscreenspacecollisioning    <bgcolor=0x00fff6>;
+        else if (ReadInt() == SCREENSPACESCREENSPACECOLLISION           )
+            ScreenSpaceScreenSpaceScreenSpaceCollision           screenspacescreenspacecollision           <bgcolor=0x00fff6>;
+        else if (ReadInt() == PTSCREENSPACESCREENSPACECOLLISION       )
+            PtScreenSpaceScreenSpaceScreenSpaceCollisioning    ptscreenspacescreenspacecollisioning    <bgcolor=0x00fff6>;
         else if (ReadInt() == SHOVEL             )
             Shovel             shovel             <bgcolor=0x00d8ff>;
         else if (ReadInt() == LAYOUT             )
@@ -2234,16 +2234,16 @@ typedef struct (int count){
             Dds_Useage          dds_useage          <bgcolor=0xffe400>;
         else if (ReadInt() == SCALEANIM           )
             ScaleAnim           scaleanim           <bgcolor=0x84ff00>;
-        else if (ReadInt() == UVS_USEAGE          )
-            Uvs_Useage          uvs_useage          <bgcolor=0x84ff00>;
+        else if (ReadInt() == UVSEQUENCE          )
+            Uvs_Useage          uvsequence          <bgcolor=0x84ff00>;
         else if (ReadInt() == ALPHACORRECTION )
             AlphaCorrection alphacorrection <bgcolor=0x5aff00>;
         else if (ReadInt() == SHADERSETTINGS    )
             ShaderSettings    shadersettings    <bgcolor=0xf4ce7e>;
         else if (ReadInt() == RGBFIRE  )
             RgbFire  rgbfire  <bgcolor=0x00ff66>;
-        else if (ReadInt() == MOD3_USEAGE         )
-            Mod3_Useage         mod3_useage         <bgcolor=0xbaff00>;
+        else if (ReadInt() == MESH         )
+            Mesh         mesh         <bgcolor=0xbaff00>;
         else if (ReadInt() == ROTATEANIM   )
             RotateAnim   rotateanim   <bgcolor=0x84ff00>;
         else if (ReadInt() == PLEMISSIVE               )
@@ -2390,7 +2390,7 @@ string ReadMainP(MAIN_PREFIX &mp) {
  (__main__.Transform3D, 2),
  (__main__.Transform2D, 2),
  (__main__.ParentOptions, 3),
- (__main__.Beam_ScreenSpaceScreenSpaceCollision, 4),
+ (__main__.Beam_ScreenSpaceScreenSpaceScreenSpaceCollision, 4),
  (__main__.LinkPartsVisible, 5),
  (__main__.Launcher_Prop, 6),
  (__main__.SpawnByAngle, 7),
@@ -2418,7 +2418,7 @@ string ReadMainP(MAIN_PREFIX &mp) {
  (__main__.Ribbon, 15),
  (__main__.Dds_Useage_Alt, 15),
  (__main__.Material_Animation, 16),
- (__main__.Mod3_Useage, 17),
+ (__main__.Mesh, 17),
  (__main__.Uvs_Useage, 18),
  (__main__.ScaleAnim, 18),
  (__main__.RotateAnim, 18),
@@ -2434,8 +2434,8 @@ string ReadMainP(MAIN_PREFIX &mp) {
  (__main__.RgbWater, 24),
  (__main__.Turbulence, 25),
  (__main__.Material, 26),
- (__main__.PtScreenSpaceScreenSpaceCollisioning, 26),
- (__main__.ScreenSpaceScreenSpaceCollision, 26),
+ (__main__.PtScreenSpaceScreenSpaceScreenSpaceCollisioning, 26),
+ (__main__.ScreenSpaceScreenSpaceScreenSpaceCollision, 26),
  (__main__.Noise, 27),
  (__main__.Blink, 27),
  (__main__.Shovel, 27),
@@ -2549,7 +2549,7 @@ typedef struct{}EffectGroupData;
 typedef struct{}EffectGroup;
 typedef struct{}BoundaryBase;
 typedef struct{}RenderTarget_Target;
-typedef struct{}TexturePath;
+typedef struct{}MaterialPath;
 typedef struct{}TypeLightning_Branch;
 typedef struct{}TypeRibbonBladeSection;
 typedef struct{}TubeLightSection;
