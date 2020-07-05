@@ -4,7 +4,7 @@
 //      File: 
 //   Authors: 叶子, 尾巴, canni, 冰块冰块冰Ice, MHW Modding Wiki, Crimson, Asterisk, Dave uRrr
 //   Version: 3.1
-//   Purpose: 
+//   Purpose
 //  Category: 
 // File Mask: *efx
 //  ID Bytes: 
@@ -189,7 +189,7 @@ const int TURBULENCE                = 937428146     ; // B2 04 E0 37 // TURBULEN
 const int FADEBYEMITTERANGLE               = 2116359897    ; // D9 16 25 7E 
 const int RIBBON         = 733291506     ; // F2 23 B5 2B 
 const int NOISE= 523015778     ; // 62 96 2C 1F 
-const int MATERIAL_ANIMATION     = 2020068998    ; // 86 CE 67 78 
+const int UVCONTROL     = 2020068998    ; // 86 CE 67 78 
 const int FADEBYANGLE               = 1226136492    ; // AC 5B 15 49 
 const int EMITTERBOUNDARY               = 873436648     ; // E8 95 0F 34
 const int PTLIFE          = 493311524     ; // 24 56 67 1D
@@ -351,6 +351,13 @@ typedef struct (int type, int skip){
         int z;
     }
 } XYZ;
+
+typedef struct{
+    float col0[4];
+    float col1[4];
+    float col2[4];
+    float col3[4];
+} matrix;
 
 typedef struct{
     byte red;
@@ -1175,9 +1182,12 @@ typedef struct {
     int     unkn00[2];
     int     occur<name="Spawn Start Delay">;
     int     occur2<name="Randomized Spawn Start Delay">;
-    uint64  unkn1;
-    uint64  unkn2;
-    uint64  unkn3;
+    uint32  unkn10;
+    uint32  unkn11;
+    uint32  unkn20;
+    uint32  unkn21;
+    uint32  unkn30;
+    uint32  unkn31;
 } Spawn;
 
 typedef struct {
@@ -1320,8 +1330,38 @@ typedef struct{
     int     path_len<name="Path Length",bgcolor=0x123456>;
 }dds_data;
 
+typedef struct{
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0;
+    int     applicationRule;//Enum that determine how long and how many times it applies
+    XYZ     color(2,0)[2]<name="Color",read=ReadbyteXYZ,bgcolor=0xFFFF00,optimize=true>;
+    float   brightness<name="Brightness",bgcolor=0x00aaaa>;
+    int     unkn2[3];
+    int     EPVColorSlot1;
+    int     SlotOverride1;
+    float   unknDimension;
+    float   unknDimensionJitter;
+    float   scale<name="Scale",bgcolor=0xaa55aa>;
+    float   scaleJitter;
+    float   width<name="Width",bgcolor=0xaaaa55>;
+    float   widthJitter;
+    float   height<name="Height",bgcolor=0xaaaa55>;
+    float   heightJitter;
+
+    float   flowmapSpeed;
+    float   flowmapSpeedJitter;
+    float   flowmapAcceleration;
+    float   flowmapAccelerationJitter;
+    float   flowmapStrength;
+    float   flowmapStrengthJitter;
+    float   flowmapStrengthAcceleration;
+    float   flowmapStrengthAccelerationJitter;
+
+    int     path_len<name="Path Length",bgcolor=0x123456>;
+}billboard_data;
+
 typedef struct {
-    dds_data dds;
+    billboard_data dds;
     int     unkn5;
     uint64  unkn6;
     float   unkn7;
@@ -1362,7 +1402,7 @@ typedef struct {
     int     unkn0;
     float   speed<name="Speed",bgcolor=0x0000BB>;
     long    NULL;
-    float   unkn2[4*4];
+    matrix   unkn2;
 } ScaleAnim;
 
 typedef struct {
@@ -1778,7 +1818,7 @@ typedef struct {
     float   opacityAcceleration;//Multiplies opacity every second
     float   opacityAccelerationJitter;    
     
-} Material_Animation;
+} UVControl;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -2136,8 +2176,8 @@ typedef struct (int count){
             Noise  noise             <bgcolor=0x00d8ff>;
         else if (ReadInt() == DUMMY             )
             Dummy             dummy             <bgcolor=0xff5a00>;
-        else if (ReadInt() == MATERIAL_ANIMATION   )
-            Material_Animation   material_animation <bgcolor=0xe4ff00>;
+        else if (ReadInt() == UVCONTROL   )
+            UVControl   uvcontrol <bgcolor=0xe4ff00>;
         else if (ReadInt() == FADEBYANGLE             )
             FadeByAngle             fadebyangle             <bgcolor=0xff003c>;
         else if (ReadInt() == RANDOMFIX             )
