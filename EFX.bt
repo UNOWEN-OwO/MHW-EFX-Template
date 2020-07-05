@@ -179,11 +179,11 @@ const int PLEMISSIVE                 = 597394907     ; // DB 85 9B 23 // 光圈
 const int GUIDE                = 1123011591    ; // 07 CC EF 42 // 跟随
 const int LIGHTNING             = 1558046267    ; // 3B E6 DD 5C
 const int PARENTEMISSIVE          = 14579343      ; // 8F 76 DE 00
-const int PTSCREENSPACESCREENSPACESCREENSPACESCREENSPACECOLLISION         = 280719621     ; // 05 71 BB 10
+const int PTCOLLISION         = 280719621     ; // 05 71 BB 10
 const int PLSNOW          = 1267346617    ; // B9 2C 8A 4B
 const int PTBEHAVIOR         = 1179069619    ; // B3 2C 47 46 // EFX行为
 const int MATERIAL               = 1659025771    ; // 6B B9 E2 62 // 材质
-const int BILLBOARD3D_ALT        = 37870541      ; // CD DB 41 02 // ALTERNATIVE DDS USEAGE
+const int PLANE        = 37870541      ; // CD DB 41 02 // ALTERNATIVE DDS USEAGE
 const int RGBWATER               = 1660327299    ; // 83 95 F6 62 // RGBWATER
 const int TURBULENCE                = 937428146     ; // B2 04 E0 37 // TURBULENCE
 const int FADEBYEMITTERANGLE               = 2116359897    ; // D9 16 25 7E 
@@ -194,8 +194,8 @@ const int FADEBYANGLE               = 1226136492    ; // AC 5B 15 49
 const int EMITTERBOUNDARY               = 873436648     ; // E8 95 0F 34
 const int PTLIFE          = 493311524     ; // 24 56 67 1D
 const int STRAINRIBBON      = 1062052310    ; // D6 A1 4D 3F
-const int SCREENSPACESCREENSPACESCREENSPACESCREENSPACECOLLISION             = 697457224     ; // 48 5A 92 29
-const int BEAM_SCREENSPACESCREENSPACESCREENSPACESCREENSPACECOLLISION        = 275476317     ; // 5D 6F 6B 10
+const int SCREENSPACECOLLISION             = 697457224     ; // 48 5A 92 29
+const int RAYCAST        = 275476317     ; // 5D 6F 6B 10
 
 // Unused So Far
 
@@ -609,7 +609,7 @@ typedef struct {
     long spacer;
     int  unknown1;//(usually -1. saw one as 0)
     short unknown2;//(it was 256 so not sure if it is a flag or something else)
-} Beam_ScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollision;
+} RayCast;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -650,7 +650,7 @@ typedef struct {
     int     lifespan;//0 for no interaction, higher values result in more bounce
     int     lifespanJitter;
     float   bounceConditional;
-} ScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollision;
+} ScreenSpaceCollision;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -669,7 +669,7 @@ typedef struct {
     float   unkn1[3];
     int     unkn2[2];
     //float   unkn3[9];
-    float   bounceElasticity;//Bounce Elasticity On ScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollision
+    float   bounceElasticity;//Bounce Elasticity On Collision
     float   bounceElasticityJitter;//Bounce Elasticity Jitters
     float   bounceElasticityMultiplier;
     float   horizontalBounce;//Multiplier of bounce elasticity
@@ -682,7 +682,7 @@ typedef struct {
     int     unkn4[2];
     int     ieIndex;//0 Call External Index?, FF FF FF FF Null
     int     unkn6[3];
-} PtScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollisioning;
+} PtCollision;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -1376,7 +1376,7 @@ typedef struct {
     XYZ     rotation(0,1);
     uint64  unkn7;
     char    p[dds.path_len]<name="Path",bgcolor=0x123456>;
-} Billboard3D_Alt;
+} Plane;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -2204,16 +2204,16 @@ typedef struct (int count){
             Refraction         refraction           <bgcolor=0x24ff00>;
         else if (ReadInt() == MASTERONLY             )
             MasterOnly             masteronly             <bgcolor=0x0018ff>;
-        else if (ReadInt() == BEAM_SCREENSPACESCREENSPACESCREENSPACESCREENSPACECOLLISION      )
-            Beam_ScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollision      beam_screenspacescreenspacescreenspacescreenspacecollision    <bgcolor=0xd800ff>;
+        else if (ReadInt() == RAYCAST      )
+            RayCast      raycast    <bgcolor=0xd800ff>;
         else if (ReadInt() == PARENTEMISSIVE        )
             ParentEmissive        parentemissive        <bgcolor=0x00a8ff>;
         else if (ReadInt() == TUBELIGHT             )
             TubeLight             tubelight             <bgcolor=0x5aff00>;
-        else if (ReadInt() == SCREENSPACESCREENSPACESCREENSPACESCREENSPACECOLLISION           )
-            ScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollision           screenspacescreenspacescreenspacescreenspacecollision           <bgcolor=0x00fff6>;
-        else if (ReadInt() == PTSCREENSPACESCREENSPACESCREENSPACESCREENSPACECOLLISION       )
-            PtScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollisioning    ptscreenspacescreenspacescreenspacescreenspacecollisioning    <bgcolor=0x00fff6>;
+        else if (ReadInt() == SCREENSPACECOLLISION           )
+            ScreenSpaceCollision           screenspacecollision           <bgcolor=0x00fff6>;
+        else if (ReadInt() == PTCOLLISION       )
+            PtCollision    ptcollision    <bgcolor=0x00fff6>;
         else if (ReadInt() == SHOVEL             )
             Shovel             shovel             <bgcolor=0x00d8ff>;
         else if (ReadInt() == LAYOUT             )
@@ -2294,8 +2294,8 @@ typedef struct (int count){
             PtBehavior       ptbehavior       <bgcolor=0x00ff3c>;
         else if (ReadInt() == MATERIAL             )
             Material             material             <bgcolor=0x00fff6>;
-        else if (ReadInt() == BILLBOARD3D_ALT      )
-            Billboard3D_Alt       billboard3D_Alt     <bgcolor=0xffe400>;
+        else if (ReadInt() == PLANE      )
+            Plane       plane     <bgcolor=0xffe400>;
         else if (ReadInt() == RGBWATER             )
             RgbWater             rgbwater             <bgcolor=0x00ff96>;
         else if (ReadInt() == TURBULENCE              )
@@ -2430,7 +2430,7 @@ string ReadMainP(MAIN_PREFIX &mp) {
  (__main__.Transform3D, 2),
  (__main__.Transform2D, 2),
  (__main__.ParentOptions, 3),
- (__main__.Beam_ScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollision, 4),
+ (__main__.RayCast, 4),
  (__main__.LinkPartsVisible, 5),
  (__main__.Launcher_Prop, 6),
  (__main__.SpawnByAngle, 7),
@@ -2456,7 +2456,7 @@ string ReadMainP(MAIN_PREFIX &mp) {
  (__main__.RepeatArea, 14),
  (__main__.Billboard3D, 15),
  (__main__.Ribbon, 15),
- (__main__.Billboard3D_Alt, 15),
+ (__main__.Plane, 15),
  (__main__.Material_Animation, 16),
  (__main__.Mesh, 17),
  (__main__.UVSequence, 18),
@@ -2474,8 +2474,8 @@ string ReadMainP(MAIN_PREFIX &mp) {
  (__main__.RgbWater, 24),
  (__main__.Turbulence, 25),
  (__main__.Material, 26),
- (__main__.PtScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollisioning, 26),
- (__main__.ScreenSpaceScreenSpaceScreenSpaceScreenSpaceScreenSpaceCollision, 26),
+ (__main__.PtCollisioning, 26),
+ (__main__.ScreenSpaceCollision, 26),
  (__main__.Noise, 27),
  (__main__.Blink, 27),
  (__main__.Shovel, 27),
