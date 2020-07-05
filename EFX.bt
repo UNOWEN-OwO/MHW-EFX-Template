@@ -687,7 +687,32 @@ typedef struct {
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     long    unkn0[17];
-    short   unkn1;
+
+    long    unkn00;
+    long    unkn01;
+    long    spacer;
+
+    float   width;
+    float   widthJitter;
+
+    float   height;
+    float   heightJitter;
+
+    float   length;
+    float   lengthJitter;
+
+    long    unkn09;
+
+    long    unkn10;
+    float   unkn11;
+    long    unkn12;
+    long    unkn13;
+    long    unkn14;
+
+    long    pattern;
+    long    unkn16;
+
+    short   unkn17;
 } Shovel;
 
 // LAYOUT see after single prefix
@@ -1838,7 +1863,7 @@ typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     short   unkn0;
     short   unkn1;
-    short   unkn2;
+    short   timing<comment= "0 Attaches at spawn, 4 attaches after the end">;//0
     short   unkn3;
     short   relationIndex;//Internal External Index that will declare the children
     short   unkn5;
@@ -1846,7 +1871,7 @@ typedef struct {
     short   unkn7;
     short   unkn8;
     short   unkn9;
-} PtLife_Binding;
+} PtLife;//Declares this as parent to other main bodies
 
 
 
@@ -2189,7 +2214,7 @@ typedef struct (int count){
         else if (ReadInt() == EMITTERBOUNDARY             )
             EmitterBoundary             emitterboundary             <bgcolor=0x00ff06>;
         else if (ReadInt() == PTLIFE        )
-            PtLife_Binding  ptlife_binding<bgcolor=0x00ff06>;
+            PtLife  ptlife<bgcolor=0x00ff06>;
         else if (ReadInt() == BLINK             )
             Blink             blink             <bgcolor=0x00d8ff>;
         else if (ReadInt() == LUMINANCEBLEED             )
