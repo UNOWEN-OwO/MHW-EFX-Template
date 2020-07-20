@@ -119,10 +119,10 @@
 
 // #HASH EFX
 
-const int EXTERNAL              = 1965813039    ; // 25 31 AF 44 // 外部调用
-const int INTERNAL              = 1152332069    ; // 2F ED 2B 75 // 内部调用
+const int PLAYEFX              = 1965813039    ; // 25 31 AF 44 // 外部调用
+const int PLAYEMITTER              = 1152332069    ; // 2F ED 2B 75 // 内部调用
 
-// #INTERNAL EXTERNAL HASHES
+// #Play Emitter / EXTERNAL HASHES
 //const int CHILD_OF            = ; //5B 76 9F BF // CHILD OF
 //Attributes is the index of the children, indexed in the main body. Those are excluded in the end declaration
 //in general if you are a target of internal external you are excluded in the end declaration
@@ -232,9 +232,6 @@ const int RADIALBLURFILTERBEHAVIOR                          = 1161774816; // 453
 const int EFFECTDATA                                        = 1135895459; // 43B463A3
 const int EMITTEREXECUTOR                                   = 2097355886; // 7D031C6E
 const int TYPEMIE3D                                         = 1771758423; // 699AE357
-const int PLAYEFX                                           = 1965813039; // 752BED2F
-const int SHOVEL                                            = 1240420851; // 49EF51F3
-const int PLAYEMITTER                                       = 1152332069; // 44AF3125
 const int GROUPITEM                                         = 2043222009; // 79C917F9
 const int GPUPHYSICS                                        = 393634900; // 17766454
 const int EMITTERSHAPE3DOVERRIDER                           = 1105989980; // 41EC115C
@@ -278,7 +275,6 @@ const int EXTERNOTOMOSNOW                                   = 1181241355; // 466
 const int GUIDE_MOVETYPE_ALWAYSTHROUGH                      = 1168412664; // 45A48FF8
 const int GUIDE_MOVETYPE_SKIPNEAR                           = 889775412; // 3508E534
 const int GUIDE_MOVETYPE_OLDTYPE                            = 594406925; // 236DEE0D
-const int GUIDE                                             = 1123011591; // 42EFCC07
 
 // #HEADER STRUCT
 typedef struct {
@@ -290,7 +286,7 @@ typedef struct {
     float   NULL;
     int     EFX_Count<name="NON-NULL EFX Type Entry Count">;
     int     EFX_type_len<name="EFX Type Entry Length">;
-    int     IE_Count<name="Internal/External PtLife Count">;
+    int     IE_Count<name="Play Emitter/Player EFX Count">;
     int     UNKN_Count<name="Unknown Prefix Count">;
     int     NULL_Count<name="NULL EFX Type Count">;
     int     NULL_Lenth<name="NULL EFX Entry Length (END OF EFX)">;
@@ -680,13 +676,13 @@ typedef struct {
     int     unkn38;
 
     int     unkn4[2];
-    int     ieIndex;//0 Call External Index?, FF FF FF FF Null
+    int     ieIndex;//0 Call PlayEFX Index?, FF FF FF FF Null
     int     unkn6[3];
 } PtCollision;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
-    long    unkn0[17];
+    //long    unkn0[17];
 
     long    unkn00;
     long    unkn01;
@@ -1024,12 +1020,12 @@ typedef struct {
 typedef struct {
     int     unkn0;
     int     path_len<name="Path Length",bgcolor=0x123456>;
-    long    type<name="External",format=hex,bgcolor=0xAA0000>;
+    long    type<name="Play EFX",format=hex,bgcolor=0xAA0000>;
     int     unkn[7];
     XYZ     xyz(0,0);
     int     NULL[3];
     char    p[path_len]<name="Path",bgcolor=0x123456>;
-} External;
+} PlayEFX;
 
 typedef struct {
     int     unkn[7];
@@ -1038,30 +1034,30 @@ typedef struct {
     int     target_count;
     if (target_count > 0)
         int     targets[target_count];
-} Internal;
+} PlayEmitter;
 
 typedef struct (int x) {
     local int ord = x;
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     count<name="I/E Count",bgcolor=0xFF0000>;
-    long    ie<name="Internal/External",format=hex,bgcolor=0x990000>;
-    if (ie==EXTERNAL)
+    long    ie<name="Play Emitter/Play EFX",format=hex,bgcolor=0x990000>;
+    if (ie==PLAYEFX)
         if (count>0)
-            External external<name="External">;
+            PlayEFX playEFX<name="Play EFX">;
         if (count>1) {
-            long    ie<name="Internal",format=hex,bgcolor=0x990000>;
-            Internal internal;
-    } else if (ie==INTERNAL)
-        Internal internal;
+            long    ie<name="Play Emitter",format=hex,bgcolor=0x990000>;
+            PlayEmitter playEmitter;
+    } else if (ie==PLAYEMITTER)
+        PlayEmitter playEmitter;
 
 } IE_Prefix;
 
 typedef struct {
     local int k;
     for(k=0;k<header.IE_Count;k++) {
-        IE_Prefix ie(k)<name="External/Internal Useage",read=ReadIEP>;
+        IE_Prefix ie(k)<name="Play Emitter/Play EFX Useage",read=ReadIEP>;
     }
-} IE_PREFIX;
+} Play;
 
 
 
@@ -1209,7 +1205,10 @@ typedef struct {
     int     occur2<name="Randomized Spawn Start Delay">;
     uint32  unkn10;
     uint32  unkn11;
-    uint32  unkn20;
+    uint32  repeatAtribute;//0 Repeat indefinitely, above is the number of repetitions; 
+                            //I don't know what exactly it is doing but for Spawn uint32 unkn20 will allow other attributes to repeat once or continuously 
+                            //with another one that is finite with int durationOfSpawnerLifespan 
+                            //if the unkn20 is 0 if it is 1 or higher it will do that many cycles before it stops
     uint32  unkn21;
     uint32  unkn30;
     uint32  unkn31;
@@ -1425,9 +1424,20 @@ typedef struct {
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0;
-    float   speed<name="Speed",bgcolor=0x0000BB>;
+    float   animationSpeed<name="Speed",bgcolor=0x0000BB>;
     long    NULL;
-    matrix   unkn2;
+    float   scaleSpeed;
+    float   scaleSpeedJitter;
+    float   unkn1[2];
+
+    float   scaleAccel;
+    float   scaleAccelJitter;
+
+    float   unkn2[8];
+    int     delay;
+    int     delayJitter;
+
+
 } ScaleAnim;
 
 typedef struct {
@@ -1435,8 +1445,8 @@ typedef struct {
     int     unkn0;
     int     uvs_index<name="UVS File Path Index",bgcolor=0xBB0000>;
     long    NULL;
-    int     unkn2;
-    int     unkn3;
+    int     startingFrame;
+    int     startingFrameJitter;
     float   animationSpeed;
     float   animationSpeedJitter;
     float   animationAcceleration;
@@ -1865,7 +1875,7 @@ typedef struct {
     short   unkn1;
     short   timing<comment= "0 Attaches at spawn, 4 attaches after the end">;//0
     short   unkn3;
-    short   relationIndex;//Internal External Index that will declare the children
+    short   relationIndex;//Play Emitter/Play EFX Index that will declare the children
     short   unkn5;
     short   unkn6;
     short   unkn7;
@@ -2099,7 +2109,7 @@ typedef struct (int x){
 typedef struct {
     local int k;
     for(k=0;k<header.UNKN_Count;k++)
-        Extern_Attribute attribute(k)<name="Extern Prefix",read=ReadExtern>;
+        Extern_Attribute attribute(k)<name="Extern Reference",read=ReadExtern>;
 } Extern;
 
 
@@ -2163,19 +2173,19 @@ typedef struct (int x) {
     local int ord = x;
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     CONST0; // 1
-    int     count<name="Single Prefix Count",bgcolor=0xFF0000>;;
+    int     count<name="Root Count",bgcolor=0xFF0000>;;
     int     CONST1; // 0
     
     local int j;
     for(j=0;j<count;j++)
         if(ReadInt() == 1413509420) // 2C 71 40 54
-            UnitBoundary   sp1<name="Single Prefix Type 1">;
+            UnitBoundary   sp1<name="Unit Boundary">;
         else if (ReadInt() == 2083659062) // 36 1D 32 7C
-            RenderTarget   sp1<name="Single Prefix Type 2">;
+            RenderTarget   sp1<name="Render Target">;
         else if (ReadInt() == 2050487542) // F6 F4 37 7A
-            LayoutBank   sp1<name="Single Prefix Type 3">;
+            LayoutBank   sp1<name="Layout Bank">;
 
-} SINGLE_PREFIX;
+} ROOT;
 
 
 typedef struct {
@@ -2189,6 +2199,7 @@ typedef struct {
 typedef struct (int count){
     local int j;
     for(j=0;j<count && j <100;j++)
+        //Printf("%d\n",j);
         if      (ReadInt() == EXTERNREFERENCE             )
             ExternReference             externreference             <bgcolor=0x1800ff>;
         else if (ReadInt() == FADEBYEMITTERANGLE             )
@@ -2345,7 +2356,7 @@ typedef struct {
     local int k;
     for(k=0;k<header.EFX_Count;k++)
         if(ReadInt() == 1228515738) // 9A A9 39 49
-            SINGLE_PREFIX sp(k)<name="Single Prefix",bgcolor=0x882E61,read=ReadSingleP>;
+            ROOT sp(k)<name="Root",bgcolor=0x882E61,read=ReadSingleP>;
         else
             MAIN_PREFIX mp(k)<read=ReadMainP>;
 } MAIN;
@@ -2353,23 +2364,23 @@ typedef struct {
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x0000ff>;
     long    unkn0[3];
-    int     count<name="NULL EFX Entry Count",bgcolor=0x0000aa>;
-    int     entry[count]<name="NULL EFX Entry">;
-} NULL_EFX;
+    int     count<name="Subselection Table Entry Count",bgcolor=0x0000aa>;
+    int     entry[count]<name="Subselection Entry">;
+} SUBSELECT_TABLE;
 
 typedef struct {
     local int k;
     for(k=0;k<header.NULL_Count;k++)
-        NULL_EFX  null_efx<name="NULL EFX">;
-} NULL;//Acts as a table of subselectable sections for the epv subselection calls
+        SUBSELECT_TABLE  subselect_table<name="SUBSELECT TABLE">;
+} SUBSELECT;//Acts as a table of subselectable sections for the epv subselection calls
 
 // #HEADER
 Header          header<name="Header",bgcolor=0x00ffff>;
 EFX_Type        efx_Type<name="EFX Type",bgcolor=0xf000ff>;
-IE_PREFIX       ie_p<name="External/Internal Useage",bgcolor=0x7C9F35>;
-Extern          extern<name="Unknown Prefix",bgcolor=0x277553>;
+Play            play<name="Play Emitter/Play EFX Useage",bgcolor=0x7C9F35>;
+Extern          extern<name="External Reference",bgcolor=0x277553>;
 MAIN            main<name="Main Body",bgcolor=0x1b1b1b>;
-NULL            null<name="NULL EFX",bgcolor=0xffffff>;
+SUBSELECT       null<name="Subselection Tables",bgcolor=0xffffff>;
 int             end[header.End_Count]<name="End EFX (Acutal?)",bgcolor=0x999887>;
 
 
@@ -2423,10 +2434,10 @@ string ReadExtern(Extern_Attribute &up) {
     return s;
 }
 
-string ReadSingleP(SINGLE_PREFIX &sp) {
+string ReadSingleP(ROOT &sp) {
     local int order = sp.ord + header.IE_Count + header.UNKN_Count;
     string s;
-    SPrintf(s, "SP Map to: [%d] %s", order, efx_Type.efx_T[order].str);
+    SPrintf(s, "ROOT Map to: [%d] %s", order, efx_Type.efx_T[order].str);
     return s;
 }
 
@@ -2589,8 +2600,6 @@ typedef struct{}RadialBlurFilterBehavior;
 typedef struct{}EffectData;
 typedef struct{}EmitterExecutor;
 typedef struct{}TypeMie3D;
-typedef struct{}PlayEfx;
-typedef struct{}PlayEmitter;
 typedef struct{}GroupItem;
 typedef struct{}GpuPhysics;
 typedef struct{}EmitterShape3DOverrider;
