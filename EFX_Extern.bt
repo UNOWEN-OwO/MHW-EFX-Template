@@ -1,0 +1,195 @@
+//------------------------------------------------
+//--- 010 Editor v9.0 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct {
+    long    unkn[57];
+} ExternTransform3D;
+
+typedef struct {
+    long    unkn[27];
+} ExternVelocity3D;
+
+typedef struct {
+    long    unkn[19];
+} ExternScaleAnim;
+
+typedef struct {
+    long    unkn[28];
+} ExternRgbFire;
+
+typedef struct {
+    long    unkn[18];
+} ExternSpawn;
+
+typedef struct {
+    long    unkn[44];
+    byte    unkn1;
+} ExternMesh;
+
+typedef struct {
+    long    unkn[33];
+    byte    unkn1;
+} ExternBillboard3D;
+
+typedef struct {
+    long    unkn[22];
+} ExternEmitterShape3D;
+
+typedef struct {
+    long    unkn[11];
+    byte    unkn1;
+} ExternUVSequence;
+
+typedef struct {
+    long    unkn[19];
+} ExternPlEmissive;
+
+typedef struct {
+    long    unkn[12];
+} ExternVelocity3D0;
+
+typedef struct {
+    long    unkn[90];
+    byte    unkn1;
+} ExternVelocity3D1;
+
+typedef struct {
+    long    unkn[21];
+} ExternVelocity3D2;
+
+typedef struct {
+    long    unkn[40];
+    byte    unkn1;
+} ExternRgbWater;
+
+typedef struct {
+    long    unkn[18];
+} ExternVelocity3D5;
+
+typedef struct {
+    long    unkn[20];
+} ExternVelocity3D6;
+
+typedef struct {
+    long    unkn[39];
+    byte    unkn1;
+} ExternVelocity3D7;
+
+
+typedef struct (int t) {
+    if (t==EXTERNTRANSFORM3D) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        ExternTransform3D  transform3D[attri_count];
+    } else if (t==EXTERNVELOCITY3D) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        ExternVelocity3D  velocity3D[attri_count];
+    } else if (t==EXTERNSCALEANIM) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        ExternScaleAnim  scaleAnim[attri_count];
+    } else if (t==EXTERNRGBFIRE) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        ExternRgbFire  rgbFire[attri_count];
+    } else if (t==EXTERNSPAWN) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        ExternSpawn  spawn[attri_count];
+    } else if (t==EXTERNMESH) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        ExternMesh  mesh[attri_count];
+    } else if (t==EXTERNBILLBOARD3D) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        ExternBillboard3D  billboard3d[attri_count];
+    } else if (t==EXTERNEMITTERSHAPE3D) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        ExternEmitterShape3D  emitterShape3D[attri_count];
+    } else if (t==EXTERNUVSEQUENCE) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        ExternUVSequence  uvSequence[attri_count];
+    } else if (t==EXTERNPLEMISSIVE){
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        ExternPlEmissive  p1Emissive[attri_count];
+    } else if (t==EXTERNVELOCITY3D0) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        ExternVelocity3D0 velocity3D0[attri_count];
+    } else if (t==EXTERNVELOCITY3D1) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        ExternVelocity3D1 velocity3D1[attri_count];
+    } else if (t==EXTERNVELOCITY3D2) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        ExternVelocity3D2 velocity3D2[attri_count];
+    } else if (t==EXTERNPTBEHAVIOR) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        local int z;
+        for(z=0;z<attri_count;z++)
+            EFX_Behavior efx_behaiv;
+    } else if (t==EXTERNRGBWATER) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        ExternRgbWater rgbWater[attri_count];
+    } else if (t==EXTERNVELOCITY3D5) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        ExternVelocity3D5 velocity3D5[attri_count];
+    } else if (t==EXTERNVELOCITY3D6) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        ExternVelocity3D6 velocity3D6[attri_count];
+    }  else if (t==EXTERNVELOCITY3D7) {
+        int     unkn;
+        int     attri_count<bgcolor=0xFFFF00>;
+        ExternVelocity3D7 velocity3D7[attri_count];
+    } 
+
+} Extern_Data;
+
+
+typedef struct (int x){
+    local int ord = x;
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    long    NULL0;
+    int     count<name="Extern Prefix Count",bgcolor=0xFF0000>;
+    long    NULL1;
+    local int n;
+    for (n=0;n<count;n++){
+        long    np<name="Extern P",format=hex,bgcolor=0x990000>;
+        Extern_Data    data(np);
+    }
+} Extern_Attribute;
+
+typedef struct {
+    Extern_Attribute attribute(k)[header.UNKN_Count]<name="Extern Reference",read=ReadExtern,optimize = false>;
+} Extern;
+
+typedef struct{}ExternFadeByAngle;
+typedef struct{}ExternFadeByDepth;
+typedef struct{}ExternStrainRibbon;
+typedef struct{}ExternUVControl;
+typedef struct{}ExternTurbulence;
+typedef struct{}ExternItem;
+typedef struct{}BasicExternItem;
+typedef struct{}ExternGuide;
+typedef struct{}ExternParentSnow;
+typedef struct{}ExternOtomoSnow;

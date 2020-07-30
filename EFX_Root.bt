@@ -1,0 +1,100 @@
+//------------------------------------------------
+//--- 010 Editor v9.0 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x990000>;
+    int     unkn0[2];
+    float   unkn1[7];
+    long    NULL;
+} UnitBoundary;
+
+typedef struct {
+    int     path_len<name="Path Length",bgcolor=0x654321>;
+    char    p[path_len]<name="Path",bgcolor=0x123456>;
+} RenderTarget_Path;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x990000>;
+    int     path_count<name="Path Count",bgcolor=0xFFFF00>;
+    local int i;
+//  Hard code 6
+    for(i=0;i<6;i++)
+        RenderTarget_Path paths<name="Paths">;
+    long    NULL;
+    int     unkn0[6];
+    float   unkn1[9];
+} RenderTarget;
+
+// #SUPPORT STRUCT
+typedef union {
+    float   unknf;
+    int     unkni;
+} UN;
+
+typedef struct {
+    int     block_type<bgcolor=0x339933>;
+    if (block_type > 0 && block_type < 6)
+        UN  p[count*2]<read=ReadUN>;
+    else if (block_type == 0 || block_type == 6)
+        UN  p[count*3]<read=ReadUN>;
+    else if (block_type == 7){
+        int unkn0;
+        UN  p[count*2 * unkn0]<read=ReadUN>;
+    } else
+        Printf("LayoutBank_B BLOCK TYPE ERROR %d\n", block_type);
+
+} LayoutBank_B;
+
+typedef struct {
+    int     count<bgcolor=0xFF9900>;
+    if(count>0) {
+        while (ReadInt() != -1)
+            LayoutBank_B spb;
+        long    end<bgcolor=0xAAAAAA>;
+    }
+} LayoutBank_Block;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x990000>;
+    int     unkn0;
+    int     block_count<bgcolor=0x00FF00>;
+    local int i;
+    for(i=0;i<block_count;i++)
+        LayoutBank_Block spb;
+} LayoutBank;
+
+
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     unkn0[2];
+    long    unkn1[4];
+    LayoutBank_Block spb;
+} Layout;
+
+
+typedef struct (int x) {
+    local int ord = x;
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     CONST0; // 1
+    int     count<name="Root Count",bgcolor=0xFF0000>;;
+    int     CONST1; // 0
+    
+    local int j;
+    for(j=0;j<count;j++)
+        if(ReadInt() == 1413509420) // 2C 71 40 54
+            UnitBoundary   sp1<name="Unit Boundary">;
+        else if (ReadInt() == 2083659062) // 36 1D 32 7C
+            RenderTarget   sp1<name="Render Target">;
+        else if (ReadInt() == 2050487542) // F6 F4 37 7A
+            LayoutBank   sp1<name="Layout Bank">;
+} Root;

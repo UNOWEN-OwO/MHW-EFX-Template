@@ -1,0 +1,195 @@
+//------------------------------------------------
+//--- 010 Editor v9.0 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+// #HASH EFX
+
+const int PLAYEFX              = 1965813039    ; // 25 31 AF 44 // 外部调用
+const int PLAYEMITTER              = 1152332069    ; // 2F ED 2B 75 // 内部调用
+
+// #Play Emitter / EXTERNAL HASHES
+//const int CHILD_OF            = ; //5B 76 9F BF // CHILD OF
+//Attributes is the index of the children, indexed in the main body. Those are excluded in the end declaration
+//in general if you are a target of internal external you are excluded in the end declaration
+
+// NEW DISCOVERERD
+const int EXTERNREFERENCE               = 351869514     ; // 4A 1A F9 14
+const int FAKEPLANE               = 1257264016    ; // 90 53 F0 4A
+const int DUMMY               = 201720946     ; // 72 04 06 0C
+const int RANDOMFIX               = 674258598     ; // A6 5E 30 28
+const int TRANSFORM2D               = 428328940     ; // EC C7 87 19
+const int BILLBOARD2D               = 1524169119    ; // 9F F9 D8 5A
+const int BLINK               = 1354601878    ; // 96 95 BD 50
+const int LUMINANCEBLEED               = 71967929      ; // B9 24 4A 04
+const int EMITTERSHAPE2D               = 584030352     ; // 90 98 CF 22
+const int VELOCITY2D               = 341394325     ; // 95 43 59 14
+const int REFRACTION            = 957228464     ; // B0 25 0E 39
+const int MASTERONLY               = 1616705008    ; // F0 F5 5C 60
+const int TUBELIGHT               = 252064274     ; // 12 32 06 0F
+const int SHOVEL               = 1240420851    ; // F3 51 EF 49
+const int LAYOUT               = 156539255     ; // 77 99 54 09
+const int FAKEDOF               = 212167510     ; // 56 6B A5 0C
+const int REPEATAREA               = 842043995     ; // 5B 92 30 32
+const int LINKPARTSVISIBLE               = 812022019     ; // 03 79 66 30
+const int PTTRIGGER               = 2115227124    ; // F4 CD 13 7E
+const int PATHCHAIN               = 1217635032    ; // D8 A2 93 48
+const int HOMING  = 1535857470    ; // 3E 53 8B 5B
+const int EMITTERSHAPEMESH               = 1111321825    ; // E1 6C 3D 42
+const int SPAWNBYANGLE               = 1916268445    ; // 9D EF 37 72
+const int CHECKPUREATTRIBUTE               = 283684959     ; // 5F B0 E8 10
+const int TONEMAPFILTER               = 845585410     ; // 02 9C 66 32
+const int COLORCORRECTFILTER               = 1293936879    ; // EF E8 1F 4D
+
+// 31-45 See below
+
+
+const int TIML                  = 1819109748    ; // 74 69 6D 6C // 关键帧动画
+const int TRANSFORM3D       = 10286765      ; // AD F6 9C 00 // 基本变换
+const int PARENTOPTIONS       = 368199626     ; // CA 47 F2 15 // 变换约束
+const int SPAWN     = 1921765292    ; // AC CF 8B 72 // 发射器属性
+const int LIFE            = 1320868484    ; // 84 DA BA 4E // 生命周期
+const int EMITTERSHAPE3D        = 1003792849    ; // D1 A9 D4 3B // 对称复制
+const int VELOCITY3D      = 222458580     ; // D4 72 42 0D // 动量控制
+const int FADEBYDEPTH          = 859243212     ; // CC 02 37 33 // 可见距离
+const int RIBBONBLADE        = 319363982     ; // 8E 1B 09 13 // DDS轨迹属性
+const int BILLBOARD3D            = 1136904414    ; // DE C8 C3 43 // DDS(CM)调用   // CM_Useage
+const int SCALEANIM             = 480396424     ; // 88 44 A2 1C // 播放循环
+const int UVSEQUENCE            = 1698970185    ; // 49 3A 44 65 // UVS调用
+const int ALPHACORRECTION   = 61219887      ; // 2F 24 A6 03 // 透明渐变控制
+const int SHADERSETTINGS      = 1978267738    ; // 5A F8 E9 75 // 层级可见性
+const int RGBFIRE    = 459578090     ; // EA 9A 64 1B // 颜色属性控制
+const int MESH           = 276670093     ; // 8D A6 7D 10 // mod3调用
+const int ROTATEANIM     = 1774142981    ; // 05 46 BF 69 // 自旋转控制 
+const int PLEMISSIVE                 = 597394907     ; // DB 85 9B 23 // 光圈
+const int GUIDE                = 1123011591    ; // 07 CC EF 42 // 跟随
+const int LIGHTNING             = 1558046267    ; // 3B E6 DD 5C
+const int PARENTEMISSIVE          = 14579343      ; // 8F 76 DE 00
+const int PTCOLLISION         = 280719621     ; // 05 71 BB 10
+const int PLSNOW          = 1267346617    ; // B9 2C 8A 4B
+const int PTBEHAVIOR         = 1179069619    ; // B3 2C 47 46 // EFX行为
+const int MATERIAL               = 1659025771    ; // 6B B9 E2 62 // 材质
+const int PLANE        = 37870541      ; // CD DB 41 02 // ALTERNATIVE DDS USEAGE
+const int RGBWATER               = 1660327299    ; // 83 95 F6 62 // RGBWATER
+const int TURBULENCE                = 937428146     ; // B2 04 E0 37 // TURBULENCE
+const int FADEBYEMITTERANGLE               = 2116359897    ; // D9 16 25 7E 
+const int RIBBON         = 733291506     ; // F2 23 B5 2B 
+const int NOISE= 523015778     ; // 62 96 2C 1F 
+const int UVCONTROL     = 2020068998    ; // 86 CE 67 78 
+const int FADEBYANGLE               = 1226136492    ; // AC 5B 15 49 
+const int EMITTERBOUNDARY               = 873436648     ; // E8 95 0F 34
+const int PTLIFE          = 493311524     ; // 24 56 67 1D
+const int STRAINRIBBON      = 1062052310    ; // D6 A1 4D 3F
+const int SCREENSPACECOLLISION             = 697457224     ; // 48 5A 92 29
+const int RAYCAST        = 275476317     ; // 5D 6F 6B 10
+
+// Unused So Far
+
+const int EFFECTATTRCOLORTBL                                = 1690896576; // 64C908C0
+const int MHEFFECTDECALBEHAVIOR                             = 1128324015; // 4340DBAF
+const int MHEFFECTDECALBEHAVIOR_GETTOTALFIRELIFEFRAME       = 1250245974; // 4A853D56
+const int MHEFFECTDECALBEHAVIOR_GETTOTALSMOKELIFEFRAME      = 409149100; // 18631EAC
+const int MHEFFECTDECALBEHAVIOR_GETTOTALSPECULARLIFEFRAME   = 173467491; // 0A56E763
+const int MHEFFECTDECALBEHAVIOR_GETTOTALSHEETLIFEFRAME      = 1969325070; // 7561840E
+const int MHEFFECTDECALBEHAVIOR_GETTOTALGTOBLIFEFRAME       = 1296538020; // 4D4799A4
+const int CCOORDPARAMETER                                   = 1892103853; // 70C736AD
+const int IEFFECTITEM                                       = 19434345; // 01288B69
+const int ITEM                                              = 1215086948; // 486CC164
+const int DYNAMICRAY                                        = 1708014292; // 65CE3AD4
+const int FLOWMAPSETTINGS                                   = 1184613359; // 469BC3EF
+const int EFFECTEXECUTOR                                    = 1213896611; // 485A97A3
+const int EXTERNFADEBYANGLE                                 = 1415485201; // 545E9711
+const int EXTERNFADEBYDEPTH                                 = 779931249; // 2E7CCE71
+const int EXTERNSTRAINRIBBON                                = 167781675; // 0A00252B
+const int EXTERNUVCONTROL                                   = 1243935109; // 4A24F185
+const int EXTERNTURBULENCE                                  = 777721399; // 2E5B1637
+const int EXTERNITEM                                        = 1226458230; // 491A4476
+const int BASICEXTERNITEM                                   = 1771113640; // 69910CA8
+const int EFFECTEVENT                                       = 1923506186; // 72A6600A
+const int EVENTBEHAVIORPROPERTY                             = 346395602; // 14A593D2
+const int DECALBEHAVIOR                                     = 657374606; // 272EBD8E
+const int VARIANT                                           = 588732697; // 23175919
+const int LIGHTBEHAVIOR                                     = 603167555; // 23F39B43
+const int POINTLIGHTBEHAVIOR                                = 110612213; // 0697CEF5
+const int SPOTLIGHTBEHAVIOR                                 = 804054309; // 2FECE525
+const int UEFFECTRADIALBLURFILTER                           = 1183727815; // 468E40C7
+const int FILTERBEHAVIOR                                    = 618247822; // 24D9B68E
+const int RADIALBLURFILTERBEHAVIOR                          = 1161774816; // 453F46E0
+const int EFFECTDATA                                        = 1135895459; // 43B463A3
+const int EMITTEREXECUTOR                                   = 2097355886; // 7D031C6E
+const int TYPEMIE3D                                         = 1771758423; // 699AE357
+const int GROUPITEM                                         = 2043222009; // 79C917F9
+const int GPUPHYSICS                                        = 393634900; // 17766454
+const int EMITTERSHAPE3DOVERRIDER                           = 1105989980; // 41EC115C
+const int MEMOITEM                                          = 1484483739; // 587B6C9B
+const int IITEMPROPERTYINFO                                 = 716000960; // 2AAD4EC0
+const int EFFECTDATABASE_ITEMPROPERTYINFO                   = 997811050; // 3B79636A
+const int EFFECTDATABASE                                    = 1987779161; // 767B1A59
+const int TIMELINERESOURCE                                  = 610766284; // 24678DCC
+const int TIMELINELISTRESOURCE                              = 1650401859; // 625F2243
+const int INODE                                             = 881621517; // 348C7A0D
+const int NODE                                              = 1376259135; // 52080C3F
+const int ROOT                                              = 1099111713; // 41831D21
+const int GROUP                                             = 256197774; // 0F45448E
+const int EMITTER                                           = 668609413; // 27DA2B85
+const int ACTION                                            = 1956806151; // 74A27E07
+const int FIELD                                             = 963659027; // 39704513
+const int EXTERN                                            = 242552826; // 0E750FFA
+const int NODE_GETTYPE                                      = 1929273712; // 72FE6170
+const int VELOCITYBASE                                      = 261120345; // 0F906159
+const int TYPEBILLBOARDBASE                                 = 1590369728; // 5ECB1DC0
+const int EFFECTGROUPDATA                                   = 1608814288; // 5FE48ED0
+const int EFFECTGROUP                                       = 617098856; // 24C82E68
+const int BOUNDARYBASE                                      = 1100150108; // 4192F55C
+const int RENDERTARGET_TARGET                               = 1478767196; // 5824325C
+const int TEXTUREPATH                                       = 386986771; // 1710F313
+const int TYPELIGHTNING_BRANCH                              = 2120416030; // 7E62FB1E
+const int TYPERIBBONBLADESECTION                            = 19293690; // 012665FA
+const int TUBELIGHTSECTION                                  = 292704954; // 117252BA
+const int EFFECTSETTINGPRESET                               = 712996915; // 2A7F7833
+const int EFFECTTIMEREDEEMPRESET                            = 916096233; // 369A84E9
+const int MATERIAL_MATERIALPARAM                            = 312479394; // 12A00EA2
+const int MATERIAL_MATERIALNODEDATA                         = 1851897063; // 6E61B4E7
+const int SHAPEMESHHOLDER                                   = 738773001; // 2C08C809
+const int CEFFECTPROVIDERCUSTOMDATA_ACTIONELEMENT           = 510816299; // 1E72702B
+const int CEFFECTPROVIDERCUSTOMDATA_UNITELEMENT             = 1178760989; // 4642771D
+const int CEFFECTPROVIDERCUSTOMDATA                         = 1867843721; // 6F550889
+const int PLEMISSIVEMANAGER                                 = 910471525; // 3644B165
+const int EXTERNGUIDE                                       = 766474541; // 2DAF792D
+const int EXTERNPARENTSNOW                                  = 74649634; // 04731022
+const int EXTERNOTOMOSNOW                                   = 1181241355; // 4668500B
+const int GUIDE_MOVETYPE_ALWAYSTHROUGH                      = 1168412664; // 45A48FF8
+const int GUIDE_MOVETYPE_SKIPNEAR                           = 889775412; // 3508E534
+const int GUIDE_MOVETYPE_OLDTYPE                            = 594406925; // 236DEE0D
+const int SPAWNBYOCCLUSION                                  = 1913890808; // F8 A7 13 72
+const int FADEBYOCCLUSION                                   = 64111316; // D4 42 D2 03
+const int PARENTSNOW                                        = 215153612; // CC FB D2 0C
+const int OTOMOSNOW                                         = 180261702; // 46 93 BE 0A
+const int PARENTMATERIAL                                    = 638869640; // 88 60 14 26
+
+const int EXTERNTRANSFORM3D             = 500644368     ; // 10 3A D7 1D
+const int EXTERNMESH                    = 1850314036    ; // 34 8D 49 6E
+const int EXTERNPLEMISSIVE              = 725249589     ; // 35 6E 3A 2B
+const int EXTERNPTBEHAVIOR              = 1610366518    ; // 36 3E FC 5F
+const int EXTERNRGBWATER                = 482524730     ; // 3A BE C2 1C
+const int EXTERNVELOCITY3D              = 351887441     ; // 51 60 F9 14
+const int EXTERNEMITTERSHAPE3D          = 1880343637    ; // 55 C4 13 70
+const int EXTERNVELOCITY3D5             = 705591903     ; // 5F 7A 0E 2A
+const int EXTERNSPAWN                   = 28559457      ; // 61 C8 B3 01
+const int EXTERNRGBFIRE                 = 2069124466    ; // 72 55 54 7B
+const int EXTERNVELOCITY3D1             = 839790967     ; // 77 31 0E 32
+const int EXTERNVELOCITY3D6             = 1879331968    ; // 80 54 04 70
+const int EXTERNBILLBOARD3D             = 693979274     ; // 8A 48 5D 29
+const int EXTERNSCALEANIM               = 786529163     ; // 8B 7B E1 2E
+const int EXTERNVELOCITY3D0             = 1338793878    ; // 96 5F CC 4F
+const int EXTERNUVSEQUENCE              = 2097096908    ; // CC 28 FF 7C
+const int EXTERNVELOCITY3D7             = 805496014     ; // CE E4 02 30
+const int EXTERNVELOCITY3D2             = 283026906     ; // DA A5 DE 10

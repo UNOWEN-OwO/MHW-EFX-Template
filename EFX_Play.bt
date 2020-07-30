@@ -1,0 +1,48 @@
+//------------------------------------------------
+//--- 010 Editor v9.0 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+typedef struct {
+    int     unkn0;
+    int     path_len<name="Path Length",bgcolor=0x123456>;
+    long    type<name="Play EFX",format=hex,bgcolor=0xAA0000>;
+    int     unkn[7];
+    XYZ     xyz(3);
+    int     NULL[3];
+    char    p[path_len]<name="Path",bgcolor=0x123456>;
+} PlayEFX;
+
+typedef struct {
+    int     unkn[7];
+    XYZ     xyz(3);
+    int     NULL[3];
+    int     target_count;
+    int     targets[target_count];
+} PlayEmitter;
+
+typedef struct (int x) {
+    local int ord = x;
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    int     count<name="I/E Count",bgcolor=0xFF0000>;
+    local int i;
+    for (i=0;i<count;i++){
+        long typeHash<name="Play Emitter/Play EFX Hash",format=hex,bgcolor=0x990000>;
+        if (typeHash == PLAYEFX) PlayEFX play<name="Play EFX">;
+        else if (typeHash == PLAYEMITTER) PlayEmitter play<name="Play Emitter",format=hex,bgcolor=0x990000>;
+        else Printf("Error Identifying Play Type Hash %X",typeHash);
+    }
+} PlayData;
+
+typedef struct {
+    local int k;
+    for (k = 0; k<header.IE_Count; k++)
+    PlayData Data(k)<name="Play Emitter/Play EFX Useage",read=ReadIEP>;
+} Play;

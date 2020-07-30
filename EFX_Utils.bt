@@ -1,0 +1,70 @@
+//------------------------------------------------
+//--- 010 Editor v9.0 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+typedef struct {
+    string str;
+} STRING;
+
+// type 0 - float; 1 - int; 2 - ubyte; 3 - jitterless float
+typedef struct (int type){
+    if (type==0){
+        float fixed_x;
+        float random_x;
+        //FSkip(skip*4);
+        float fixed_y;
+        float random_y;
+        //FSkip(skip*4);
+        float fixed_z;
+        float random_z;
+        //FSkip(skip*4);
+    }else if (type == 3){
+        float x;
+        float y;
+        float z;
+    } else if (type == 2){
+        ubyte x;
+        ubyte y;
+        ubyte z;
+        ubyte NULL<bgcolor=0xffffff>;
+    } else if (type == 1){
+        int x;
+        int y;
+        int z;
+    }
+} XYZ;
+
+typedef struct{
+    long    EPVColorSlotHead;
+    XYZ     color1(2)<name="Color 1",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
+    long    NULL2;
+    XYZ     color2(2)<name="Color 2",read=ReadbyteXYZ,bgcolor=0xFFFF00>;
+    int     spacer4;
+    int     unkn15;
+    float   size<bgcolor=0x91A480>;
+    int     unkn17;
+    byte    unkn18[2];
+    short   spacer5<bgcolor=0x91A480>;
+}EPVColorSlot;
+
+typedef struct{
+    float col0[4];
+    float col1[4];
+    float col2[4];
+    float col3[4];
+} matrix;
+
+typedef struct{
+    ubyte red;
+    ubyte green;
+    ubyte blue;
+    ubyte alpha;
+} colour;
