@@ -170,7 +170,7 @@ typedef struct {
 //    int     unkn9[2];
 //} Dummy;
 
-string ReadSet0(TIML_Set0& r) {
+string ReadTIML_Data(TIML_Data& r) {
     string s;
     SPrintf(s, "offSet: %d \t Count: %d \t [%d %d %f %f %d %x]", 
         r.offSet, r.unkn0, r.unkn1, r.unkn2, r.animationLength, r.loopStartPoint, r.loopControl, r.unknHash);
@@ -400,24 +400,6 @@ string ReadMainP(MAIN_PREFIX &mp) {
 }
 */
 
-string ReadSet1(TIML_Set1& r) {
-    string s;
-    SPrintf(s, "offSet: %d \t Count: %d \t [%xh]", r.offSet, r.Count, r.nTimelineParamHash);
-    return s;
-}
-
-string ReadSet2(TIML_Set2& r) {
-    string s;
-    SPrintf(s, "offSet: %d \t Count: %d \t [%xh %d]", r.offSet, r.Count, r.datatypeHash, r.unkn1);
-    return s;
-}
-
-string ReadFoot(TIML_Foot& r) {
-    string s;
-    SPrintf(s, "[(%f|%d) [%f->%f] Frame#: %f Controls: %d/%d]", r.datai, r.dataf, r.bounceForwardLimit, r.bounceBacwardsLimit, r.key_frame_number, r.easingMethod, r.interpolationType1);
-    return s;
-}
-
 // #DISPLAY FUNCTION
 string ReadintXYZ(XYZ& h) {
     string s;
@@ -464,9 +446,8 @@ string ReadIEP(PlayData &ie) {
 }
 
 string ReadExtern(Extern_Attribute &up) {
-    local int order = up.ord + header.IE_Count;
     string s;
-    SPrintf(s, "UP Map to: [%d] %s", order, efx_Type.efx_T[order].str);
+    SPrintf(s, "Extern Map");
     return s;
 }
 

@@ -1,0 +1,22 @@
+//------------------------------------------------
+//--- 010 Editor v9.0.1 Binary Template
+//
+//      File: 
+//   Authors: Dave uRrr, Silvris, Crimson, AsteriskAmpersand
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: *.timl
+//  ID Bytes: 
+//   History: 
+//      August 9 2019
+//          -Figured out the Header along with the Hash
+//          -Start the main struct, seems it has offsets
+//
+//      Oct 11, 2019
+//          -Seem that there are subsets with each Time List Struct
+//          -A lot of unknowns but most of the structs are figured out
+//------------------------------------------------
+#include <EFX_TIML.bt>
+
+TIML_Header File;

@@ -86,7 +86,8 @@ typedef struct {
 } ExternVelocity3D7;
 
 
-typedef struct (int t) {
+typedef struct{
+    long t;
     if (t==EXTERNTRANSFORM3D) {
         int     unkn;
         int     attri_count<bgcolor=0xFFFF00>;
@@ -166,21 +167,17 @@ typedef struct (int t) {
 } Extern_Data;
 
 
-typedef struct (int x){
-    local int ord = x;
+typedef struct{
+    //local int ord = x;
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     long    NULL0;
     int     count<name="Extern Prefix Count",bgcolor=0xFF0000>;
     long    NULL1;
-    local int n;
-    for (n=0;n<count;n++){
-        long    np<name="Extern P",format=hex,bgcolor=0x990000>;
-        Extern_Data    data(np);
-    }
+    Extern_Data    data[count];
 } Extern_Attribute;
 
 typedef struct {
-    Extern_Attribute attribute(k)[header.UNKN_Count]<name="Extern Reference",read=ReadExtern,optimize = false>;
+    Extern_Attribute attribute[header.UNKN_Count]<name="Extern Reference",read=ReadExtern,optimize = false>;
 } Extern;
 
 typedef struct{}ExternFadeByAngle;
