@@ -14,7 +14,6 @@
 #include <EFX_Utils.bt>
 
 typedef struct {
-    long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0;
     XYZ     translate(0)<name="Translation T",bgcolor=0xFFAA00,read=ReadfloatXYZ>;
     XYZ     rotate(0)<name="Rotation R",bgcolor=0xAA00FF,read=ReadfloatXYZ>;  // Format Exceptions too many to diaplay
@@ -29,6 +28,11 @@ typedef struct {
     XYZ     Scale_Velocity_Modifier(0)<optimize=true,read=ReadfloatXYZ>;//Multiplier/Acceleration? [0,1]
 
     int     enableVelocityBitflag;  // {0: 26795, 1: 2438, 2: 340, 3: 59} Bitflag: Pos0: Enable Velocity, Pos1: Enable Acceleration?
+} ExternTransform3D;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    ExternTransform3D transform3d;
 } Transform3D;
 
 typedef struct {
@@ -47,9 +51,7 @@ typedef struct {
     int     bone_lim<name="Bone Limitation">;
 } ParentOptions;
 
-
-typedef struct {
-    long    type<name="Type",format=hex,bgcolor=0x000000>;
+typedef struct{
     int     unkn0;
     int     instancesSpawnedTotal;
     int     instancesSpawnedPerFrame;
@@ -70,7 +72,13 @@ typedef struct {
     uint32  unkn21;
     uint32  unkn30;
     uint32  unkn31;
+}ExternSpawn;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    ExternSpawn spawn;
 } Spawn;
+
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -86,8 +94,7 @@ typedef struct {
     long    indefiniteLifespan;
 } Life;
 
-typedef struct {
-    long    type<name="Type",format=hex,bgcolor=0x000000>;
+typedef struct{
     int     unkn0;
     XYZ     transform(0);
     int     patternControl<comment="0 - Cube, 1 - Sphere, 2 - Ring, 3 - Spot">;
@@ -99,12 +106,15 @@ typedef struct {
     int     unkn3_i1;
     int     spawnCount;
     float   unkn3_f2[3];
-
     int     unkn4;
-} EmitterShape3D;
+}ExternEmitterShape3D;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
+    ExternEmitterShape3D emitterShape3d;
+} EmitterShape3D;
+
+typedef struct {
     int     unkn0[3];
     float   unkn1[2];
     long    NULL0[4];
@@ -131,7 +141,13 @@ typedef struct {
     int     gravityDelay;
     int     gravityDelayJitter;
     long    NULL2;
+} ExternVelocity3D;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    ExternVelocity3D velocity3d;
 } Velocity3D;
+
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -212,8 +228,7 @@ typedef struct{
     int     path_len<name="Path Length",bgcolor=0x123456>;
 }dds_data;
 
-typedef struct{
-    long    type<name="Type",format=hex,bgcolor=0x000000>;
+typedef struct{    
     int     unkn0;
     int     applicationRule;//Enum that determine how long and how many times it applies
     XYZ     color(2)[2]<name="Color",read=ReadbyteXYZ,bgcolor=0xFFFF00,optimize=true>;
@@ -242,7 +257,7 @@ typedef struct{
     int     path_len<name="Path Length",bgcolor=0x123456>;
 }billboard_data;
 
-typedef struct {
+typedef struct{
     billboard_data dds;
     int     unkn5;
     uint64  unkn6;
@@ -250,6 +265,11 @@ typedef struct {
     int     unkn8;
     int     unkn9;
     char    p[dds.path_len]<name="Path",bgcolor=0x123456>;
+}ExternBillboard3D;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    ExternBillboard3D billboard3d;
 } Billboard3D;
 
 typedef struct {
@@ -260,8 +280,7 @@ typedef struct {
     char    p[dds.path_len]<name="Path",bgcolor=0x123456>;
 } Plane;
 
-typedef struct {
-    long    type<name="Type",format=hex,bgcolor=0x000000>;
+typedef struct{
     int     unkn0;
     XYZ     color(2)[2]<name="Color",read=ReadbyteXYZ,bgcolor=0xFFFF00,optimize=true>;
     //float   unkn1[10];
@@ -277,10 +296,14 @@ typedef struct {
     int     unkn2[26];
     int     path_len<name="Path Length",bgcolor=0x123456>;
     char    p[path_len]<name="Path",bgcolor=0x123456>;
-} RgbWater;
+} ExternRgbWater;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
+    ExternRgbWater rgbWater;
+} RgbWater;
+
+typedef struct{
     int     unkn0;
     float   animationSpeed<name="Speed",bgcolor=0x0000BB>;
     long    NULL;
@@ -294,12 +317,14 @@ typedef struct {
     float   unkn2[8];
     int     delay;
     int     delayJitter;
-
-
-} ScaleAnim;
+}ExternScaleAnim;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
+    ExternScaleAnim scaleAnim;
+} ScaleAnim;
+
+typedef struct{
     int     unkn0;
     int     uvs_index<name="UVS File Path Index",bgcolor=0xBB0000>;
     long    NULL;
@@ -312,7 +337,13 @@ typedef struct {
     int     loopingEnum<comment="0-NotAnimated, 2-RandomRestart,8-, 9-Continuous">;//looping related
     int     path_len<name="Path Length",bgcolor=0x123456>;
     char    p[path_len]<name="Path",bgcolor=0x123456>;
+}ExternUVSequence;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    ExternUVSequence uvsequence;
 } UVSequence;
+
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
@@ -343,8 +374,7 @@ typedef struct {
     int     unkn5[2];
 } ShaderSettings;
 
-typedef struct {
-    long    type<name="Type",format=hex,bgcolor=0x000000>;
+typedef struct{
     int     unkn0;
     XYZ     color1(2)<name="Color Channel 1 (Alpha)",read=ReadbyteXYZ,bgcolor=0xFFFF00,optimize=true>;
     float   brightness1<name="Brightness 1 (Alpha)">; //colors will combine
@@ -355,6 +385,11 @@ typedef struct {
     float   brightness4<name="Color Balance 2">; //setting either to 0 will make all disappear
     int     unkn6[10]<name="Color 1 Params">; //the 10th param kills color when set to 1
     int     unkn7[10]<name="Color 2 Params">; //I have no idea what else it does
+}ExternRgbFire;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    ExternRgbFire rgbFire;
 } RgbFire;
 
 typedef struct {
@@ -402,11 +437,15 @@ typedef struct {
 }Mod3Properties;
 
 typedef struct {
-    long    type<name="Type",format=hex,bgcolor=0x000000>;
     Mod3Properties properties;
     byte    BeginMod3;
     string  path1<name="Mod3 Path1",bgcolor=0x123456,read=ReadStr>;
     string  path2<name="Mod3 Path2",bgcolor=0x123456,read=ReadStr>;
+} ExternMesh;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    ExternMesh mesh;
 } Mesh;
 
 typedef struct {
@@ -476,8 +515,7 @@ typedef struct {
     EFX_Behavior    efx_behav<name="Behavior Parameter">;
 } PtBehavior;
 
-typedef struct {
-    long    type<name="Type",format=hex,bgcolor=0x000000>;
+typedef struct{
     int     unkn0[2];
     float   unkn1;
     ubyte   body_p<name="Player Aura Part",bgcolor=0x550055,comment="/wiki/EFX-Effect-Editing#aura-parts">;
@@ -493,6 +531,11 @@ typedef struct {
     float radii_effect_unkn1;
     float radii_effect_unkn2;
     float   unkn5[5];
+}ExternPlEmissive;
+
+typedef struct {
+    long    type<name="Type",format=hex,bgcolor=0x000000>;
+    ExternPlEmissive plEmissive;
 } PlEmissive;
 
 typedef struct {
@@ -741,7 +784,9 @@ typedef struct {
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
-    int     unkn0[9];
+    int     unkn0;
+    int     referenceIndex;
+    int     unkn1[7];
 } ExternReference;
 
 typedef struct {
@@ -767,17 +812,28 @@ typedef struct {
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
-    int64   unkn0[2];
-    float   unkn1[2];
+    int64   offsetXY[2];
+    float   scaleXY[2];
 } Transform2D;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
-    int     unkn0[2];
-    long    unkn1[2];
-    float   unkn2[2];
+    long    unkn0[2];
+    XYZ     color(2)[2];
+    float   emissionMin;
+    float   emissionMax;
     int     unkn3[4];
-    float   unkn4[16];
+
+    float   rotationJitterMin;
+    float   rotationJitterMax;
+    float   scaleJitterMin;
+    float   scaleJitterMax;
+    float   imageResolutionX;
+    float   scaleX;
+    float   imageResolutionY;
+    float   scaleY;
+    float   unkn4[8];
+
     int     path_len<name="Path Length",bgcolor=0x123456>;
     int     unkn5[2];
     char    p[path_len]<name="Path",bgcolor=0x123456>;
@@ -798,7 +854,10 @@ typedef struct {
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0;
-    float   unkn1[4];
+    float   offsetX;
+    float   offsetXJitter;
+    float   offsetY;
+    float   offsetYJitter;
     int     unkn2[4];
 } EmitterShape2D;
 

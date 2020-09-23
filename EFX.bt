@@ -118,7 +118,7 @@
 //
 //              3.6     Split the template into multiple files to help with editing and automated conversion to other formats
 // ------------------------------------------------
-#include <EFX_Subtypes.bt>
+//#include <EFX_Subtypes.bt>
 #include <EFX_Extern.bt>
 #include <EFX_Play.bt>
 #include <EFX_Root.bt>

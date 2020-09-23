@@ -10,49 +10,7 @@
 //  ID Bytes: 
 //   History: 
 //------------------------------------------------
-
-typedef struct {
-    long    unkn[57];
-} ExternTransform3D;
-
-typedef struct {
-    long    unkn[27];
-} ExternVelocity3D;
-
-typedef struct {
-    long    unkn[19];
-} ExternScaleAnim;
-
-typedef struct {
-    long    unkn[28];
-} ExternRgbFire;
-
-typedef struct {
-    long    unkn[18];
-} ExternSpawn;
-
-typedef struct {
-    long    unkn[44];
-    byte    unkn1;
-} ExternMesh;
-
-typedef struct {
-    long    unkn[33];
-    byte    unkn1;
-} ExternBillboard3D;
-
-typedef struct {
-    long    unkn[22];
-} ExternEmitterShape3D;
-
-typedef struct {
-    long    unkn[11];
-    byte    unkn1;
-} ExternUVSequence;
-
-typedef struct {
-    long    unkn[19];
-} ExternPlEmissive;
+#include <EFX_Subtypes.bt>
 
 typedef struct {
     long    unkn[12];
@@ -66,11 +24,6 @@ typedef struct {
 typedef struct {
     long    unkn[21];
 } ExternVelocity3D2;
-
-typedef struct {
-    long    unkn[40];
-    byte    unkn1;
-} ExternRgbWater;
 
 typedef struct {
     long    unkn[18];
