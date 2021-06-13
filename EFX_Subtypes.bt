@@ -40,8 +40,8 @@ typedef struct {
     int     unkn0;
     XYZ     translation_tracking(1)<name="Translation Tracking Mode",read=ReadintXYZ,bgcolor=0xAA0000,comment="0 - Track Map Center Absolutely, 1 - Track Player Movement, 2 - Do not track further movements, 3 - Ignore Basic Transform ">; 
     // 0 - Track Map Center Absolutely, 1 - Track Player Movement, 2 - Do not track further movements, 3 - Ignore Basic Transform 
-    XYZ     angle_tracking(1)<name="Angle Tracking Mode",read=ReadintXYZ,bgcolor=0x00AA00,comment="0 - Track Map Center Absolutely, 1 - Track Player Movement, 2 - Do not track further movements, 3 - Ignore Basic Transform ">;
-    // 0 - Track Map Center Absolutely, 1 - Track Player Movement, 2 - Do not track further movements, 3 - Ignore Basic Transform 
+    XYZ     angle_tracking(1)<name="Angle Tracking Mode",read=ReadintXYZ,bgcolor=0x00AA00,comment="0 - Track Map Center Absolutely, 1 - Track Player Movement, 2 - Do not track further movements, 3 - Snap to Angle And Track ">;
+    // 0 - Track Map Center Absolutely, 1 - Track Player Movement, 2 - Do not track further movements, 3 - Snap to Angle And Track
     XYZ     scale_tracking(1)<name="Scale Tracking Mode",read=ReadintXYZ,bgcolor=0x00AA00,comment="0 - Track Map Center Absolutely, 1 - Track Player Movement, 2 - Do not track further movements, 3 - Ignore Basic Transform ">;
     // 0 - Track Map Center Absolutely, 1 - Track Player Movement, 2 - Do not track further movements, 3 - Ignore Basic Transform
     int     spawnTrack<name="Track Across Spawns",bgcolor=0x0000AA0>;
@@ -60,7 +60,8 @@ typedef struct{
     int     randomizedDelay;
     int     durationOfSpawnerLifespan;
     int     randomizedLifespan;
-    int     unkn00[2];
+    int     instanceCountUnknLimit;
+    int     instanceCountUnknLimitJitter;
     int     occur<name="Spawn Start Delay">;
     int     occur2<name="Randomized Spawn Start Delay">;
     uint32  unkn10;
@@ -90,7 +91,8 @@ typedef struct {
     long    unkn2[2];
     long    fadeOutDuration;
     long    fadeOutDurationJitter;
-    long    unkn3[2];
+    long    timeToDeath<comment = "Overrides indefinite">;
+    long    timeToDeathJitter<comment = "Overrides indefinite">;
     long    indefiniteLifespan;
 } Life;
 
@@ -99,13 +101,20 @@ typedef struct{
     XYZ     transform(0);
     int     patternControl<comment="0 - Cube, 1 - Sphere, 2 - Ring, 3 - Spot">;
     int     unkn2;
-    float   unkn3_f0[4];
+    float   unkn3_f0
+    // Does not reorient the normal or tangent vector of the spawn object only the trayectory over which it is copied.
+    float   trayectoryRotationX;
+    float   trayectoryRotationY;
+    float   trayectoryRotationZ;
+
     int     unkn3_i0;
     float   spawnAngleLimits;
     float   unkn3_f1;
-    int     unkn3_i1;
-    int     spawnCount;
-    float   unkn3_f2[3];
+    int     spawnPerCycle;//On each cycle it spawns a number of entries, and then offsets the next cycle by one position
+    int     spawnTotal;
+    float   radiusEnd;
+    float   radiusOrigin;
+    float   unknRadiusRelated;
     int     unkn4;
 }ExternEmitterShape3D;
 
@@ -115,32 +124,41 @@ typedef struct {
 } EmitterShape3D;
 
 typedef struct {
+    //Neutral is (0,1,0)
     int     unkn0[3];
-    float   unkn1[2];
-    long    NULL0[4];
+
+    float   rotationX;
+    float   rotationXJitter;
+    float   rotationY;
+    float   rotationYJitter;
+    float   rotationZ;
+    float   rotationZJitter;
 
     float expansion_radius_limit;
     float expansion_radius_jitter;
     float expansion_radius_elasticity;// 0 - completely dampened (Instantly at Position), 1 - No dampening, continues moving.
     float expansion_radius_elasticity_jitter;
 
-    float unkn2_04;//Nothing Known
-    float unkn2_05;//Nothing Known
-    float unkn2_06;//Nothing Known
+    //Net Force conserved
+    float velocityX;//Substracts from system net energy so higher values restrict motion radially
+    float velocityY;
+    float velocityZ;
 
-    float unkn2_07;//TODO - Test this since they look stable
-    float unkn2_08;//TODO - Test this since they look stable
-    float unkn2_09;//TODO - Test this since they look stable
+    float energyOnAxisX;//(1-x), above 1 is traditional emission on the axis radially, below is implosion 1 is no energy. Higher energy is faster
+    float energyOnAxisY;//
+    float energyOnAxisZ;//
 
-    int unkn2_10; //Set to 1 Normally
+    int   expansionType; //1 - Radial, 2 - Directional, 5 - No Expansion
 
     float gravity;
     float gravity_jitter;
 
-    long    NULL1[2];
+    int     expansionDelay;
+    int     expansionDelayJitter;
     int     gravityDelay;
     int     gravityDelayJitter;
     long    NULL2;
+
 } ExternVelocity3D;
 
 typedef struct {
@@ -406,8 +424,8 @@ typedef struct {
     XYZ       scale(0);
     float     global_scale;
     float   global_scale_jitter;
-    int     model_viscon;
-    int     model_viscon_randomizer;//picks between the 2 at random
+    int     starting_model_viscon;
+    int     end_model_viscon;//picks between the 2 at random
     colour     color1;
     colour     color2;
     colour     color3;
@@ -430,8 +448,8 @@ typedef struct {
     int     epv_color_slot2;
     int     unkn6_1;
     byte    colorize_material1[4];//byte controls
-    byte    colorize_material2[4];//byte controls
-    int     unkn6_2;
+    byte    colorize_material2[4];//byte controls //Second byte control is tied to following the EPV Slot colour with NFH plugin
+    int     randommizeViscon<comment = "0 Spawn Random Sample of Range, 1 Spawn all of the Range">;
     
     short   NULL1;
 }Mod3Properties;
@@ -439,8 +457,8 @@ typedef struct {
 typedef struct {
     Mod3Properties properties;
     byte    BeginMod3;
-    string  path1<name="Mod3 Path1",bgcolor=0x123456,read=ReadStr>;
-    string  path2<name="Mod3 Path2",bgcolor=0x123456,read=ReadStr>;
+    string  path<name="Mod3 Path",bgcolor=0x123456,read=ReadStr>;
+    string  placement<name="Pl (Placement) Path",bgcolor=0x123456,read=ReadStr>;
 } ExternMesh;
 
 typedef struct {
@@ -677,7 +695,7 @@ typedef struct {
     long    unkn20[4];
     float   unkn21;
     long    unkn22[3];
-    long    spacer6<hidden=true>;
+    long    tailTiedToBone;
     float   unkn23[8];
     long    unkn24;
     long    epvcolor[2];
@@ -1218,7 +1236,11 @@ typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[2];
     long    unkn1[3];
-    byte    unkn2[8];
+    byte    unkn20;
+    byte    ddsUsageType;
+    byte    unkn22;
+    byte    visconIndex;
+    byte    unkn21[4];
     int     unkn3;
     string  path1<name="Mod3 Path1",bgcolor=0x123456,read=ReadStr>;
 } EmitterShapeMesh;

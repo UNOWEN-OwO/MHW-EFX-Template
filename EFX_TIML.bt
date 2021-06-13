@@ -30,22 +30,22 @@ typedef struct{
 typedef struct(int base){
     int64 offset;
     int64 count;
-    int32 datatypeHash<format=hex, comment="Hash to determine the transform type (rot:X, pos:Z, Etc).">;
-    int32 unkn1;
+    int32 datatypeHash<format=hex, comment="Hash to determine the transform type (rot:X, pos:Z, Etc).", bgcolor = 0xFFFF00>;
+    int32 dataType;
     local int pos = FTell();
     FSeek(base+offset);
-    TIML_Keyframe keyframes[count]<optimize = false>;
+    TIML_Keyframe keyframes[count]<optimize = false, bgcolor = 0xFF4444>;
     FSeek(pos);
 }TIML_Transform;
 
 typedef struct(int base){
     int64 offset;
     int64 count;
-    int32 timelineParameterHash<format=hex, comment="Hash to determine if it affects a mesh or a materials, etc.">;
+    int32 timelineParameterHash<format=hex, comment="Hash to determine if it affects a mesh or a materials, etc.", bgcolor = 0xFFFF44>;
     int32 NULL;
     local int pos = FTell();
     FSeek(base+offset);
-    TIML_Transform transforms(base)[count]<optimize = false>;
+    TIML_Transform transforms(base)[count]<optimize = false, bgcolor = 0xFF6666>;
     FSeek(pos);
 }TIML_Type;
 
@@ -57,10 +57,10 @@ typedef struct(int base){
     float animationLength;
     float loopStartPoint;
     int loopControl<comment="Determines how and if it will loop">;
-    int labelHash<format=hex, comment="Label Hash">;
+    int labelHash<format=hex, comment="Label Hash",bgcolor = 0xFFFF88>;
     local int pos = FTell();
     FSeek(base+offset);
-    TIML_Type types(base)[count]<optimize = false>;
+    TIML_Type types(base)[count]<optimize = false, bgcolor = 0xFF8888>;
     FSeek(pos);
 }TIML_Data;
 
@@ -69,7 +69,7 @@ typedef struct(int base){
     if (offset > 0){
         local int pos = FTell();
         FSeek(base+offset);
-        TIML_Data data(base)<optimize = false>;
+        TIML_Data data(base)<optimize = false, bgcolor = 0xFFBBBB>;
         FSeek(pos);
     }
 }TIML_Body;
@@ -83,12 +83,12 @@ typedef struct{
     int NULL<comment = "0">;
     int32 count;
     if (count > 0) int32 NULL2;
-    TIML_Body animations(base)[count]<optimize = false>;    
+    TIML_Body animations(base)[count]<optimize = false, bgcolor = 0xFFCCCC>;    
 }TIML_Header;
 
 typedef struct {
     local int base;
     base = FTell();
-    TIML_Header Header;
+    TIML_Header Header<bgcolor = 0xFFFFFF>;
     FSeek(base+timl_length);
 }Timl;
