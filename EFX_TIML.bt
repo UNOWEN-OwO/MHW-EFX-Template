@@ -23,8 +23,17 @@ typedef struct{
     float bounceForwardLimit;
     float bounceBackwardsLimit;
     float frameTiming;
-    short easingMethod<comment = "0 - Binary (Stuck), 1 - Constant, (2 - Linear, 3 - Cuadratic) Known to Work, 4 - Cubic">;
     short interpolationType1<comment = "2 - Only Functional">;
+    short dataType;
+//0 is special -1,0,1,3,31
+//1 Int or Flag
+//2 Float
+//3 RGBA
+//dataType to valid interpol values
+//0:[1]
+//1:[1,4,5,6]
+//2:[0,1,2,3,4]
+//3:[0,1,2,3,4]
 }TIML_Keyframe;
 
 typedef struct(int base){

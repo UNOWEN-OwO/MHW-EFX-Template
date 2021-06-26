@@ -101,7 +101,7 @@ typedef struct{
     XYZ     transform(0);
     int     patternControl<comment="0 - Cube, 1 - Sphere, 2 - Ring, 3 - Spot">;
     int     unkn2;
-    float   unkn3_f0
+    float   unkn3_f0;
     // Does not reorient the normal or tangent vector of the spawn object only the trayectory over which it is copied.
     float   trayectoryRotationX;
     float   trayectoryRotationY;
@@ -830,7 +830,9 @@ typedef struct {
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
-    int64   offsetXY[2];
+    int     unknown;
+    float   offsetXY[2];//this used to be int64 offset before crimson suggested this split, so if it's wrong it's his fault
+    float   rotation;
     float   scaleXY[2];
 } Transform2D;
 
@@ -876,16 +878,36 @@ typedef struct {
     float   offsetXJitter;
     float   offsetY;
     float   offsetYJitter;
-    int     unkn2[4];
+    int     unkn20;
+    int     spawnCount;
+    int     unkn22;//SpawnCountJitter??
+    int     unkn22;
 } EmitterShape2D;
 
 typedef struct {
     long    type<name="Type",format=hex,bgcolor=0x000000>;
     int     unkn0[2];
-    float   unkn1[9];
-    int     unkn2;
-    float   unkn3[3];
-    int     unkn4[3];
+
+    float   unkn10;
+    float   expansionRadius;
+    float   expansionRadiusJitter;
+    float   expansionRadiusElasticity;
+    float   expansionRadiusElasticityJitter;
+    float   unkn15;
+    float   unkn16;
+    float   energyOnAxisX;
+
+    float   energyOnAxisY;
+    int     expansionType; //0-1 Linear, 2-3 No Movement
+        
+    float   gravity;
+    float   gravityJitter;
+    
+    int   expansionDelay;
+    int   expansionDelayJitter;
+
+    int   gravityDelay;
+    int   gravityDelayJitter;
 } Velocity2D;
 
 typedef struct {
