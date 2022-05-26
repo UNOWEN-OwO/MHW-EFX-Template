@@ -126,7 +126,7 @@ typedef struct{
     long    NULL0;
     int     count<name="Extern Prefix Count",bgcolor=0xFF0000>;
     long    NULL1;
-    Extern_Data    data[count];
+    Extern_Data    data[count]<optimize = false>;
 } Extern_Attribute;
 
 typedef struct {
