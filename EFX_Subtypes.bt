@@ -629,11 +629,13 @@ typedef struct {
     int     unkn0;
     int     path_len<name="Path Length",bgcolor=0x123456>;
     char    p[path_len]<name="Path",bgcolor=0x123456>;
-    float   unkn1[3];
-    XYZ     unkn_set_1(0);
-    int64   NULL[3];
-    float   unkn2[12];
-    XYZ     unkn_set_2(0);
+    float   forceMultiplier;
+    float   unkn1[2];
+    XYZ     offsetPos(0);
+    XYZ     offsetPosVel(0);
+    XYZ     offsetAngle(0);
+    XYZ     offsetAngleVel(0);
+    XYZ     offsetScale(0);
     float   unkn3[5];
 } Turbulence;
 
