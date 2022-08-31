@@ -222,10 +222,13 @@ typedef struct{
     int     applicationRule;//Enum that determine how long and how many times it applies
     XYZ     color(2)[2]<name="Color",read=ReadbyteXYZ,bgcolor=0xFFFF00,optimize=true>;
     float   brightness<name="Brightness",bgcolor=0x00aaaa>;
-    int     unkn2[3];
+    int     unkn20;
+    int     EPVColorBlend;
+    int     unkn22;
+
     int     EPVColorSlot1;
-    int     SlotOverride1;
     int     EPVColorSlot2;
+    int     SlotOverride1;
     int     SlotOverride2;
     float   scale<name="Scale",bgcolor=0xaa55aa>;
     float   scaleJitter;
@@ -393,6 +396,19 @@ typedef struct {
 } ShaderSettings;
 
 typedef struct{
+    int     enable;
+    int     fadeIn;
+    int     fadeInJitter;
+    int     duration;
+    int     durationJitter;
+    int     fadeOut;
+    int     fadeOutJitter;
+    int     unkn7;
+    int     unkn8;
+    int     unkn9;
+}ColorParam;
+
+typedef struct{
     int     unkn0;
     XYZ     color1(2)<name="Color Channel 1 (Alpha)",read=ReadbyteXYZ,bgcolor=0xFFFF00,optimize=true>;
     float   brightness1<name="Brightness 1 (Alpha)">; //colors will combine
@@ -401,8 +417,8 @@ typedef struct{
     float   unkn4;
     float   brightness3<name="Color Balance 1">; //seems to bring out color 1 without lowering overall brightness, might be more of a color balance
     float   brightness4<name="Color Balance 2">; //setting either to 0 will make all disappear
-    int     unkn6[10]<name="Color 1 Params">; //the 10th param kills color when set to 1
-    int     unkn7[10]<name="Color 2 Params">; //I have no idea what else it does
+    ColorParam color1Param<name="Color 1 Params (Green)">; //the 10th param kills color when set to 1
+    ColorParam color2Param<name="Color 2 Params (Red)">; //the 10th param kills color when set to 1
 }ExternRgbFire;
 
 typedef struct {
